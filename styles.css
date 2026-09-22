@@ -1,0 +1,161 @@
+:root {
+  --bg: #f6f3ee;
+  --ink: #1c1916;
+  --muted: #5c564e;
+  --line: #d9d2c8;
+  --accent: #2f5d50;
+  --card: #fffdf9;
+  --max: 42rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  color: var(--ink);
+  background: var(--bg);
+  line-height: 1.6;
+}
+
+a {
+  color: var(--accent);
+}
+
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 6vw;
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  background: color-mix(in srgb, var(--bg) 88%, white);
+  backdrop-filter: blur(8px);
+}
+
+.logo {
+  font-weight: 700;
+  text-decoration: none;
+  color: inherit;
+  letter-spacing: 0.04em;
+}
+
+nav {
+  display: flex;
+  gap: 1.25rem;
+}
+
+nav a {
+  text-decoration: none;
+  color: var(--muted);
+}
+
+nav a:hover {
+  color: var(--ink);
+}
+
+main {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 4rem 6vw 6rem;
+}
+
+.hero {
+  padding-bottom: 3.5rem;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin: 0 0 0.75rem;
+}
+
+h1 {
+  font-size: clamp(2.1rem, 5vw, 3.4rem);
+  line-height: 1.15;
+  font-weight: 500;
+  margin: 0 0 1rem;
+}
+
+.lede {
+  font-size: 1.15rem;
+  color: var(--muted);
+  margin: 0 0 1.75rem;
+}
+
+.button {
+  display: inline-block;
+  background: var(--accent);
+  color: #f8faf8;
+  text-decoration: none;
+  padding: 0.7rem 1.1rem;
+  border-radius: 999px;
+}
+
+h2 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+}
+
+section + section {
+  margin-top: 3.25rem;
+  padding-top: 3.25rem;
+  border-top: 1px solid var(--line);
+}
+
+.work-list {
+  list-style: none;
+  padding: 0;
+  margin: 1.25rem 0 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.work-list li {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1.15rem 1.2rem;
+}
+
+.work-list h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+}
+
+.work-list p {
+  margin: 0;
+  color: var(--muted);
+}
+
+footer {
+  padding: 1.5rem 6vw 2.5rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+footer p {
+  max-width: var(--max);
+  margin: 0 auto;
+}
+
+@media (max-width: 640px) {
+  nav {
+    gap: 0.85rem;
+    font-size: 0.95rem;
+  }
+}
