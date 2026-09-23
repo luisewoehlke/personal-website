@@ -8,6 +8,14 @@ ARCHIVE = "https://luisew.substack.com/api/v1/archive?sort=new&limit=20"
 OUT = Path(__file__).resolve().parents[1] / "posts.json"
 
 
+def excerpt(text, limit=140):
+    words = " ".join((text or "").split())
+    if not words or len(words) <= limit:
+        return words
+    cut = words[:limit].rsplit(" ", 1)[0].rstrip(".,;:—-")
+    return f"{cut}…"
+
+
 def main():
     request = urllib.request.Request(
         ARCHIVE,
@@ -25,6 +33,7 @@ def main():
             "image": post.get("cover_image") or "",
             "likes": post.get("reaction_count") or 0,
             "comments": post.get("comment_count") or 0,
+            "excerpt": excerpt(post.get("truncated_body_text")),
         }
         for post in posts
     ]
