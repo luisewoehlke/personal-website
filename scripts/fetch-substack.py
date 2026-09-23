@@ -1,51 +1,39 @@
-"""Write posts.json from the Substack RSS feed."""
+"""Write posts.json from the Substack archive, including likes and comments."""
 
 import json
 import urllib.request
-import xml.etree.ElementTree as ET
-from email.utils import parsedate_to_datetime
 from pathlib import Path
 
-FEED = "https://luisew.substack.com/feed"
+ARCHIVE = "https://luisew.substack.com/api/v1/archive?sort=new&limit=20"
 OUT = Path(__file__).resolve().parents[1] / "posts.json"
-
-
-def text(element, tag):
-    child = element.find(tag)
-    return (child.text or "").strip() if child is not None else ""
 
 
 def main():
     request = urllib.request.Request(
-        FEED,
+        ARCHIVE,
         headers={"User-Agent": "personal-website-feed"},
     )
     with urllib.request.urlopen(request, timeout=30) as response:
-        root = ET.fromstring(response.read())
+        posts = json.load(response)
 
-    posts = []
-    for item in root.findall("./channel/item"):
-        enclosure = item.find("enclosure")
-        published = text(item, "pubDate")
-        try:
-            published = parsedate_to_datetime(published).isoformat()
-        except (TypeError, ValueError, IndexError):
-            pass
-        posts.append(
-            {
-                "title": text(item, "title"),
-                "subtitle": text(item, "description"),
-                "url": text(item, "link"),
-                "date": published,
-                "image": enclosure.get("url", "") if enclosure is not None else "",
-            }
-        )
+    cleaned = [
+        {
+            "title": post.get("title") or "",
+            "subtitle": post.get("subtitle") or post.get("description") or "",
+            "url": post.get("canonical_url") or "",
+            "date": post.get("post_date") or "",
+            "image": post.get("cover_image") or "",
+            "likes": post.get("reaction_count") or 0,
+            "comments": post.get("comment_count") or 0,
+        }
+        for post in posts
+    ]
 
     OUT.write_text(
-        json.dumps(posts, indent=2, ensure_ascii=False) + "\n",
+        json.dumps(cleaned, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
-    print(f"Wrote {len(posts)} posts")
+    print(f"Wrote {len(cleaned)} posts")
 
 
 if __name__ == "__main__":
