@@ -2,7 +2,10 @@ name: Update Substack posts
 
 on:
   schedule:
+    # Hourly: Substack + LessWrong only
     - cron: "17 * * * *"
+    # Daily: also attempt EA Forum (Cloudflare often blocks it)
+    - cron: "23 7 * * *"
   workflow_dispatch:
 
 permissions:
@@ -14,6 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Fetch posts
+        env:
+          # Only the daily cron (and manual runs) hit the EA Forum API.
+          FETCH_EA_FORUM: ${{ github.event_name == 'workflow_dispatch' && '1' || github.event.schedule == '23 7 * * *' && '1' || '0' }}
         run: python3 scripts/fetch-substack.py
       - name: Commit posts.json if it changed
         run: |

@@ -1,6 +1,7 @@
 """Write posts.json from Substack, the EA Forum, and LessWrong."""
 
 import json
+import os
 import urllib.error
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -279,10 +280,21 @@ def merge_kept(posts, kept):
     return posts
 
 
+def should_fetch_ea_forum():
+    """EA Forum is Cloudflare-blocked often; only hit it when explicitly enabled."""
+    flag = os.environ.get("FETCH_EA_FORUM", "0").strip().lower()
+    return flag in ("1", "true", "yes", "on")
+
+
 def main():
-    ea_live = safe_source(
-        "EA Forum", lambda: forum_posts(EA_FORUM, EA_USER_ID, EA_FORUM_LOGO)
-    )
+    fetch_ea = should_fetch_ea_forum()
+    if fetch_ea:
+        ea_live = safe_source(
+            "EA Forum", lambda: forum_posts(EA_FORUM, EA_USER_ID, EA_FORUM_LOGO)
+        )
+    else:
+        print("EA Forum: skipped (FETCH_EA_FORUM not set; at most once daily)")
+        ea_live = []
     posts = (
         safe_source("Substack", substack_posts)
         + ea_live

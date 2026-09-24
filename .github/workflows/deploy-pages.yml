@@ -38,16 +38,24 @@ jobs:
             echo "$RESP" | jq -c .
             exit 1
           fi
+          if [ -z "$NEW_REFRESH" ] || [ "$NEW_REFRESH" = "null" ]; then
+            echo "Refresh succeeded but no new refresh_token was returned:"
+            echo "$RESP" | jq -c 'del(.access_token)'
+            exit 1
+          fi
           echo "::add-mask::$ACCESS"
           echo "::add-mask::$NEW_REFRESH"
           echo "access_token=$ACCESS" >> "$GITHUB_OUTPUT"
           # Cloudflare rotates refresh tokens; keep the secret current.
-          echo "$NEW_REFRESH" | gh secret set CF_REFRESH_TOKEN -R "${{ github.repository }}"
+          if ! echo "$NEW_REFRESH" | gh secret set CF_REFRESH_TOKEN -R "${{ github.repository }}"; then
+            echo "Failed to save rotated CF_REFRESH_TOKEN — refusing to continue so the token is not lost."
+            exit 1
+          fi
 
       - name: Deploy
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ steps.cf.outputs.access_token }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy . --project-name=luisew
+          command: pages deploy . --project-name=luisew --commit-dirty=true
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
