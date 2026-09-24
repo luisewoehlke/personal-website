@@ -323,11 +323,46 @@ const BEST_OF_STICKERS = [
   { src: "images/stickers/orange%202.png", cls: "is-orange" },
 ];
 
-const BEST_OF_URLS = [
-  "https://luisew.substack.com/p/unreasonably-easy-ways-to-make-people",
-  "https://www.lesswrong.com/posts/7Q7DPSk4iGFJd8DRk/an-opinionated-guide-to-using-anki-correctly",
-  "https://luisew.substack.com/p/5-things-i-learned-about-people-from",
-  "https://forum.effectivealtruism.org/posts/yMptv5msFnnfESCqm/how-i-solved-my-problems-with-low-energy-or-burnout",
+const BEST_OF_POSTS = [
+  {
+    url: "https://luisew.substack.com/p/unreasonably-easy-ways-to-make-people",
+    title: "Unreasonably Easy Ways to Make People Laugh That Comedians Use",
+    subtitle: "Not all jokes are born equal",
+    date: "2026-06-17T23:06:42.009Z",
+    image:
+      "https://substack-post-media.s3.amazonaws.com/public/images/ca87f98c-a9df-45b9-a064-b6e032b37bc5_2769x1605.jpeg",
+    category: "stand-up",
+  },
+  {
+    url: "https://www.lesswrong.com/posts/7Q7DPSk4iGFJd8DRk/an-opinionated-guide-to-using-anki-correctly",
+    title: "An Opinionated Guide to Using Anki Correctly",
+    subtitle:
+      "I can't count how many times I've heard variations on \"I used Anki too for a while, but I got out of the habit.",
+    date: "2025-07-08T20:01:16.858Z",
+    image:
+      "https://res.cloudinary.com/lesswrong-2-0/image/upload/c_fill,ar_1.91,g_auto/SocialPreview/fihplye6jfgsjtyczhs8",
+    category: "blog",
+  },
+  {
+    url: "https://luisew.substack.com/p/5-things-i-learned-about-people-from",
+    title: "5 Things I Learned About People From Doing Stand-Up Comedy",
+    subtitle: "People need to put you in a box",
+    date: "2026-06-09T08:39:23.562Z",
+    image:
+      "https://substack-post-media.s3.amazonaws.com/public/images/f7cfc26b-0a22-4c4e-a483-28888a3970d0_2041x1171.png",
+    category: "stand-up",
+  },
+  {
+    url: "https://forum.effectivealtruism.org/posts/yMptv5msFnnfESCqm/how-i-solved-my-problems-with-low-energy-or-burnout",
+    title: "How I solved my problems with low energy (or: burnout)",
+    subtitle:
+      "I had really bad problems with low energy and tiredness for about 2 years.",
+    date: "2021-09-01T00:00:00.000Z",
+    image: EA_FORUM_LOGO,
+    likes: 0,
+    comments: 0,
+    category: "research",
+  },
 ];
 
 const isForumPost = (url) =>
@@ -354,7 +389,7 @@ const postCardHtml = (post) => {
   const image = imageSrc
     ? `<span class="post-card-media"><img class="post-card-image${
         imageSrc === EA_FORUM_LOGO || imageSrc === LESSWRONG_LOGO ? " is-logo" : ""
-      }" src="${escapeHtml(imageSrc)}" alt="" /></span>`
+      }" src="${escapeHtml(imageSrc)}" alt="" loading="lazy" /></span>`
     : `<span class="post-card-media"><span class="post-card-image"></span></span>`;
   const sourceLogo = url.includes("forum.effectivealtruism.org")
     ? `<img class="post-source is-ea" src="images/ea-mark.png" alt="EA Forum" />`
@@ -470,52 +505,118 @@ const typeStandupLabel = (label, show) => {
   step();
 };
 
-const renderBestOf = (posts) => {
+const renderBestOf = (posts = []) => {
   const grid = document.querySelector("#best-of .best-of-grid");
   if (!grid) return;
   const byUrl = new Map(posts.map((post) => [post.url, post]));
-  const picked = BEST_OF_URLS.map((url) => byUrl.get(url)).filter(Boolean);
-  if (picked.length !== BEST_OF_URLS.length) return;
-  grid.innerHTML = picked
-    .map((post, i) => {
-      const { card, date } = postCardHtml(post);
-      const sticker = BEST_OF_STICKERS[i];
-      return `<li><span class="best-of-sticker-wrap ${sticker.cls}"><img class="sticker best-of-sticker" src="${sticker.src}" alt="" /><span class="best-of-num" aria-hidden="true">${i + 1}</span></span>${card}${date}<span class="best-of-rule" aria-hidden="true"><span class="best-of-rule-num">${i + 1}</span></span></li>`;
-    })
-    .join("");
+  grid.innerHTML = BEST_OF_POSTS.map((fallback, i) => {
+    const live = byUrl.get(fallback.url) || {};
+    const post = {
+      ...fallback,
+      ...live,
+      title: live.title || fallback.title,
+      subtitle: live.subtitle || fallback.subtitle,
+      image: live.image || fallback.image,
+      date: live.date || fallback.date,
+      category: live.category || fallback.category,
+      url: fallback.url,
+    };
+    const { card, date } = postCardHtml(post);
+    const sticker = BEST_OF_STICKERS[i];
+    return `<li><span class="best-of-sticker-wrap ${sticker.cls}"><img class="sticker best-of-sticker" src="${sticker.src}" alt="" /><span class="best-of-num" aria-hidden="true">${i + 1}</span></span>${card}${date}<span class="best-of-rule" aria-hidden="true"><span class="best-of-rule-num">${i + 1}</span></span></li>`;
+  }).join("");
 };
 
-const renderLatestPosts = (posts) => {
-  if (!latestPosts) return;
-  const ordered = [...posts].sort(
-    (a, b) => new Date(b.date) - new Date(a.date)
-  );
-  let lastMonth = "";
-  latestPosts.innerHTML = ordered
-    .map((post) => {
-      const when = formatPostDate(post.date);
-      const monthKey = when.datetime.slice(0, 7);
-      const heading =
-        monthKey !== lastMonth
-          ? `<li class="post-month"><span class="month-label">${escapeHtml(monthHeading(post.date))}</span></li>`
-          : "";
-      lastMonth = monthKey;
-      const { card, date, category } = postCardHtml(post);
-      const orange =
-        category === "stand-up"
-          ? `<span class="standup-mark"><img class="sticker standup-orange" src="images/stickers/orange%202.png" alt="" /><span class="standup-label" aria-hidden="true"><span class="typeout-shadow"></span><span class="typeout-shadow-left"></span><span class="typeout-live"></span></span></span>`
-          : "";
-      return `${heading}<li data-category="${escapeHtml(category)}">
+const POST_BATCH = 5;
+let orderedLatestPosts = [];
+let latestRenderCursor = 0;
+let latestMonthKey = "";
+let loadMoreSentinel = null;
+
+const latestPostItemHtml = (post) => {
+  const when = formatPostDate(post.date);
+  const monthKey = when.datetime.slice(0, 7);
+  let heading = "";
+  if (monthKey !== latestMonthKey) {
+    heading = `<li class="post-month"><span class="month-label">${escapeHtml(
+      monthHeading(post.date)
+    )}</span></li>`;
+    latestMonthKey = monthKey;
+  }
+  const { card, date, category } = postCardHtml(post);
+  const orange =
+    category === "stand-up"
+      ? `<span class="standup-mark"><img class="sticker standup-orange" src="images/stickers/orange%202.png" alt="" /><span class="standup-label" aria-hidden="true"><span class="typeout-shadow"></span><span class="typeout-shadow-left"></span><span class="typeout-live"></span></span></span>`
+      : "";
+  return `${heading}<li data-category="${escapeHtml(category)}">
         ${orange}
         ${card}
         ${date}
       </li>`;
-    })
+};
+
+const fillLatestViewport = () => {
+  let guard = 0;
+  while (
+    loadMoreSentinel &&
+    latestRenderCursor < orderedLatestPosts.length &&
+    loadMoreSentinel.getBoundingClientRect().top < window.innerHeight + 240 &&
+    guard < 20
+  ) {
+    appendLatestBatch();
+    guard += 1;
+  }
+};
+
+const appendLatestBatch = (forceAll = false) => {
+  if (!latestPosts || !loadMoreSentinel) return;
+  if (latestRenderCursor >= orderedLatestPosts.length) {
+    loadMoreSentinel.hidden = true;
+    return;
+  }
+  const end = forceAll
+    ? orderedLatestPosts.length
+    : Math.min(latestRenderCursor + POST_BATCH, orderedLatestPosts.length);
+  const html = orderedLatestPosts
+    .slice(latestRenderCursor, end)
+    .map(latestPostItemHtml)
     .join("");
+  loadMoreSentinel.insertAdjacentHTML("beforebegin", html);
+  latestRenderCursor = end;
+  if (latestRenderCursor >= orderedLatestPosts.length) {
+    loadMoreSentinel.hidden = true;
+  } else {
+    loadMoreSentinel.hidden = false;
+  }
   mountRaindrops();
   applyPostFilter();
   watchMonthLines();
   placeStandupStickers();
+};
+
+const loadMoreObserver = new IntersectionObserver(
+  (entries) => {
+    if (!entries.some((entry) => entry.isIntersecting)) return;
+    appendLatestBatch();
+    fillLatestViewport();
+  },
+  { rootMargin: "400px 0px" }
+);
+
+const renderLatestPosts = (posts) => {
+  if (!latestPosts) return;
+  orderedLatestPosts = [...posts].sort(
+    (a, b) => new Date(b.date) - new Date(a.date)
+  );
+  latestRenderCursor = 0;
+  latestMonthKey = "";
+  if (loadMoreSentinel) loadMoreObserver.unobserve(loadMoreSentinel);
+  latestPosts.innerHTML =
+    '<li class="post-load-sentinel" aria-hidden="true"></li>';
+  loadMoreSentinel = latestPosts.querySelector(".post-load-sentinel");
+  loadMoreObserver.observe(loadMoreSentinel);
+  appendLatestBatch();
+  requestAnimationFrame(fillLatestViewport);
 };
 
 const youtubeIdFrom = (url) => {
@@ -646,69 +747,32 @@ const raindropCard = (item) => {
     : `<a class="raindrop-board" href="${escapeHtml(
         FAVORITES_BOARD
       )}" target="_blank" rel="noopener noreferrer">raindrop.io</a>`;
-  const tags = (Array.isArray(item.tags) ? item.tags : [])
-    .filter(Boolean)
-    .map((tag) => String(tag).replace(/^#/, ""))
-    .filter(Boolean);
-  const spineTags = tags.length ? tags : ["things"];
-  const spine = !spotify
-    ? `<span class="raindrop-spines" aria-hidden="true">${spineTags
-        .map(
-          (tag) =>
-            `<span class="raindrop-spine">${escapeHtml(
-              ` #${tag}`.repeat(40)
-            )}</span>`
-        )
-        .join("")}</span>`
-    : "";
   const showsCover = !youtube && !spotify && (item.image || isImageDrop(item));
   const teal = item.yellow && showsCover ? " is-teal" : "";
-  const spineAttr = !spotify ? ` style="--spine-n: ${spineTags.length}"` : "";
-  return `<li class="raindrop-item${teal}"${spineAttr} hidden>${kicker}${body}${spine}${board}</li>`;
+  return `<li class="raindrop-item${teal}" hidden>${kicker}${body}${board}</li>`;
 };
 
 const mountRaindrops = () => {
   if (!latestPosts || !savedRaindrops.length) return;
   const postCount = latestPosts.querySelectorAll(
-    ":scope > li:not(.post-month):not(.raindrop-item)"
+    ":scope > li:not(.post-month):not(.raindrop-item):not(.post-load-sentinel)"
   ).length;
   const slots = Math.floor(postCount / 3);
-  latestPosts.insertAdjacentHTML(
-    "beforeend",
-    savedRaindrops.slice(0, slots).map(raindropCard).join("")
-  );
-};
-
-const fitRaindropSpines = () => {
-  if (!latestPosts) return;
-  latestPosts
-    .querySelectorAll(":scope > li.raindrop-item:not([hidden]) .raindrop-spine")
-    .forEach((spine) => {
-      const full = spine.dataset.spine || spine.textContent;
-      spine.dataset.spine = full;
-      const box = spine.getBoundingClientRect();
-      if (box.height < 2 || !full) {
-        spine.textContent = "";
-        return;
-      }
-      const lastLetterFits = (n) => {
-        spine.textContent = full.slice(0, n);
-        if (n < 1 || !spine.firstChild) return true;
-        const range = document.createRange();
-        range.setStart(spine.firstChild, 0);
-        range.setEnd(spine.firstChild, n);
-        const all = range.getBoundingClientRect();
-        return all.bottom <= box.bottom + 0.5;
-      };
-      let lo = 0;
-      let hi = full.length;
-      while (lo < hi) {
-        const mid = Math.ceil((lo + hi) / 2);
-        if (lastLetterFits(mid)) lo = mid;
-        else hi = mid - 1;
-      }
-      spine.textContent = full.slice(0, lo).replace(/ +$/, "");
-    });
+  const existing = [
+    ...latestPosts.querySelectorAll(":scope > li.raindrop-item"),
+  ];
+  if (existing.length > slots) {
+    existing.slice(slots).forEach((item) => item.remove());
+    return;
+  }
+  if (existing.length >= slots) return;
+  const html = savedRaindrops
+    .slice(existing.length, slots)
+    .map(raindropCard)
+    .join("");
+  if (!html) return;
+  if (loadMoreSentinel) loadMoreSentinel.insertAdjacentHTML("beforebegin", html);
+  else latestPosts.insertAdjacentHTML("beforeend", html);
 };
 
 const sizeRaindropCards = () => {
@@ -801,7 +865,6 @@ const sizeRaindropCards = () => {
       img.style.objectFit = fit;
     }
   });
-  fitRaindropSpines();
 };
 
 const placeRaindrops = () => {
@@ -811,6 +874,7 @@ const placeRaindrops = () => {
     (item) =>
       !item.classList.contains("post-month") &&
       !item.classList.contains("raindrop-item") &&
+      !item.classList.contains("post-load-sentinel") &&
       !item.hidden
   );
   let slot = 0;
@@ -877,6 +941,7 @@ const watchMonthLines = () => {
   if (!latestPosts) return;
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   latestPosts.querySelectorAll(":scope > li").forEach((item) => {
+    if (item.classList.contains("post-load-sentinel")) return;
     if (reduce) {
       item.classList.add("is-drawn");
       return;
@@ -910,12 +975,16 @@ const applyPostFilter = () => {
   const boxes = postFilter.querySelectorAll("input[type=checkbox]");
   const count = postFilter.querySelector(".post-filter-count");
   const selected = [...boxes].filter((b) => b.checked).map((b) => b.value);
+  if (selected.length && latestRenderCursor < orderedLatestPosts.length) {
+    appendLatestBatch(true);
+  }
   const items = [...latestPosts.querySelectorAll(":scope > li")];
   let visible = 0;
   items.forEach((item) => {
     if (
       item.classList.contains("post-month") ||
-      item.classList.contains("raindrop-item")
+      item.classList.contains("raindrop-item") ||
+      item.classList.contains("post-load-sentinel")
     ) {
       return;
     }
@@ -932,7 +1001,11 @@ const applyPostFilter = () => {
     );
     const group = rest
       .slice(0, nextHeading === -1 ? rest.length : nextHeading)
-      .filter((entry) => !entry.classList.contains("raindrop-item"));
+      .filter(
+        (entry) =>
+          !entry.classList.contains("raindrop-item") &&
+          !entry.classList.contains("post-load-sentinel")
+      );
     item.hidden = group.length === 0 || group.every((entry) => entry.hidden);
   });
   placeRaindrops();
@@ -955,6 +1028,7 @@ if (postFilter) {
 }
 
 renderLatestPosts(substackFallback);
+renderBestOf();
 fetch(POSTS_URL, { cache: "no-cache" })
   .then((response) => {
     if (!response.ok) throw new Error("Could not load posts");

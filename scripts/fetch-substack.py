@@ -19,7 +19,66 @@ LESSWRONG_LOGO = "images/lesswrong-logo.svg"
 RESEARCH_URLS = {
     "https://forum.effectivealtruism.org/posts/4cxtbsdA7DGKyjdKA/will-the-us-government-control-the-first-agi-finding-base",
     "https://forum.effectivealtruism.org/posts/L9pixdGZpJrBicYsS/could-regulatory-cost-benefit-analysis-stop-frontier-ai-1",
+    "https://forum.effectivealtruism.org/posts/yMptv5msFnnfESCqm/how-i-solved-my-problems-with-low-energy-or-burnout",
 }
+# Seeded when the EA Forum GraphQL API is blocked (Cloudflare 403).
+KEEP_POSTS = [
+    {
+        "title": "Will the US Government Control the First AGI?—Finding Base Rates",
+        "subtitle": "Historical data suggests the US government has controlled about 28% of important technological innovations…",
+        "url": "https://forum.effectivealtruism.org/posts/4cxtbsdA7DGKyjdKA/will-the-us-government-control-the-first-agi-finding-base",
+        "date": "2024-09-02T00:00:00.000Z",
+        "image": EA_FORUM_LOGO,
+        "likes": 0,
+        "comments": 0,
+        "excerpt": "In order to forecast whether the US government will control the first AGI…",
+        "category": "research",
+    },
+    {
+        "title": "Could Regulatory Cost-Benefit Analysis Stop Frontier AI Regulations in the US?",
+        "subtitle": "Federal agencies in the US must conduct cost-benefit analyses for large regulations…",
+        "url": "https://forum.effectivealtruism.org/posts/L9pixdGZpJrBicYsS/could-regulatory-cost-benefit-analysis-stop-frontier-ai-1",
+        "date": "2024-07-11T00:00:00.000Z",
+        "image": EA_FORUM_LOGO,
+        "likes": 23,
+        "comments": 1,
+        "excerpt": "Federal agencies in the US must conduct cost-benefit analyses for large…",
+        "category": "research",
+    },
+    {
+        "title": "Large epistemological concerns I should maybe have about EA a priori",
+        "subtitle": "I have become more careful about how I form opinions…",
+        "url": "https://forum.effectivealtruism.org/posts/KRSthwicCTRw9Ayzg/large-epistemological-concerns-i-should-maybe-have-about-ea",
+        "date": "2023-06-07T00:00:00.000Z",
+        "image": EA_FORUM_LOGO,
+        "likes": 0,
+        "comments": 0,
+        "excerpt": "In recent months, I have become more careful about how I form opinions…",
+        "category": "blog",
+    },
+    {
+        "title": "How I solved my problems with low energy (or: burnout)",
+        "subtitle": "I had really bad problems with low energy and tiredness for about 2 years.",
+        "url": "https://forum.effectivealtruism.org/posts/yMptv5msFnnfESCqm/how-i-solved-my-problems-with-low-energy-or-burnout",
+        "date": "2023-05-24T00:00:00.000Z",
+        "image": EA_FORUM_LOGO,
+        "likes": 0,
+        "comments": 0,
+        "excerpt": "I had really bad problems with low energy and tiredness for about 2 years.",
+        "category": "research",
+    },
+    {
+        "title": "In defence of epistemic modesty [distillation]",
+        "subtitle": "This is a distillation of In defence of epistemic modesty, a 2017 essay by Gregory Lewis…",
+        "url": "https://forum.effectivealtruism.org/posts/AkaG7LPkHxgncsExi/in-defence-of-epistemic-modesty-distillation",
+        "date": "2023-05-10T00:00:00.000Z",
+        "image": EA_FORUM_LOGO,
+        "likes": 0,
+        "comments": 0,
+        "excerpt": "This is a distillation of In defence of epistemic modesty, a 2017 essay by…",
+        "category": "blog",
+    },
+]
 SKIP_URLS = {
     "https://www.lesswrong.com/posts/3CdKcgo8vrb2hxEFd/5-things-i-learned-about-people-from-doing-stand-up-comedy-1",
     "https://forum.effectivealtruism.org/posts/Ev5iSTJnniCrsSDKm/i-made-a-judgment-calibration-game-for-beginners-calibrate",
@@ -195,10 +254,38 @@ def safe_source(label, loader):
         return []
 
 
+def load_existing_ea_posts():
+    if not OUT.exists():
+        return []
+    try:
+        existing = json.loads(OUT.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return []
+    return [
+        post
+        for post in existing
+        if isinstance(post, dict)
+        and "forum.effectivealtruism.org" in str(post.get("url") or "")
+        and post.get("url") not in SKIP_URLS
+    ]
+
+
+def merge_kept(posts, kept):
+    seen = {post["url"] for post in posts}
+    for post in kept:
+        if post["url"] not in seen and post["url"] not in SKIP_URLS:
+            posts.append(dict(post))
+            seen.add(post["url"])
+    return posts
+
+
 def main():
+    ea_live = safe_source(
+        "EA Forum", lambda: forum_posts(EA_FORUM, EA_USER_ID, EA_FORUM_LOGO)
+    )
     posts = (
         safe_source("Substack", substack_posts)
-        + safe_source("EA Forum", lambda: forum_posts(EA_FORUM, EA_USER_ID, EA_FORUM_LOGO))
+        + ea_live
         + safe_source(
             "LessWrong",
             lambda: forum_posts(LESSWRONG, LESSWRONG_USER_ID, LESSWRONG_LOGO),
@@ -207,6 +294,11 @@ def main():
     if not posts:
         raise SystemExit("No posts fetched from any source")
     posts = [post for post in posts if post["url"] not in SKIP_URLS]
+    # Cloudflare often blocks the EA Forum API; keep seeded + previously saved posts.
+    if not ea_live:
+        print("EA Forum empty; keeping seeded and previously saved EA posts")
+        posts = merge_kept(posts, load_existing_ea_posts())
+    posts = merge_kept(posts, KEEP_POSTS)
     for post in posts:
         if post["url"] in RESEARCH_URLS:
             post["category"] = "research"

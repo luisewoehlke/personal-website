@@ -22,6 +22,50 @@
     "category": "blog"
   },
   {
+    "title": "Will the US Government Control the First AGI?—Finding Base Rates",
+    "subtitle": "Historical data suggests the US government has controlled about 28% of important technological innovations…",
+    "url": "https://forum.effectivealtruism.org/posts/4cxtbsdA7DGKyjdKA/will-the-us-government-control-the-first-agi-finding-base",
+    "date": "2024-09-02T00:00:00.000Z",
+    "image": "images/ea-forum-logo.png",
+    "likes": 0,
+    "comments": 0,
+    "excerpt": "In order to forecast whether the US government will control the first AGI…",
+    "category": "research"
+  },
+  {
+    "title": "Could Regulatory Cost-Benefit Analysis Stop Frontier AI Regulations in the US?",
+    "subtitle": "Federal agencies in the US must conduct cost-benefit analyses for large regulations…",
+    "url": "https://forum.effectivealtruism.org/posts/L9pixdGZpJrBicYsS/could-regulatory-cost-benefit-analysis-stop-frontier-ai-1",
+    "date": "2024-07-11T00:00:00.000Z",
+    "image": "images/ea-forum-logo.png",
+    "likes": 23,
+    "comments": 1,
+    "excerpt": "Federal agencies in the US must conduct cost-benefit analyses for large…",
+    "category": "research"
+  },
+  {
+    "title": "Large epistemological concerns I should maybe have about EA a priori",
+    "subtitle": "I have become more careful about how I form opinions…",
+    "url": "https://forum.effectivealtruism.org/posts/KRSthwicCTRw9Ayzg/large-epistemological-concerns-i-should-maybe-have-about-ea",
+    "date": "2023-06-07T00:00:00.000Z",
+    "image": "images/ea-forum-logo.png",
+    "likes": 0,
+    "comments": 0,
+    "excerpt": "In recent months, I have become more careful about how I form opinions…",
+    "category": "blog"
+  },
+  {
+    "title": "In defence of epistemic modesty [distillation]",
+    "subtitle": "This is a distillation of In defence of epistemic modesty, a 2017 essay by Gregory Lewis…",
+    "url": "https://forum.effectivealtruism.org/posts/AkaG7LPkHxgncsExi/in-defence-of-epistemic-modesty-distillation",
+    "date": "2023-05-10T00:00:00.000Z",
+    "image": "images/ea-forum-logo.png",
+    "likes": 0,
+    "comments": 0,
+    "excerpt": "This is a distillation of In defence of epistemic modesty, a 2017 essay by…",
+    "category": "blog"
+  },
+  {
     "title": "What I mean by the phrase “getting intimate with reality”",
     "subtitle": "Note: This post is super-quickly written and mostly for reference…",
     "url": "https://www.lesswrong.com/posts/K7uCdMN3FGv7rEqRy/what-i-mean-by-the-phrase-getting-intimate-with-reality",
@@ -42,5 +86,16 @@
     "comments": 2,
     "excerpt": "This post is super-quickly written and mostly for reference. Setup: *…",
     "category": "blog"
+  },
+  {
+    "title": "How I solved my problems with low energy (or: burnout)",
+    "subtitle": "I had really bad problems with low energy and tiredness for about 2 years.",
+    "url": "https://forum.effectivealtruism.org/posts/yMptv5msFnnfESCqm/how-i-solved-my-problems-with-low-energy-or-burnout",
+    "date": "2021-09-01T00:00:00.000Z",
+    "image": "images/ea-forum-logo.png",
+    "likes": 0,
+    "comments": 0,
+    "excerpt": "I had really bad problems with low energy and tiredness for about 2 years.",
+    "category": "research"
   }
 ]
