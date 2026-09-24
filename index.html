@@ -114,7 +114,49 @@
             height="960"
           />
           <figcaption class="location">
-            <span aria-hidden="true">📍</span> London
+            <span
+              class="location-trigger"
+              tabindex="0"
+              aria-label="London. Has also variously been found in Oxford, Berkeley, and Berlin."
+            >
+              <span class="location-pin" aria-hidden="true">📍</span>
+              <span class="location-core">
+                <span class="location-label">London</span>
+                <div class="location-trail" aria-hidden="true">
+                  <svg
+                    class="location-arrow"
+                    viewBox="0 0 150 140"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      class="location-arrow-path"
+                      d="M4 14 C 72 14, 108 36, 108 118"
+                      stroke="currentColor"
+                      stroke-width="1.6"
+                      stroke-linecap="round"
+                    />
+                    <path
+                      class="location-arrow-head"
+                      d="M98 106 L108 120 L118 106"
+                      stroke="currentColor"
+                      stroke-width="1.6"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <p class="location-trail-copy">
+                    has also variously been found in:
+                  </p>
+                  <ul class="location-places">
+                    <li>Oxford</li>
+                    <li>Berkeley</li>
+                    <li>Berlin</li>
+                  </ul>
+                </div>
+              </span>
+              <span class="location-ellipsis" aria-hidden="true"></span>
+            </span>
           </figcaption>
         </figure>
         <div class="landing-card">
