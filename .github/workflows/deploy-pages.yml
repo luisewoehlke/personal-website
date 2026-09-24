@@ -1,0 +1,53 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Refresh Cloudflare access token
+        id: cf
+        env:
+          CF_REFRESH_TOKEN: ${{ secrets.CF_REFRESH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          set -euo pipefail
+          RESP=$(curl -sS -X POST https://dash.cloudflare.com/oauth2/token \
+            -H 'Content-Type: application/x-www-form-urlencoded' \
+            --data-urlencode "grant_type=refresh_token" \
+            --data-urlencode "refresh_token=${CF_REFRESH_TOKEN}" \
+            --data-urlencode "client_id=54d11594-84e4-41aa-b438-e81b8fa78ee7")
+          ACCESS=$(echo "$RESP" | jq -r .access_token)
+          NEW_REFRESH=$(echo "$RESP" | jq -r .refresh_token)
+          if [ -z "$ACCESS" ] || [ "$ACCESS" = "null" ]; then
+            echo "Failed to refresh Cloudflare token:"
+            echo "$RESP" | jq -c .
+            exit 1
+          fi
+          echo "::add-mask::$ACCESS"
+          echo "::add-mask::$NEW_REFRESH"
+          echo "access_token=$ACCESS" >> "$GITHUB_OUTPUT"
+          # Cloudflare rotates refresh tokens; keep the secret current.
+          echo "$NEW_REFRESH" | gh secret set CF_REFRESH_TOKEN -R "${{ github.repository }}"
+
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ steps.cf.outputs.access_token }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy . --project-name=luisew
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
