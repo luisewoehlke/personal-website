@@ -376,6 +376,23 @@ document.querySelectorAll(".scroll-hint").forEach((hint) => {
   });
 });
 
+document.querySelectorAll(".location").forEach((location) => {
+  const trigger = location.querySelector(".location-trigger");
+  if (!trigger) return;
+  location.addEventListener("pointerleave", () => {
+    if (trigger === document.activeElement) trigger.blur();
+    location.classList.remove("is-open");
+  });
+  trigger.addEventListener("click", (event) => {
+    // Toggle for touch / click without leaving a stuck focus reveal.
+    event.preventDefault();
+    location.classList.toggle("is-open");
+    if (!location.classList.contains("is-open") && trigger === document.activeElement) {
+      trigger.blur();
+    }
+  });
+});
+
 window.addEventListener("scroll", updateExitReturnOnScroll, { passive: true });
 updateExitReturnOnScroll();
 

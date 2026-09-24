@@ -405,8 +405,9 @@ main {
   animation: location-ellipsis-type 1.8s steps(1, end) infinite;
 }
 
+.location.is-open .location-ellipsis,
 .location:hover .location-ellipsis,
-.location:focus-within .location-ellipsis {
+.location:has(.location-trigger:focus-visible) .location-ellipsis {
   opacity: 0;
 }
 
@@ -450,6 +451,8 @@ main {
   width: 12.5rem;
   height: 10rem;
   pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
 }
 
 .location-arrow {
@@ -467,6 +470,7 @@ main {
   stroke-dasharray: 200;
   stroke-dashoffset: 200;
   opacity: 0;
+  animation: none;
 }
 
 .location-trail-copy {
@@ -483,6 +487,7 @@ main {
   color: #3a3a3a;
   opacity: 0;
   translate: -50% -0.35rem;
+  animation: none;
 }
 
 .location-places {
@@ -509,6 +514,7 @@ main {
   scale: 0;
   transform-origin: center center;
   white-space: nowrap;
+  animation: none;
 }
 
 .location-places li:nth-child(1) {
@@ -523,37 +529,50 @@ main {
   translate: calc(-50% + 5.7rem) 0.25rem;
 }
 
+.location.is-open .location-trail,
+.location:hover .location-trail,
+.location:has(.location-trigger:focus-visible) .location-trail {
+  visibility: visible;
+  opacity: 1;
+}
+
+.location.is-open .location-arrow-path,
 .location:hover .location-arrow-path,
-.location:focus-within .location-arrow-path {
+.location:has(.location-trigger:focus-visible) .location-arrow-path {
   opacity: 1;
   animation: location-draw 0.55s ease-out forwards;
 }
 
+.location.is-open .location-arrow-head,
 .location:hover .location-arrow-head,
-.location:focus-within .location-arrow-head {
+.location:has(.location-trigger:focus-visible) .location-arrow-head {
   opacity: 1;
   animation: location-draw 0.28s ease-out 0.42s forwards;
 }
 
+.location.is-open .location-trail-copy,
 .location:hover .location-trail-copy,
-.location:focus-within .location-trail-copy {
+.location:has(.location-trigger:focus-visible) .location-trail-copy {
   animation: location-copy-in 0.35s ease-out 0.5s forwards;
 }
 
+.location.is-open .location-places li:nth-child(1),
 .location:hover .location-places li:nth-child(1),
-.location:focus-within .location-places li:nth-child(1) {
+.location:has(.location-trigger:focus-visible) .location-places li:nth-child(1) {
   animation: location-place-pop 0.42s cubic-bezier(0.18, 0.9, 0.32, 1.15) 1.15s
     forwards;
 }
 
+.location.is-open .location-places li:nth-child(2),
 .location:hover .location-places li:nth-child(2),
-.location:focus-within .location-places li:nth-child(2) {
+.location:has(.location-trigger:focus-visible) .location-places li:nth-child(2) {
   animation: location-place-pop 0.42s cubic-bezier(0.18, 0.9, 0.32, 1.15) 1.6s
     forwards;
 }
 
+.location.is-open .location-places li:nth-child(3),
 .location:hover .location-places li:nth-child(3),
-.location:focus-within .location-places li:nth-child(3) {
+.location:has(.location-trigger:focus-visible) .location-places li:nth-child(3) {
   animation: location-place-pop 0.42s cubic-bezier(0.18, 0.9, 0.32, 1.15) 2.05s
     forwards;
 }
@@ -577,18 +596,21 @@ main {
     scale: 0;
   }
 
-  58% {
+  70% {
     opacity: 1;
-    scale: 1.18;
-  }
-
-  76% {
-    scale: 0.92;
+    scale: 1.12;
   }
 
   100% {
     opacity: 1;
     scale: 1;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .location:hover .location-trail {
+    visibility: visible;
+    opacity: 1;
   }
 }
 
@@ -600,22 +622,26 @@ main {
     animation: none !important;
   }
 
+  .location.is-open .location-arrow-path,
   .location:hover .location-arrow-path,
-  .location:focus-within .location-arrow-path,
+  .location:has(.location-trigger:focus-visible) .location-arrow-path,
+  .location.is-open .location-arrow-head,
   .location:hover .location-arrow-head,
-  .location:focus-within .location-arrow-head {
+  .location:has(.location-trigger:focus-visible) .location-arrow-head {
     opacity: 1;
     stroke-dashoffset: 0;
   }
 
+  .location.is-open .location-trail-copy,
   .location:hover .location-trail-copy,
-  .location:focus-within .location-trail-copy {
+  .location:has(.location-trigger:focus-visible) .location-trail-copy {
     opacity: 1;
     translate: -50% 0;
   }
 
+  .location.is-open .location-places li,
   .location:hover .location-places li,
-  .location:focus-within .location-places li {
+  .location:has(.location-trigger:focus-visible) .location-places li {
     opacity: 1;
     scale: 1;
   }
