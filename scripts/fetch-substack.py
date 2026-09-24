@@ -255,7 +255,7 @@ def safe_source(label, loader):
         return []
 
 
-def load_existing_ea_posts():
+def load_existing_posts(url_contains):
     if not OUT.exists():
         return []
     try:
@@ -266,9 +266,17 @@ def load_existing_ea_posts():
         post
         for post in existing
         if isinstance(post, dict)
-        and "forum.effectivealtruism.org" in str(post.get("url") or "")
+        and url_contains in str(post.get("url") or "")
         and post.get("url") not in SKIP_URLS
     ]
+
+
+def load_existing_ea_posts():
+    return load_existing_posts("forum.effectivealtruism.org")
+
+
+def load_existing_substack_posts():
+    return load_existing_posts("luisew.substack.com")
 
 
 def merge_kept(posts, kept):
@@ -295,17 +303,22 @@ def main():
     else:
         print("EA Forum: skipped (FETCH_EA_FORUM not set; at most once daily)")
         ea_live = []
+    substack_live = safe_source("Substack", substack_posts)
     posts = (
-        safe_source("Substack", substack_posts)
+        substack_live
         + ea_live
         + safe_source(
             "LessWrong",
             lambda: forum_posts(LESSWRONG, LESSWRONG_USER_ID, LESSWRONG_LOGO),
         )
     )
-    if not posts:
+    if not posts and not load_existing_substack_posts() and not load_existing_ea_posts():
         raise SystemExit("No posts fetched from any source")
     posts = [post for post in posts if post["url"] not in SKIP_URLS]
+    # Substack often 403s GitHub Actions IPs; keep previously saved posts.
+    if not substack_live:
+        print("Substack empty; keeping previously saved Substack posts")
+        posts = merge_kept(posts, load_existing_substack_posts())
     # Cloudflare often blocks the EA Forum API; keep seeded + previously saved posts.
     if not ea_live:
         print("EA Forum empty; keeping seeded and previously saved EA posts")
