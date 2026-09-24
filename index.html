@@ -5,12 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Personal website" />
     <title>Luise</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Playfair+Display:wght@500&family=Space+Mono:wght@400;700&display=swap"
+    />
+    <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/block-craft" />
+    <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/bytebounce" />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
+  <body id="top">
+    <div class="site-header-bg" aria-hidden="true"></div>
+    <img
+      class="sticker sticker-peach"
+      src="images/stickers/peach.png"
+      alt=""
+      aria-hidden="true"
+    />
     <header class="site-header">
-      <a class="site-name" href="#top">Luise Woehlke</a>
+      <div class="header-start">
+        <span class="site-brand">
+          <a class="site-name" href="#top">Luise Woehlke</a>
+          <span class="wolky-hint" tabindex="0" data-tip="In stand-up, I go by Luise Wolky" aria-label="In stand-up, I go by Luise Wolky"><span aria-hidden="true">?</span></span>
+        </span>
+      </div>
       <div class="header-end">
+        <a class="about-link" href="#about">About</a>
+        <span class="header-rule" aria-hidden="true"></span>
         <ul class="socials">
           <li>
             <a
@@ -58,56 +80,209 @@
             </a>
           </li>
         </ul>
-        <a class="about-link" href="#about">About</a>
       </div>
     </header>
 
     <main>
-      <section class="landing" id="top" aria-label="Home">
-        <img
-          class="landing-photo"
-          src="images/portrait.webp"
-          alt="Portrait of Luise"
-          width="960"
-          height="960"
-        />
+      <section class="landing" aria-label="Home">
+        <div class="landing-sticker-back" aria-hidden="true">
+          <img class="sticker sticker-espr" src="images/stickers/espr.png" alt="" />
+          <img class="sticker sticker-fig" src="images/stickers/fig.png" alt="" />
+        </div>
+        <div class="landing-stickers is-over-feed" aria-hidden="true">
+          <img class="sticker sticker-pickle" src="images/stickers/pickle%202.png" alt="" />
+          <img class="sticker sticker-wombat" src="images/stickers/wombat.png" alt="" />
+        </div>
+        <div class="landing-stickers" aria-hidden="true">
+          <img class="sticker sticker-cow" src="images/stickers/cow%202.png" alt="" />
+          <img class="sticker sticker-orange-2" src="images/stickers/orange%202.png" alt="" />
+          <img class="sticker sticker-mic" src="images/stickers/mic.png" alt="" />
+          <img class="sticker sticker-maki" src="images/stickers/maki%202.png" alt="" />
+          <img class="sticker sticker-nigiri" src="images/stickers/nigiri.png" alt="" />
+          <img class="sticker sticker-crab" src="images/stickers/crab.png" alt="" />
+          <img class="sticker sticker-strawberry" src="images/stickers/strawberry.png" alt="" />
+        </div>
+        <div class="landing-stickers is-front" aria-hidden="true">
+          <img class="sticker sticker-potato-2" src="images/stickers/potato%202.png" alt="" />
+        </div>
+        <figure class="landing-figure">
+          <img
+            class="landing-photo"
+            src="images/portrait.webp"
+            alt="Portrait of Luise"
+            width="960"
+            height="960"
+          />
+          <figcaption class="location">
+            <span aria-hidden="true">📍</span> London
+          </figcaption>
+        </figure>
         <div class="landing-card">
-          <p>Hi, I'm Luise!</p>
           <p>
-            I love clear thinking, stand-up comedy, and
+            Hi, I'm
+            <span
+              class="name-hint"
+              tabindex="0"
+              data-pronunciation="“Lu-ee-suh”"
+              aria-describedby="name-pronunciation"
+              >Luise</span
+            >!<span id="name-pronunciation" hidden>Pronounced Lu-ee-suh</span>
+          </p>
+          <p>
+            I love <span class="hl-thinking">clear thinking</span>,
+            <span class="hl-comedy">stand-up comedy</span>, and
             <a
               href="https://www.effectivealtruism.org/"
               target="_blank"
               rel="noopener noreferrer"
+              class="hl-ea"
               >Effective Altruism</a
             >.
           </p>
           <p>
-            I have ME/CFS, a chronic illness that causes fatigue and currently
-            takes up much of my time.
+            I have ME/CFS, a chronic illness that
+            currently takes up much of my time.
           </p>
           <p>
-            Previously, I worked in AI policy at the
+            Previously, I worked at the
             <a
               href="https://iaps.ai"
               target="_blank"
               rel="noopener noreferrer"
+              class="hl-iaps"
               >Institute for AI Policy and Strategy</a
             >.
           </p>
-          <p>
-            I write about stand-up comedy on
-            <a
-              href="https://luisew.substack.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              >substack</a
-            >.
-          </p>
+          <p>This page has my collected writings and doings.</p>
         </div>
+          <a class="scroll-hint" href="#best-of-heading">
+          <span>best of my stuff</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M4 8h16l-8 9z"
+              fill="currentColor"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
       </section>
 
       <div class="feed">
+        <section id="best-of">
+          <h2 id="best-of-heading">best of my stuff</h2>
+          <ul class="best-of-grid">
+            <li>
+              <span class="best-of-sticker-wrap is-peach">
+                <img class="sticker best-of-sticker" src="images/stickers/peach.png" alt="" />
+                <span class="best-of-num" aria-hidden="true">1</span>
+              </span>
+              <a
+                href="https://luisew.substack.com/p/unreasonably-easy-ways-to-make-people"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <h3>
+                  Unreasonably Easy Ways to Make People Laugh That Comedians Use
+                </h3>
+                <p>Not all jokes are born equal</p>
+              </a>
+              <span class="best-of-rule" aria-hidden="true"><span class="best-of-rule-num">1</span></span>
+            </li>
+            <li>
+              <span class="best-of-sticker-wrap is-lemon">
+                <img class="sticker best-of-sticker" src="images/stickers/lemon.png" alt="" />
+                <span class="best-of-num" aria-hidden="true">2</span>
+              </span>
+              <a
+                href="https://www.lesswrong.com/posts/7Q7DPSk4iGFJd8DRk/an-opinionated-guide-to-using-anki-correctly"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <h3>An Opinionated Guide to Using Anki Correctly</h3>
+                <p>
+                  I can't count how many times I've heard variations on "I used
+                  Anki too for a while, but I got out of the habit.
+                </p>
+              </a>
+              <span class="best-of-rule" aria-hidden="true"><span class="best-of-rule-num">2</span></span>
+            </li>
+            <li>
+              <span class="best-of-sticker-wrap is-apricot">
+                <img class="sticker best-of-sticker" src="images/stickers/apricot.png" alt="" />
+                <span class="best-of-num" aria-hidden="true">3</span>
+              </span>
+              <a
+                href="https://luisew.substack.com/p/5-things-i-learned-about-people-from"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <h3>
+                  5 Things I Learned About People From Doing Stand-Up Comedy
+                </h3>
+                <p>People need to put you in a box</p>
+              </a>
+              <span class="best-of-rule" aria-hidden="true"><span class="best-of-rule-num">3</span></span>
+            </li>
+            <li>
+              <span class="best-of-sticker-wrap is-orange">
+                <img class="sticker best-of-sticker" src="images/stickers/orange%202.png" alt="" />
+                <span class="best-of-num" aria-hidden="true">4</span>
+              </span>
+              <a
+                href="https://forum.effectivealtruism.org/posts/yMptv5msFnnfESCqm/how-i-solved-my-problems-with-low-energy-or-burnout"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <h3>How I solved my problems with low energy (or: burnout)</h3>
+                <p>
+                  I had really bad problems with low energy and tiredness for
+                  about 2 years.
+                </p>
+              </a>
+              <span class="best-of-rule" aria-hidden="true"><span class="best-of-rule-num">4</span></span>
+            </li>
+          </ul>
+        </section>
+
+        <section id="latest">
+          <h2 id="latest-heading">Latest</h2>
+          <details class="post-filter">
+            <summary>
+              <svg
+                class="post-filter-icon"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  d="M3 5h18l-7 8.5V19l-4 2v-7.5z"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <span class="visually-hidden">Filter</span
+              ><span class="post-filter-count" aria-live="polite"></span>
+            </summary>
+            <fieldset>
+              <legend class="visually-hidden">Show posts about</legend>
+              <label
+                ><input type="checkbox" value="stand-up" /> Stand-up</label
+              >
+              <label
+                ><input type="checkbox" value="research" /> Research</label
+              >
+              <label
+                ><input type="checkbox" value="blog" /> Blog posts</label
+              >
+            </fieldset>
+          </details>
+          <ul class="work-list" id="latest-posts"></ul>
+          <p class="post-empty" hidden>No posts match this filter yet.</p>
+        </section>
+
         <section id="about">
           <h2>About</h2>
           <p>
@@ -116,38 +291,11 @@
             knows whether to reach out.
           </p>
         </section>
-
-        <section id="feed" aria-label="Feed">
-          <h2>Feed</h2>
-          <ul class="work-list">
-            <li>
-              <h3>Post one</h3>
-              <p>A brief note, link, or update that would sit in the feed.</p>
-            </li>
-            <li>
-              <h3>Post two</h3>
-              <p>Another placeholder item for later writing or photos.</p>
-            </li>
-            <li>
-              <h3>Post three</h3>
-              <p>Swap these cards for real posts when you are ready.</p>
-            </li>
-          </ul>
-        </section>
-
-        <section id="contact">
-          <h2>Contact</h2>
-          <p>
-            Email
-            <a href="mailto:hello@example.com">hello@example.com</a>
-            or add links to GitHub, LinkedIn, or anywhere else you publish.
-          </p>
-        </section>
       </div>
     </main>
 
     <footer>
-      <p>&copy; <span id="year"></span> Luise</p>
+      <p>&copy; <span id="year"></span> Luise Woehlke</p>
     </footer>
 
     <script src="script.js"></script>

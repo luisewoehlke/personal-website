@@ -12,8 +12,8 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Fetch the Substack feed
+      - uses: actions/checkout@v5
+      - name: Fetch posts
         run: python3 scripts/fetch-substack.py
       - name: Commit posts.json if it changed
         run: |
@@ -22,5 +22,5 @@ jobs:
             echo "No new posts"
             exit 0
           fi
-          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Update Substack posts"
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Update posts"
           git push

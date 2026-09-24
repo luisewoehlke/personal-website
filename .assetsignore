@@ -1,0 +1,15 @@
+﻿.git
+.github
+.cursor
+.agents
+scripts
+**/__pycache__
+**/*.pyc
+font-options.html
+highlight-font-options.html
+icon-options.html
+month-font-options.html
+README.md
+.gitignore
+.assetsignore
+wrangler.jsonc

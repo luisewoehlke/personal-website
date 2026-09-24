@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Filter icon options</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 2.5rem 8vw 3rem;
+        background: #fed6c1;
+        color: #1c1916;
+        font-family: "Segoe UI", system-ui, sans-serif;
+      }
+
+      h1 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0 0 1.75rem;
+      }
+
+      ol {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 1.5rem;
+      }
+
+      .label {
+        display: block;
+        font-size: 0.8rem;
+        color: #5c564e;
+        margin-bottom: 0.5rem;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.35rem 0.85rem;
+        border: 1px solid #e6d2c3;
+        border-radius: 999px;
+        color: #5e2808;
+        font-size: 0.9rem;
+      }
+
+      .button::after {
+        content: "";
+        width: 0.4rem;
+        height: 0.4rem;
+        border-right: 1.5px solid currentColor;
+        border-bottom: 1.5px solid currentColor;
+        transform: translateY(-2px) rotate(45deg);
+      }
+
+      svg {
+        width: 0.95rem;
+        height: 0.95rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Filter icon options</h1>
+    <ol>
+      <li>
+        <span class="label">1. Sliders: like adjusting settings</span>
+        <span class="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0" />
+              <circle cx="16" cy="6" r="2" />
+              <circle cx="10" cy="12" r="2" />
+              <circle cx="18" cy="18" r="2" />
+            </g>
+          </svg>
+          Filter
+        </span>
+      </li>
+      <li>
+        <span class="label">2. Narrowing lines: a list getting shorter</span>
+        <span class="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M3 6h18M6 12h12M10 18h4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+            />
+          </svg>
+          Filter
+        </span>
+      </li>
+      <li>
+        <span class="label">3. Solid funnel: the current shape, filled in</span>
+        <span class="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M3 5h18l-7 8.5V19l-4 2v-7.5z"
+              fill="currentColor"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linejoin="round"
+            />
+          </svg>
+          Filter
+        </span>
+      </li>
+    </ol>
+  </body>
+</html>
