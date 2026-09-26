@@ -20,7 +20,6 @@ LESSWRONG_LOGO = "images/lesswrong-logo.svg"
 RESEARCH_URLS = {
     "https://forum.effectivealtruism.org/posts/4cxtbsdA7DGKyjdKA/will-the-us-government-control-the-first-agi-finding-base",
     "https://forum.effectivealtruism.org/posts/L9pixdGZpJrBicYsS/could-regulatory-cost-benefit-analysis-stop-frontier-ai-1",
-    "https://forum.effectivealtruism.org/posts/yMptv5msFnnfESCqm/how-i-solved-my-problems-with-low-energy-or-burnout",
 }
 # Seeded when the EA Forum GraphQL API is blocked (Cloudflare 403).
 KEEP_POSTS = [
@@ -66,7 +65,7 @@ KEEP_POSTS = [
         "likes": 0,
         "comments": 0,
         "excerpt": "I had really bad problems with low energy and tiredness for about 2 years.",
-        "category": "research",
+        "category": "blog",
     },
     {
         "title": "In defence of epistemic modesty [distillation]",

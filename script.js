@@ -43,15 +43,6 @@ if (siteHeader) {
   placePeachSticker();
 }
 
-const landingScrollHint = document.querySelector(".landing .scroll-hint");
-if (landingScrollHint) {
-  const updateScrollHint = () => {
-    landingScrollHint.classList.toggle("is-hidden", window.scrollY > 0);
-  };
-  updateScrollHint();
-  window.addEventListener("scroll", updateScrollHint, { passive: true });
-}
-
 const backgroundStickers = () =>
   document.querySelectorAll(
     ".landing-sticker-back .sticker, .landing-stickers .sticker, .sticker-peach"
@@ -97,6 +88,8 @@ let exitStickersReturned = false;
 let exitReturnStarted = false;
 let exitReturnMaxProgress = 0;
 let exitCycleId = 0;
+let cachedLatestSection = null;
+let cachedExitStickers = null;
 const stickerRestCenters = new WeakMap();
 
 const applyStickerPile = (el, x, y, duration = "0.5s", delay = "0s") => {
@@ -128,6 +121,7 @@ const resetExitCycle = () => {
   exitStickersReturned = false;
   exitReturnStarted = false;
   exitReturnMaxProgress = 0;
+  cachedExitStickers = null;
   exitStickers().forEach((el) => {
     delete el.dataset.exitHome;
     delete el.dataset.exitReturning;
@@ -209,9 +203,27 @@ const parkExitUnits = (duration = "0.65s", delay = "0.1s") => {
   });
 };
 
+const prefersReducedMotionExit = window.matchMedia(
+  "(prefers-reduced-motion: reduce)"
+);
+
+const getLatestSection = () => {
+  if (!cachedLatestSection || !cachedLatestSection.isConnected) {
+    cachedLatestSection = document.querySelector("#latest");
+  }
+  return cachedLatestSection;
+};
+
+const getExitStickersCached = () => {
+  if (!cachedExitStickers || cachedExitStickers.some((el) => !el.isConnected)) {
+    cachedExitStickers = exitStickers();
+  }
+  return cachedExitStickers;
+};
+
 const updateExitReturnOnScroll = () => {
   if (exitStickersReturned) return;
-  const stickers = exitStickers();
+  const stickers = getExitStickersCached();
   if (!stickers.length) return;
   if (
     !exitReturnStarted &&
@@ -220,7 +232,7 @@ const updateExitReturnOnScroll = () => {
     return;
   }
 
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  if (prefersReducedMotionExit.matches) {
     if (!stickers.some(isExitParked)) return;
     stickers.forEach((el) => {
       applyStickerPile(el, 0, 0, "0s", "0s");
@@ -234,7 +246,7 @@ const updateExitReturnOnScroll = () => {
     return;
   }
 
-  const latest = document.querySelector("#latest");
+  const latest = getLatestSection();
   if (!latest) return;
 
   const latestTop = latest.getBoundingClientRect().top;
@@ -260,7 +272,9 @@ const updateExitReturnOnScroll = () => {
   const n = stickers.length;
 
   stickers.forEach((el, i) => {
-    const outAt = i / n;
+    // Start first sticker slightly after threshold so it doesn't collide
+    // with other Latest scroll work at the same frame.
+    const outAt = (i + 0.12) / (n + 0.12);
     if (progress < outAt) return;
     if (!isExitParked(el) || el.dataset.exitReturning === "1") return;
     if (el.dataset.exitHome === "1") return;
@@ -268,27 +282,68 @@ const updateExitReturnOnScroll = () => {
     el.dataset.exitReturning = "1";
     el.classList.remove("is-popping-in", "is-exit-hidden");
     el.style.setProperty("--exit-delay", "0ms");
+    el.style.transition = "none";
     el.classList.add("is-popping-out");
     const cycle = exitCycleId;
     window.setTimeout(() => {
       if (cycle !== exitCycleId) return;
       el.classList.add("is-exit-hidden");
       el.classList.remove("is-popping-out");
-      applyStickerPile(el, 0, 0, "0s", "0s");
+      el.style.transition = "none";
+      el.style.translate = "0px 0px 0px";
       delete el.dataset.exitParked;
       delete el.dataset.exitReturning;
-      void el.offsetWidth;
-      el.classList.remove("is-exit-hidden");
-      el.classList.add("is-popping-in");
-      el.dataset.exitHome = "1";
-      if (stickers.every((s) => s.dataset.exitHome === "1")) {
-        exitStickersReturned = true;
-      }
+      // Avoid sync layout mid-scroll — restart pop-in next frames.
+      requestAnimationFrame(() => {
+        if (cycle !== exitCycleId) return;
+        requestAnimationFrame(() => {
+          if (cycle !== exitCycleId) return;
+          el.classList.remove("is-exit-hidden");
+          el.classList.add("is-popping-in");
+          el.dataset.exitHome = "1";
+          if (stickers.every((s) => s.dataset.exitHome === "1")) {
+            exitStickersReturned = true;
+          }
+        });
+      });
     }, 380);
   });
 };
 
+let exitReturnScrollQueued = false;
+const queueExitReturnOnScroll = () => {
+  if (exitReturnScrollQueued || exitStickersReturned) return;
+  exitReturnScrollQueued = true;
+  requestAnimationFrame(() => {
+    exitReturnScrollQueued = false;
+    updateExitReturnOnScroll();
+  });
+};
+
+// Undo a gather without parking (e.g. scroll hid the hint mid-hover).
+const cancelBackgroundStickerPile = () => {
+  if (!piledHint) return;
+  backgroundStickers().forEach((el) => {
+    applyStickerPile(el, 0, 0, "0.45s", "0s");
+    delete el.dataset.exitParked;
+    delete el.dataset.exitReturning;
+    delete el.dataset.exitHome;
+    el.classList.remove("is-popping-out", "is-popping-in", "is-exit-hidden");
+  });
+  document.body.classList.remove("is-piling-stickers");
+  document.querySelectorAll(".scroll-hint.is-gathering").forEach((hint) => {
+    hint.classList.remove("is-gathering");
+  });
+  piledHint = null;
+};
+
 const spreadBackgroundStickers = () => {
+  if (!piledHint) return;
+  // Scroll-hide can still deliver pointerleave after cancel in some browsers.
+  if (piledHint.closest(".landing") && window.scrollY > 0) {
+    cancelBackgroundStickerPile();
+    return;
+  }
   backgroundStickers().forEach((el) => {
     if (isExitSticker(el)) return;
     applyStickerPile(el, 0, 0, "0.65s", "0.1s");
@@ -362,8 +417,14 @@ const pileBackgroundStickers = (hint) => {
 };
 
 document.querySelectorAll(".scroll-hint").forEach((hint) => {
-  hint.addEventListener("pointerenter", () => pileBackgroundStickers(hint));
-  hint.addEventListener("focusin", () => pileBackgroundStickers(hint));
+  hint.addEventListener("pointerenter", () => {
+    if (hint.classList.contains("is-hidden")) return;
+    pileBackgroundStickers(hint);
+  });
+  hint.addEventListener("focusin", () => {
+    if (hint.classList.contains("is-hidden")) return;
+    pileBackgroundStickers(hint);
+  });
   hint.addEventListener("pointerleave", spreadBackgroundStickers);
   hint.addEventListener("focusout", (event) => {
     if (!hint.contains(event.relatedTarget)) spreadBackgroundStickers();
@@ -375,6 +436,21 @@ document.querySelectorAll(".scroll-hint").forEach((hint) => {
     if (target) target.style.scrollMarginTop = "20px";
   });
 });
+
+const landingScrollHint = document.querySelector(".landing .scroll-hint");
+if (landingScrollHint) {
+  const updateScrollHint = () => {
+    const hide = window.scrollY > 0;
+    // Cancel gather before hiding — visibility:hidden fires pointerleave,
+    // which would otherwise park exit stickers mid-scroll.
+    if (hide && piledHint === landingScrollHint) {
+      cancelBackgroundStickerPile();
+    }
+    landingScrollHint.classList.toggle("is-hidden", hide);
+  };
+  updateScrollHint();
+  window.addEventListener("scroll", updateScrollHint, { passive: true });
+}
 
 document.querySelectorAll(".location").forEach((location) => {
   const trigger = location.querySelector(".location-trigger");
@@ -393,8 +469,8 @@ document.querySelectorAll(".location").forEach((location) => {
   });
 });
 
-window.addEventListener("scroll", updateExitReturnOnScroll, { passive: true });
-updateExitReturnOnScroll();
+window.addEventListener("scroll", queueExitReturnOnScroll, { passive: true });
+queueExitReturnOnScroll();
 
 const postFilter = document.querySelector(".post-filter");
 const latestPosts = document.querySelector("#latest-posts");
@@ -598,7 +674,7 @@ const BEST_OF_POSTS = [
     image: EA_FORUM_LOGO,
     likes: 0,
     comments: 0,
-    category: "research",
+    category: "blog",
   },
 ];
 
@@ -992,7 +1068,7 @@ const raindropCard = (item) => {
 const mountRaindrops = () => {
   if (!latestPosts || !savedRaindrops.length) return;
   const postCount = latestPosts.querySelectorAll(
-    ":scope > li:not(.post-month):not(.raindrop-item):not(.post-load-sentinel)"
+    ":scope > li:not(.post-month):not(.raindrop-item):not(.post-load-sentinel):not([hidden])"
   ).length;
   const slots = Math.floor(postCount / 3);
   const existing = [
@@ -1000,16 +1076,43 @@ const mountRaindrops = () => {
   ];
   if (existing.length > slots) {
     existing.slice(slots).forEach((item) => item.remove());
-    return;
+  } else if (existing.length < slots) {
+    const html = savedRaindrops
+      .slice(existing.length, slots)
+      .map(raindropCard)
+      .join("");
+    if (html) {
+      if (loadMoreSentinel) loadMoreSentinel.insertAdjacentHTML("beforebegin", html);
+      else latestPosts.insertAdjacentHTML("beforeend", html);
+    }
   }
-  if (existing.length >= slots) return;
-  const html = savedRaindrops
-    .slice(existing.length, slots)
-    .map(raindropCard)
-    .join("");
-  if (!html) return;
-  if (loadMoreSentinel) loadMoreSentinel.insertAdjacentHTML("beforebegin", html);
-  else latestPosts.insertAdjacentHTML("beforeend", html);
+};
+
+const placeRaindrops = () => {
+  if (!latestPosts) return;
+  const cards = [...latestPosts.querySelectorAll(":scope > li.raindrop-item")];
+  const posts = [...latestPosts.children].filter(
+    (item) =>
+      !item.classList.contains("post-month") &&
+      !item.classList.contains("raindrop-item") &&
+      !item.classList.contains("post-load-sentinel") &&
+      !item.hidden
+  );
+  let slot = 0;
+  posts.forEach((post, index) => {
+    if ((index + 1) % 3 !== 0) return;
+    const card = cards[slot];
+    if (!card) return;
+    slot += 1;
+    card.hidden = false;
+    post.after(card);
+  });
+  const parking = loadMoreSentinel || null;
+  cards.slice(slot).forEach((card) => {
+    card.hidden = true;
+    if (parking) parking.before(card);
+  });
+  sizeRaindropCards();
 };
 
 const sizeRaindropCards = () => {
@@ -1102,31 +1205,6 @@ const sizeRaindropCards = () => {
       img.style.objectFit = fit;
     }
   });
-};
-
-const placeRaindrops = () => {
-  if (!latestPosts) return;
-  const cards = [...latestPosts.querySelectorAll(":scope > li.raindrop-item")];
-  const posts = [...latestPosts.children].filter(
-    (item) =>
-      !item.classList.contains("post-month") &&
-      !item.classList.contains("raindrop-item") &&
-      !item.classList.contains("post-load-sentinel") &&
-      !item.hidden
-  );
-  let slot = 0;
-  posts.forEach((post, index) => {
-    if ((index + 1) % 3 !== 0) return;
-    const card = cards[slot];
-    if (!card) return;
-    slot += 1;
-    card.hidden = false;
-    post.after(card);
-  });
-  cards.slice(slot).forEach((card) => {
-    card.hidden = true;
-  });
-  sizeRaindropCards();
 };
 
 const shuffle = (items) => {
@@ -1245,6 +1323,7 @@ const applyPostFilter = () => {
       );
     item.hidden = group.length === 0 || group.every((entry) => entry.hidden);
   });
+  mountRaindrops();
   placeRaindrops();
   if (count) count.textContent = selected.length ? ` (${selected.length})` : "";
   if (emptyMessage) emptyMessage.hidden = visible > 0;
