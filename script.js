@@ -505,6 +505,9 @@ const POSTS_URL = "posts.json";
 const EA_FORUM_LOGO = "images/ea-forum-logo.png";
 const LESSWRONG_LOGO = "images/lesswrong-logo.svg";
 const RAINDROPS_URL = "raindrops.json";
+const PHOTOS_URL = "photos.json";
+let feedPhotos = [];
+let latestSourcePosts = [];
 const FAVORITES_BOARD =
   "https://luise-woehlke.raindrop.page/luises-favorite-things-74011177";
 let savedRaindrops = [];
@@ -881,6 +884,52 @@ const latestPostItemHtml = (post) => {
     )}</span></li>`;
     latestMonthKey = monthKey;
   }
+  if (post.kind === "photo") {
+    const photoImg = (photo, attrs = "") =>
+      `<img${attrs} src="${escapeHtml(photo.src)}" alt="${escapeHtml(
+        photo.caption || ""
+      )}"${
+        photo.width && photo.height
+          ? ` width="${Number(photo.width)}" height="${Number(photo.height)}"`
+          : ""
+      } loading="lazy" />`;
+    const dateHtml = `<time class="post-date" datetime="${when.datetime}">${when.label}</time>`;
+    const [top] = post.items;
+    const ratio =
+      top.width && top.height ? Number(top.width) / Number(top.height) : 0.75;
+    const count = post.items.length;
+    const scale = Number(post.scale) || 1;
+    if (count > 1) {
+      const step = Math.min(1.3, 3 / (count - 1));
+      const imgs = post.items
+        .map((photo, pos) =>
+          photoImg(
+            photo,
+            ` class="photo-pile-img${pos === 0 ? " is-front" : ""}" style="--pos: ${pos}; z-index: ${
+              count - pos
+            }"`
+          )
+        )
+        .reverse()
+        .join("");
+      return `${heading}<li class="photo-item is-pile" data-category="photo" style="--photo-ratio: ${ratio}; --photo-scale: ${scale}; --pile-step: ${step}rem; --pile-spread: ${
+        step * (count - 1)
+      }rem">
+        <button type="button" class="photo-pile" aria-label="Show the next picture">${imgs}</button>
+        ${dateHtml}
+      </li>`;
+    }
+    const caption = top.caption
+      ? `<figcaption>${escapeHtml(top.caption)}</figcaption>`
+      : "";
+    return `${heading}<li class="photo-item" data-category="photo" style="--photo-ratio: ${ratio}; --photo-scale: ${scale}">
+        <figure class="feed-photo">
+          ${photoImg(top)}
+          ${caption}
+        </figure>
+        ${dateHtml}
+      </li>`;
+  }
   const { card, date, category } = postCardHtml(post);
   const orange =
     category === "stand-up"
@@ -943,7 +992,8 @@ const loadMoreObserver = new IntersectionObserver(
 
 const renderLatestPosts = (posts) => {
   if (!latestPosts) return;
-  orderedLatestPosts = [...posts].sort(
+  latestSourcePosts = posts;
+  orderedLatestPosts = [...posts, ...feedPhotos].sort(
     (a, b) => new Date(b.date) - new Date(a.date)
   );
   latestRenderCursor = 0;
@@ -1144,7 +1194,7 @@ const sizeRaindropCards = () => {
   if (!latestPosts) return;
   const maxCard = window.innerHeight * 0.7;
   const post = latestPosts.querySelector(
-    ":scope > li:not(.raindrop-item):not(.post-month):not([hidden])"
+    ":scope > li:not(.raindrop-item):not(.post-month):not(.photo-item):not([hidden])"
   );
   const otherWidth = post
     ? post.getBoundingClientRect().width
@@ -1355,6 +1405,21 @@ const applyPostFilter = () => {
   placeStandupStickers();
 };
 
+if (latestPosts) {
+  latestPosts.addEventListener("click", (event) => {
+    const pile = event.target.closest(".photo-pile");
+    if (!pile) return;
+    const imgs = [...pile.querySelectorAll(".photo-pile-img")];
+    const count = imgs.length;
+    imgs.forEach((img) => {
+      const pos = (Number(img.style.getPropertyValue("--pos")) + count - 1) % count;
+      img.style.setProperty("--pos", pos);
+      img.style.zIndex = count - pos;
+      img.classList.toggle("is-front", pos === 0);
+    });
+  });
+}
+
 if (postFilter) {
   postFilter.addEventListener("change", () => {
     applyPostFilter();
@@ -1381,6 +1446,42 @@ fetch(POSTS_URL, { cache: "no-cache" })
       renderLatestPosts(normalized);
       renderBestOf(normalized);
     }
+  })
+  .catch(() => {});
+
+fetch(PHOTOS_URL, { cache: "no-cache" })
+  .then((response) => {
+    if (!response.ok) throw new Error("Could not load photos");
+    return response.json();
+  })
+  .then((photos) => {
+    if (!Array.isArray(photos) || !photos.length) return;
+    const groups = new Map();
+    photos
+      .filter((photo) => photo.src && photo.date)
+      .forEach((photo) => {
+        const key = photo.pile ? `pile:${photo.pile}` : photo.src;
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(photo);
+      });
+    feedPhotos = [...groups.values()].map((items) => {
+      items.sort(
+        (a, b) =>
+          new Date(b.date) - new Date(a.date) ||
+          String(b.date).localeCompare(String(a.date))
+      );
+      const date = items[0].date;
+      const rank = new Map(
+        items.map((photo, index) => [
+          photo,
+          photo.front ? -1 : Number.isFinite(photo.order) ? photo.order : index,
+        ])
+      );
+      items.sort((a, b) => rank.get(a) - rank.get(b));
+      const scale = Number(items.find((photo) => photo.scale)?.scale) || 1;
+      return { kind: "photo", category: "photo", date, items, scale };
+    });
+    renderLatestPosts(latestSourcePosts);
   })
   .catch(() => {});
 

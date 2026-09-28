@@ -1207,6 +1207,26 @@ body.is-piling-stickers .sticker-peach {
 
   .about-page #about.about-scatter {
     margin-left: max(calc(50% - 15.5rem), calc(208px - (100vw - 100%) / 2));
+    --about-spread: clamp(0px, (100vw - 1300px) * 0.2, 160px);
+  }
+
+  .about-snap-out-l {
+    left: calc(var(--x) - var(--about-spread));
+  }
+
+  .about-snap-out-r {
+    left: calc(var(--x) + var(--about-spread));
+  }
+}
+
+@media (min-width: 881px) and (max-width: 1300px) {
+  .about-page #about.about-scatter {
+    max-width: 27rem;
+    margin-left: max(calc(50% - 13.5rem), calc(208px - (100vw - 100%) / 2));
+  }
+
+  .about-snap-out-r {
+    left: calc(var(--x) - 4rem);
   }
 }
 
@@ -1376,15 +1396,15 @@ h2 {
 }
 
 .best-of-grid li:nth-child(2) {
-  --best-item-delay: 1.75s;
+  --best-item-delay: 1.55s;
 }
 
 .best-of-grid li:nth-child(3) {
-  --best-item-delay: 2.6s;
+  --best-item-delay: 2.2s;
 }
 
 .best-of-grid li:nth-child(4) {
-  --best-item-delay: 3.45s;
+  --best-item-delay: 2.85s;
 }
 
 .best-of-grid li > a,
@@ -1879,10 +1899,94 @@ h2 {
   min-height: 0;
   max-height: 70svh;
   background: #fff;
-  border: 1px solid var(--line);
+  border-bottom: 4px solid var(--line);
+  border-left: 4px solid var(--line);
+  border-color: var(--about-q-mark);
   border-radius: 8px;
   padding: 0.75rem 0.85rem 1.15rem;
   overflow: hidden;
+}
+
+.work-list > li.photo-item {
+  justify-self: center;
+  width: calc(
+    min(80%, 70svh * var(--photo-ratio, 0.75)) * var(--photo-scale, 1)
+  );
+  min-height: 0;
+  background: none;
+  overflow: visible;
+}
+
+.feed-photo {
+  margin: 0;
+}
+
+.feed-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: var(--photo-ratio, auto);
+}
+
+.feed-photo figcaption {
+  margin-top: 0.4rem;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: var(--muted);
+}
+
+.work-list > li.photo-item.is-pile {
+  width: calc(
+    min(80% - var(--pile-spread) - 3.2rem, 60svh * var(--photo-ratio, 0.75)) *
+      var(--photo-scale, 1) + var(--pile-spread) + 3.2rem
+  );
+}
+
+.photo-pile {
+  display: grid;
+  place-items: end;
+  width: 100%;
+  padding: 0 calc(var(--pile-spread) + 1.6rem) var(--pile-spread) 1.6rem;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.photo-pile-img {
+  --pile-offset: calc(var(--pos) * var(--pile-step));
+  grid-area: 1 / 1;
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 60svh;
+  aspect-ratio: var(--photo-ratio);
+  object-fit: cover;
+  translate: var(--pile-offset) var(--pile-offset);
+  transition: translate 0.35s ease;
+}
+
+.photo-pile:hover .photo-pile-img,
+.photo-pile:focus-visible .photo-pile-img {
+  translate: calc(var(--pile-offset) + 1.6rem) var(--pile-offset);
+}
+
+.photo-pile:hover .photo-pile-img.is-front,
+.photo-pile:focus-visible .photo-pile-img.is-front {
+  translate: -1.6rem 0;
+}
+
+.work-list > li.photo-item .post-date {
+  right: 0;
+  bottom: 0;
+  transition: right 0.35s ease;
+}
+
+.work-list > li.photo-item.is-pile .post-date {
+  right: 1.6rem;
+}
+
+.work-list > li.photo-item.is-pile:has(.photo-pile:hover, .photo-pile:focus-visible) .post-date {
+  right: 0;
 }
 
 .work-list > li.raindrop-item[hidden] {
@@ -1917,6 +2021,7 @@ h2 {
 
 .work-list > li.raindrop-item:nth-child(3n + 3 of li.raindrop-item:not(:has(.is-spotify))) {
   background: #b04f2f;
+  border-color: #00aeae;
 }
 
 .work-list > li.raindrop-item.is-teal:nth-child(n of li.raindrop-item:not(:has(.is-spotify))) {
