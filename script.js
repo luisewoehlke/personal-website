@@ -925,7 +925,7 @@ const latestPostItemHtml = (post) => {
     const author = post.author
       ? `<span class="book-author">&nbsp;by ${escapeHtml(post.author)}</span>`
       : "";
-    return `${heading}<li class="book-item" data-category="book">
+    return `${heading}<li class="book-item" data-category="book" data-month="${monthKey}" data-rating="${rating}">
         <a class="book-update" href="${escapeHtml(
           post.url
         )}" target="_blank" rel="noopener noreferrer">
@@ -1393,6 +1393,20 @@ const collapseBookRuns = () => {
     }
     absorbed = [];
     pending = [];
+    const lead = run.reduce(
+      (best, item) =>
+        item.dataset.month === run[0].dataset.month &&
+        Number(item.dataset.rating) > Number(best.dataset.rating)
+          ? item
+          : best,
+      run[0]
+    );
+    if (lead && lead !== run[0]) {
+      if (run[0].dataset.expanded) lead.dataset.expanded = run[0].dataset.expanded;
+      delete run[0].dataset.expanded;
+      run[0].before(lead);
+      run = [lead, ...run.filter((item) => item !== lead)];
+    }
     const [first, ...rest] = run;
     first?.classList.remove("is-collapsed");
     if (rest.length) {
