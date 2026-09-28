@@ -506,7 +506,9 @@ const EA_FORUM_LOGO = "images/ea-forum-logo.png";
 const LESSWRONG_LOGO = "images/lesswrong-logo.svg";
 const RAINDROPS_URL = "raindrops.json";
 const PHOTOS_URL = "photos.json";
+const BOOKS_URL = "books.json";
 let feedPhotos = [];
+let feedBooks = [];
 let latestSourcePosts = [];
 const FAVORITES_BOARD =
   "https://luise-woehlke.raindrop.page/luises-favorite-things-74011177";
@@ -775,21 +777,10 @@ const alignStandupLabel = (label) => {
   if (!label) return;
   label.style.marginTop = "";
   if (!label.textContent) return;
-  const narrow = window.matchMedia("(max-width: 1000px)").matches;
+  const card = label.closest("li");
+  if (!card) return;
   const labelBox = label.getBoundingClientRect();
-  let targetY;
-  if (narrow) {
-    const card = label.closest("li");
-    if (!card) return;
-    targetY = card.getBoundingClientRect().bottom - 10;
-  } else {
-    const orange = label
-      .closest(".standup-mark")
-      ?.querySelector(".standup-orange");
-    if (!orange) return;
-    const orangeBox = orange.getBoundingClientRect();
-    targetY = orangeBox.top + orangeBox.height / 2 - 14;
-  }
+  const targetY = card.getBoundingClientRect().bottom - 10;
   const dy = targetY - (labelBox.top + labelBox.height / 2);
   if (Math.abs(dy) >= 0.5) {
     label.style.marginTop = `${dy}px`;
@@ -797,18 +788,11 @@ const alignStandupLabel = (label) => {
 };
 
 const placeStandupStickers = () => {
-  const narrow = window.matchMedia("(max-width: 1000px)").matches;
   document
     .querySelectorAll('.work-list > li[data-category="stand-up"] .standup-mark')
     .forEach((mark) => {
       const card = mark.closest("li");
       if (!card || card.hidden) return;
-      if (narrow) {
-        mark.style.left = "";
-      } else {
-        const left = card.getBoundingClientRect().left;
-        mark.style.left = `${-left / 2}px`;
-      }
       alignStandupLabel(mark.querySelector(".standup-label"));
     });
 };
@@ -930,6 +914,30 @@ const latestPostItemHtml = (post) => {
         ${dateHtml}
       </li>`;
   }
+  if (post.kind === "book") {
+    const rating = Math.max(0, Math.min(5, Number(post.rating) || 0));
+    const verb = rating ? "rated" : "reviewed";
+    const stars = rating
+      ? ` <span class="book-stars" aria-label="${rating} out of 5 stars">${"★".repeat(
+          rating
+        )}</span>`
+      : "";
+    const author = post.author
+      ? `<span class="book-author">&nbsp;by ${escapeHtml(post.author)}</span>`
+      : "";
+    return `${heading}<li class="book-item" data-category="book">
+        <a class="book-update" href="${escapeHtml(
+          post.url
+        )}" target="_blank" rel="noopener noreferrer">
+          <span class="book-text">
+            <span class="book-line">Luise ${verb} a book${stars}</span>
+            <span class="book-line book-title"><cite title="${escapeHtml(
+              post.title
+            )}">${escapeHtml(post.title)}</cite>${author}</span>
+          </span>          <span class="book-source"><img src="images/goodreads-logo.svg" alt="Goodreads" /><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </a>
+      </li>`;
+  }
   const { card, date, category } = postCardHtml(post);
   const orange =
     category === "stand-up"
@@ -993,7 +1001,7 @@ const loadMoreObserver = new IntersectionObserver(
 const renderLatestPosts = (posts) => {
   if (!latestPosts) return;
   latestSourcePosts = posts;
-  orderedLatestPosts = [...posts, ...feedPhotos].sort(
+  orderedLatestPosts = [...posts, ...feedPhotos, ...feedBooks].sort(
     (a, b) => new Date(b.date) - new Date(a.date)
   );
   latestRenderCursor = 0;
@@ -1143,7 +1151,7 @@ const raindropCard = (item) => {
 const mountRaindrops = () => {
   if (!latestPosts || !savedRaindrops.length) return;
   const postCount = latestPosts.querySelectorAll(
-    ":scope > li:not(.post-month):not(.raindrop-item):not(.post-load-sentinel):not([hidden])"
+    ":scope > li:not(.post-month):not(.raindrop-item):not(.book-item):not(.post-load-sentinel):not([hidden])"
   ).length;
   const slots = Math.floor(postCount / 3);
   const existing = [
@@ -1170,12 +1178,13 @@ const placeRaindrops = () => {
     (item) =>
       !item.classList.contains("post-month") &&
       !item.classList.contains("raindrop-item") &&
+      !item.classList.contains("book-item") &&
       !item.classList.contains("post-load-sentinel") &&
       !item.hidden
   );
   let slot = 0;
   posts.forEach((post, index) => {
-    if ((index + 1) % 3 !== 0) return;
+    if ((index + 1) % 3 !== 0 || index === posts.length - 1) return;
     const card = cards[slot];
     if (!card) return;
     slot += 1;
@@ -1194,7 +1203,7 @@ const sizeRaindropCards = () => {
   if (!latestPosts) return;
   const maxCard = window.innerHeight * 0.7;
   const post = latestPosts.querySelector(
-    ":scope > li:not(.raindrop-item):not(.post-month):not(.photo-item):not([hidden])"
+    ":scope > li:not(.raindrop-item):not(.post-month):not(.photo-item):not(.book-item):not([hidden])"
   );
   const otherWidth = post
     ? post.getBoundingClientRect().width
@@ -1360,6 +1369,34 @@ const syncEntranceAfterFilter = () => {
   });
 };
 
+const collapseBookRuns = () => {
+  if (!latestPosts) return;
+  latestPosts.querySelectorAll(".book-more").forEach((button) => button.remove());
+  let run = [];
+  const flush = () => {
+    const [first, ...rest] = run;
+    if (rest.length) {
+      const open = first.dataset.expanded === "1";
+      rest.forEach((item) => item.classList.toggle("is-collapsed", !open));
+      first.insertAdjacentHTML(
+        "beforeend",
+        `<button type="button" class="book-more${open ? " is-open" : ""}" aria-expanded="${open}">${
+          open ? "less" : "more"
+        }<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6.5 6-6.5 6z" fill="currentColor"/></svg></button>`
+      );
+    } else if (first) {
+      first.classList.remove("is-collapsed");
+    }
+    run = [];
+  };
+  [...latestPosts.children].forEach((item) => {
+    if (item.hidden) return;
+    if (item.classList.contains("book-item")) run.push(item);
+    else flush();
+  });
+  flush();
+};
+
 const applyPostFilter = () => {
   if (!postFilter) return;
   const boxes = postFilter.querySelectorAll("input[type=checkbox]");
@@ -1400,6 +1437,7 @@ const applyPostFilter = () => {
   });
   mountRaindrops();
   placeRaindrops();
+  collapseBookRuns();
   if (count) count.textContent = selected.length ? ` (${selected.length})` : "";
   if (emptyMessage) emptyMessage.hidden = visible > 0;
   placeStandupStickers();
@@ -1407,6 +1445,16 @@ const applyPostFilter = () => {
 
 if (latestPosts) {
   latestPosts.addEventListener("click", (event) => {
+    const more = event.target.closest(".book-more");
+    if (more) {
+      const item = more.closest("li");
+      item.dataset.expanded = item.dataset.expanded === "1" ? "0" : "1";
+      collapseBookRuns();
+      latestPosts
+        .querySelectorAll(":scope > li.book-item:not(.is-collapsed)")
+        .forEach((book) => book.classList.add("is-drawn", "is-settled"));
+      return;
+    }
     const pile = event.target.closest(".photo-pile");
     if (!pile) return;
     const imgs = [...pile.querySelectorAll(".photo-pile-img")];
@@ -1485,6 +1533,20 @@ fetch(PHOTOS_URL, { cache: "no-cache" })
   })
   .catch(() => {});
 
+fetch(BOOKS_URL, { cache: "no-cache" })
+  .then((response) => {
+    if (!response.ok) throw new Error("Could not load books");
+    return response.json();
+  })
+  .then((books) => {
+    if (!Array.isArray(books) || !books.length) return;
+    feedBooks = books
+      .filter((book) => book.title && book.date)
+      .map((book) => ({ ...book, kind: "book", category: "book" }));
+    renderLatestPosts(latestSourcePosts);
+  })
+  .catch(() => {});
+
 fetch(RAINDROPS_URL, { cache: "no-cache" })
   .then((response) => {
     if (!response.ok) throw new Error("Could not load raindrops");
@@ -1559,18 +1621,18 @@ if (latestPosts) {
   latestPosts.addEventListener(
     "pointerenter",
     (event) => {
-      const orange = event.target.closest?.(".standup-orange");
-      if (!orange || !latestPosts.contains(orange)) return;
-      typeStandupLabel(orange.closest("li").querySelector(".standup-label"), true);
+      const item = event.target;
+      if (item.parentElement !== latestPosts || item.dataset.category !== "stand-up") return;
+      typeStandupLabel(item.querySelector(".standup-label"), true);
     },
     true
   );
   latestPosts.addEventListener(
     "pointerleave",
     (event) => {
-      const orange = event.target.closest?.(".standup-orange");
-      if (!orange || !latestPosts.contains(orange)) return;
-      typeStandupLabel(orange.closest("li").querySelector(".standup-label"), false);
+      const item = event.target;
+      if (item.parentElement !== latestPosts || item.dataset.category !== "stand-up") return;
+      typeStandupLabel(item.querySelector(".standup-label"), false);
     },
     true
   );

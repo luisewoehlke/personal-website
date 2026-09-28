@@ -21,9 +21,12 @@ jobs:
           # Only the daily cron (and manual runs) hit the EA Forum API.
           FETCH_EA_FORUM: ${{ github.event_name == 'workflow_dispatch' && '1' || github.event.schedule == '23 7 * * *' && '1' || '0' }}
         run: python3 scripts/fetch-substack.py
-      - name: Commit posts.json if it changed
+      - name: Fetch Goodreads books
+        continue-on-error: true
+        run: python3 scripts/fetch-goodreads.py
+      - name: Commit posts.json and books.json if they changed
         run: |
-          git add posts.json
+          git add posts.json books.json
           if git diff --cached --quiet; then
             echo "No new posts"
             exit 0

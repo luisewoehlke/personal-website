@@ -852,14 +852,14 @@ body.is-piling-stickers .sticker-peach {
 
 .standup-mark {
   position: absolute;
-  top: 50%;
+  bottom: 0;
   left: 0;
   z-index: 8;
   display: flex;
   align-items: center;
   width: 2.5rem;
   height: 2.5rem;
-  translate: -50% -50%;
+  translate: -50% 50%;
   pointer-events: none;
 }
 
@@ -874,29 +874,26 @@ body.is-piling-stickers .sticker-peach {
   rotate: 16deg;
 }
 
-@media (min-width: 1001px) {
-  .standup-mark::before {
-    content: "";
-    position: absolute;
-    left: 1rem;
-    bottom: .4rem;
-    z-index: 0;
-    width: 2rem;
-    height: 1rem;
-    background: #eb7272;
-    border-radius: 50%;
-    rotate: -20deg;
-    pointer-events: none;
-  }
+.standup-mark::before {
+  content: "";
+  position: absolute;
+  left: 1rem;
+  bottom: .4rem;
+  z-index: 0;
+  width: 2rem;
+  height: 1rem;
+  background: #eb7272;
+  border-radius: 50%;
+  rotate: -20deg;
+  pointer-events: none;
 }
 
 .standup-label {
   position: absolute;
   left: 100%;
-  top: auto;
-  bottom: auto;
+  top: 50%;
   z-index: 8;
-  translate: 1rem 0;
+  translate: 0.45rem -50%;
   font-family: "Block Craft", "Space Mono", ui-monospace, monospace;
   font-weight: 500;
   font-size: 1.3rem;
@@ -1738,7 +1735,7 @@ h2 {
   flex-shrink: 0;
   opacity: 0;
   scale: 0.3;
-  translate: 0 0.16em;
+  translate: 0 0.06em;
 }
 
 .work-list li.post-month.is-drawn::before {
@@ -2324,6 +2321,126 @@ h2 {
   height: 1.35rem;
 }
 
+.work-list > li.book-item {
+  justify-self: center;
+  width: fit-content;
+  min-width: min(300px, 100%);
+  max-width: 100%;
+  min-height: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  text-align: center;
+  background: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.book-update {
+  grid-column: 1 / -1;
+  grid-row: 1 / 3;
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-template-rows: subgrid;
+  color: #74584a;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  text-decoration: none;
+}
+
+.book-text {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+
+.book-title {
+  display: flex;
+  max-width: 100%;
+}
+
+.book-update cite {
+  min-width: 0;
+  max-width: 27rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-style: italic;
+}
+
+.book-author {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.book-stars {
+  letter-spacing: 0.08em;
+}
+
+.book-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  grid-column: 1 / -1;
+  grid-row: 2;
+  justify-self: end;
+}
+
+.work-list > li.book-item.is-collapsed {
+  display: none;
+}
+
+.book-more {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  grid-column: 2;
+  grid-row: 3;
+  justify-self: start;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #74584a;
+  font: inherit;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  cursor: pointer;
+}
+
+.book-more svg {
+  width: 0.75rem;
+  height: 0.75rem;
+  transition: rotate 0.25s ease;
+}
+
+.book-more.is-open {
+  font-weight: 700;
+}
+
+.book-more.is-open svg {
+  rotate: 90deg;
+}
+
+.book-source img {
+  display: block;
+  height: 0.95rem;
+  width: auto;
+}
+
+.book-source svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  transition: translate 0.25s ease;
+}
+
+.book-update:hover .book-source svg {
+  translate: 0.15rem -0.15rem;
+}
+
 .post-card h3 {
   color: var(--ink);
   font-family: "SF Pro Display", -apple-system-headline, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -2499,20 +2616,6 @@ footer p {
   max-width: var(--max);
   margin: 0 auto;
   text-align: center;
-}
-
-@media (max-width: 1000px) {
-  .standup-mark {
-    top: auto;
-    bottom: 0;
-    left: 0;
-    translate: -50% 50%;
-  }
-
-  .standup-label {
-    top: 50%;
-    translate: 0.45rem -50%;
-  }
 }
 
 @media (max-width: 800px) {
