@@ -320,16 +320,21 @@ const queueExitReturnOnScroll = () => {
   });
 };
 
-// Undo a gather without parking (e.g. scroll hid the hint mid-hover).
+let exitParkedBeforePile = false;
+
+// Undo a hover gather: every sticker goes back to where it was before.
 const cancelBackgroundStickerPile = () => {
   if (!piledHint) return;
   backgroundStickers().forEach((el) => {
-    applyStickerPile(el, 0, 0, "0.45s", "0s");
+    if (isExitSticker(el) && exitParkedBeforePile) return;
+    applyStickerPile(el, 0, 0, "0.65s", "0.1s");
     delete el.dataset.exitParked;
     delete el.dataset.exitReturning;
     delete el.dataset.exitHome;
     el.classList.remove("is-popping-out", "is-popping-in", "is-exit-hidden");
   });
+  if (exitParkedBeforePile) parkExitUnits();
+  exitParkedBeforePile = false;
   document.body.classList.remove("is-piling-stickers");
   document.querySelectorAll(".scroll-hint.is-gathering").forEach((hint) => {
     hint.classList.remove("is-gathering");
@@ -337,13 +342,10 @@ const cancelBackgroundStickerPile = () => {
   piledHint = null;
 };
 
+// Click: distribute, parking the exit units beside Best Of.
 const spreadBackgroundStickers = () => {
   if (!piledHint) return;
-  // Scroll-hide can still deliver pointerleave after cancel in some browsers.
-  if (piledHint.closest(".landing") && window.scrollY > 0) {
-    cancelBackgroundStickerPile();
-    return;
-  }
+  exitParkedBeforePile = false;
   backgroundStickers().forEach((el) => {
     if (isExitSticker(el)) return;
     applyStickerPile(el, 0, 0, "0.65s", "0.1s");
@@ -358,6 +360,10 @@ const spreadBackgroundStickers = () => {
 
 const pileBackgroundStickers = (hint) => {
   if (!hint) return;
+  if (!piledHint) {
+    exitParkedBeforePile =
+      !exitStickersReturned && exitStickers().some(isExitParked);
+  }
   resetExitCycle();
   const stickers = [...backgroundStickers()];
   if (!stickers.length) return;
@@ -425,9 +431,9 @@ document.querySelectorAll(".scroll-hint").forEach((hint) => {
     if (hint.classList.contains("is-hidden")) return;
     pileBackgroundStickers(hint);
   });
-  hint.addEventListener("pointerleave", spreadBackgroundStickers);
+  hint.addEventListener("pointerleave", cancelBackgroundStickerPile);
   hint.addEventListener("focusout", (event) => {
-    if (!hint.contains(event.relatedTarget)) spreadBackgroundStickers();
+    if (!hint.contains(event.relatedTarget)) cancelBackgroundStickerPile();
   });
   hint.addEventListener("click", () => {
     resetExitCycle();
@@ -441,8 +447,7 @@ const landingScrollHint = document.querySelector(".landing .scroll-hint");
 if (landingScrollHint) {
   const updateScrollHint = () => {
     const hide = window.scrollY > 0;
-    // Cancel gather before hiding — visibility:hidden fires pointerleave,
-    // which would otherwise park exit stickers mid-scroll.
+    // Cancel the gather before hiding, since a hidden hint never gets pointerleave.
     if (hide && piledHint === landingScrollHint) {
       cancelBackgroundStickerPile();
     }
@@ -451,6 +456,26 @@ if (landingScrollHint) {
   updateScrollHint();
   window.addEventListener("scroll", updateScrollHint, { passive: true });
 }
+
+let wasAtPageTop = true;
+const parkExitUnitsOnScrollAway = () => {
+  const atTop = window.scrollY <= 0;
+  if (atTop === wasAtPageTop) return;
+  wasAtPageTop = atTop;
+  if (atTop || piledHint) return;
+  const stickers = exitStickers();
+  if (
+    stickers.some(
+      (el) => isExitParked(el) || el.dataset.exitReturning === "1"
+    )
+  ) {
+    return;
+  }
+  resetExitCycle();
+  parkExitUnits();
+};
+parkExitUnitsOnScrollAway();
+window.addEventListener("scroll", parkExitUnitsOnScrollAway, { passive: true });
 
 document.querySelectorAll(".location").forEach((location) => {
   const trigger = location.querySelector(".location-trigger");
