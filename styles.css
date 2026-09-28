@@ -6,6 +6,7 @@
   --accent: #009691;
   --card: #fffdf9;
   --peach: #b67a58;
+  --about-q-mark: #ff5959;
   --terracotta: #d14812;
   --font-playfair: "Playfair Display", Georgia, serif;
   --glow: #5e2808;
@@ -1077,6 +1078,12 @@ body.is-piling-stickers .sticker-peach {
   max-width: var(--max);
   margin: 0 auto;
   padding-top: calc(var(--header-h, 4.8rem) + 1.5rem);
+  padding-bottom: 0;
+}
+
+.about-page + footer {
+  padding-top: 0.5rem;
+  padding-bottom: 1rem;
 }
 
 .about-page #about {
@@ -1084,9 +1091,144 @@ body.is-piling-stickers .sticker-peach {
 }
 
 .about-page #about p {
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.about-page #about.about-scatter {
+  position: relative;
+  max-width: 31rem;
+  min-height: 996px;
+  margin: 0 auto;
+}
+
+.about-page #about > h2 {
+  top: -3rem;
+}
+
+.about-page #about .about-gap {
+  margin-top: 4.5rem;
+}
+
+.about-page #about a {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.about-loves {
+  margin: 0;
+  padding-left: 1.4rem;
   font-size: 1.05rem;
   line-height: 1.55;
   color: var(--muted);
+}
+
+.about-loves li + li {
+  margin-top: 0.35rem;
+}
+
+.about-snap {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  object-fit: cover;
+}
+
+.about-snap-captioned {
+  height: auto;
+  margin: 0;
+}
+
+.about-snap-captioned img {
+  display: block;
+  width: 100%;
+  height: var(--h);
+  object-fit: cover;
+}
+
+.about-snap-captioned figcaption {
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--muted);
+  text-align: left;
+}
+
+.about-snap-hint .about-snap-q {
+  position: absolute;
+  left: -.2rem;
+  top: calc(var(--h) - 1.8rem);
+  font-family: "Block Craft", "Space Mono", ui-monospace, monospace;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--about-q-mark);
+  text-shadow:
+    1px 0 0 var(--about-q-mark),
+    -1px 0 0 var(--about-q-mark),
+    2px 0 0 var(--about-q-mark),
+    -2px 0 0 var(--about-q-mark);
+  animation: about-q-wobble 3s steps(1, end) infinite;
+}
+
+@keyframes about-q-wobble {
+  0% { left: -.6rem; rotate: -25deg; }
+  50% { left: -.1rem; rotate: 25deg; }
+}
+
+.about-snap-hint,
+.about-snap-hint * {
+  cursor: default;
+}
+
+.about-snap-hint figcaption {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.about-snap-hint .about-snap-q::before {
+  content: "";
+  position: absolute;
+  inset: -0.75rem;
+}
+
+.about-snap-q:hover ~ figcaption,
+.about-snap-q:focus ~ figcaption {
+  opacity: 1;
+}
+
+@media (min-width: 881px) {
+  .about-page {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .about-page #about.about-scatter {
+    margin-left: max(calc(50% - 15.5rem), calc(208px - (100vw - 100%) / 2));
+  }
+}
+
+@media (max-width: 880px) {
+  .about-page #about.about-scatter {
+    min-height: 0;
+  }
+
+  .about-photos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 3rem;
+  }
+
+  .about-snap {
+    position: static;
+  }
+
+  .about-snap-hint {
+    position: relative;
+  }
 }
 
 h2,
