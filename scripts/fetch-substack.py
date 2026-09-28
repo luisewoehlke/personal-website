@@ -84,6 +84,9 @@ SKIP_URLS = {
     "https://forum.effectivealtruism.org/posts/Ev5iSTJnniCrsSDKm/i-made-a-judgment-calibration-game-for-beginners-calibrate",
     "https://www.lesswrong.com/posts/H3rjMpndZkqEQhS6k/in-defence-of-epistemic-modesty-distillation",
     "https://forum.effectivealtruism.org/posts/MSq9u6ZtbNTrptQy7/consciousness-research-as-a-cause-asking-for-advice",
+    "https://www.lesswrong.com/posts/K7uCdMN3FGv7rEqRy/what-i-mean-by-the-phrase-getting-intimate-with-reality",
+    "https://www.lesswrong.com/posts/44RLpbjb35ZKDYeM8/what-i-mean-by-the-phrase-taking-ideas-seriously",
+    "https://forum.effectivealtruism.org/posts/JcCwjA8TnxjqKvDNq/what-s-the-best-way-to-get-a-sense-of-the-day-to-day",
 }
 
 FORUM_QUERY = """

@@ -2018,7 +2018,7 @@ h2 {
 
 .work-list > li.raindrop-item:nth-child(3n + 3 of li.raindrop-item:not(:has(.is-spotify))) {
   background: #b04f2f;
-  border-color: #00aeae;
+  border-color: #142fff;
 }
 
 .work-list > li.raindrop-item.is-teal:nth-child(n of li.raindrop-item:not(:has(.is-spotify))) {
@@ -2389,7 +2389,9 @@ h2 {
   justify-self: end;
 }
 
-.work-list > li.book-item.is-collapsed {
+.work-list > li[hidden],
+.work-list > li.book-item.is-collapsed,
+.work-list > li.post-month.is-absorbed {
   display: none;
 }
 
@@ -2452,27 +2454,35 @@ h2 {
 }
 
 .post-filter {
-  position: relative;
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: flex-end;
-  margin-top: 0.25rem;
+  --glow: #74584a;
+  position: sticky;
+  top: 50vh;
+  width: fit-content;
+  margin: 0.25rem min(0px, calc((100% - 100vw) / 2 + 2.5rem)) 0 auto;
   font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
   font-size: 0.9rem;
+  opacity: 0;
+  translate: 2rem 0;
+  transition: opacity 0.5s ease, translate 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.post-filter[open] {
-  justify-content: flex-end;
-  gap: 1.25rem;
+.post-filter.is-in {
+  opacity: 1;
+  translate: 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .post-filter {
+    translate: 0 0;
+  }
 }
 
 .post-filter summary {
-  order: 2;
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.35rem 0;
+  padding: 0.85rem 0;
   border: 0;
   background: none;
   color: var(--glow);
@@ -2485,17 +2495,15 @@ h2 {
   display: none;
 }
 
-.post-filter summary::before {
+.post-filter summary::after {
   content: "";
-  width: 0.4rem;
-  height: 0.4rem;
-  border-right: 1.5px solid currentColor;
-  border-bottom: 1.5px solid currentColor;
-  transform: translateY(-2px) rotate(45deg);
-}
-
-.post-filter[open] summary::before {
-  transform: translateX(1px) rotate(135deg);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -0.6rem;
+  width: 1.3rem;
+  border-block: 1.5px solid currentColor;
+  pointer-events: none;
 }
 
 .post-filter summary:focus-visible {
@@ -2515,15 +2523,18 @@ h2 {
 }
 
 .post-filter fieldset {
-  order: 1;
+  position: absolute;
+  top: 100%;
+  right: 0;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 0.35rem 1.75rem;
-  margin: 0;
-  padding: 0;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0.25rem 0 0;
+  padding: 0.5rem 0.7rem;
   border: 0;
+  background: var(--bg);
   color: var(--glow);
+  white-space: nowrap;
 }
 
 .post-filter label {

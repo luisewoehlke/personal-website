@@ -191,6 +191,8 @@ def main():
         page += 1
         if page > 20:
             break
+    if not items:
+        raise SystemExit("No raindrops found; leaving raindrops.json unchanged")
     apply_yellow(items)
     OUT.write_text(
         json.dumps(items, indent=2, ensure_ascii=False) + "\n",

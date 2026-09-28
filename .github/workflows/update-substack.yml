@@ -24,9 +24,12 @@ jobs:
       - name: Fetch Goodreads books
         continue-on-error: true
         run: python3 scripts/fetch-goodreads.py
-      - name: Commit posts.json and books.json if they changed
+      - name: Fetch Raindrop collection
+        continue-on-error: true
+        run: python3 scripts/fetch-raindrop.py
+      - name: Commit feed data if it changed
         run: |
-          git add posts.json books.json
+          git add posts.json books.json raindrops.json
           if git diff --cached --quiet; then
             echo "No new posts"
             exit 0

@@ -955,7 +955,7 @@ const fillLatestViewport = () => {
   while (
     loadMoreSentinel &&
     latestRenderCursor < orderedLatestPosts.length &&
-    loadMoreSentinel.getBoundingClientRect().top < window.innerHeight + 240 &&
+    loadMoreSentinel.getBoundingClientRect().top < window.innerHeight + 1200 &&
     guard < 20
   ) {
     appendLatestBatch();
@@ -994,8 +994,10 @@ const loadMoreObserver = new IntersectionObserver(
     if (!entries.some((entry) => entry.isIntersecting)) return;
     appendLatestBatch();
     fillLatestViewport();
+    loadMoreObserver.unobserve(loadMoreSentinel);
+    loadMoreObserver.observe(loadMoreSentinel);
   },
-  { rootMargin: "400px 0px" }
+  { rootMargin: "0px 0px 1200px 0px" }
 );
 
 const renderLatestPosts = (posts) => {
@@ -1333,7 +1335,7 @@ const monthLineObserver = new IntersectionObserver(
       entry.target.classList.add("is-drawn");
     });
   },
-  { rootMargin: "0px 0px -32% 0px" }
+  { rootMargin: "0px 0px -8% 0px" }
 );
 
 const watchMonthLines = () => {
@@ -1352,7 +1354,7 @@ const watchMonthLines = () => {
 const syncEntranceAfterFilter = () => {
   if (!latestPosts) return;
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const line = window.innerHeight * 0.68;
+  const line = window.innerHeight * 0.92;
   latestPosts.querySelectorAll(":scope > li").forEach((item) => {
     if (reduce) {
       item.classList.add("is-drawn");
@@ -1372,9 +1374,27 @@ const syncEntranceAfterFilter = () => {
 const collapseBookRuns = () => {
   if (!latestPosts) return;
   latestPosts.querySelectorAll(".book-more").forEach((button) => button.remove());
+  latestPosts
+    .querySelectorAll(":scope > .post-month.is-absorbed")
+    .forEach((heading) => heading.classList.remove("is-absorbed"));
   let run = [];
-  const flush = () => {
+  let pending = [];
+  let absorbed = [];
+  const moves = [];
+  const flush = (next) => {
+    const last = absorbed.pop();
+    absorbed.forEach((heading) => heading.classList.add("is-absorbed"));
+    if (last) {
+      if (next && !next.classList.contains("post-month") && !next.classList.contains("post-load-sentinel")) {
+        moves.push([last, next]);
+      } else {
+        last.classList.add("is-absorbed");
+      }
+    }
+    absorbed = [];
+    pending = [];
     const [first, ...rest] = run;
+    first?.classList.remove("is-collapsed");
     if (rest.length) {
       const open = first.dataset.expanded === "1";
       rest.forEach((item) => item.classList.toggle("is-collapsed", !open));
@@ -1384,17 +1404,23 @@ const collapseBookRuns = () => {
           open ? "less" : "more"
         }<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6.5 6-6.5 6z" fill="currentColor"/></svg></button>`
       );
-    } else if (first) {
-      first.classList.remove("is-collapsed");
     }
     run = [];
   };
   [...latestPosts.children].forEach((item) => {
     if (item.hidden) return;
-    if (item.classList.contains("book-item")) run.push(item);
-    else flush();
+    if (item.classList.contains("book-item")) {
+      absorbed.push(...pending);
+      pending = [];
+      run.push(item);
+    } else if (run.length && item.classList.contains("post-month")) {
+      pending.push(item);
+    } else {
+      flush(pending[0] || item);
+    }
   });
-  flush();
+  flush(pending[0]);
+  moves.forEach(([heading, next]) => next.before(heading));
 };
 
 const applyPostFilter = () => {
@@ -1402,7 +1428,8 @@ const applyPostFilter = () => {
   const boxes = postFilter.querySelectorAll("input[type=checkbox]");
   const count = postFilter.querySelector(".post-filter-count");
   const selected = [...boxes].filter((b) => b.checked).map((b) => b.value);
-  if (selected.length && latestRenderCursor < orderedLatestPosts.length) {
+  const filtering = selected.length < boxes.length;
+  if (filtering && latestRenderCursor < orderedLatestPosts.length) {
     appendLatestBatch(true);
   }
   const items = [...latestPosts.querySelectorAll(":scope > li")];
@@ -1415,8 +1442,7 @@ const applyPostFilter = () => {
     ) {
       return;
     }
-    const show =
-      selected.length === 0 || selected.includes(item.dataset.category);
+    const show = !filtering || selected.includes(item.dataset.category);
     item.hidden = !show;
     if (show) visible += 1;
   });
@@ -1438,7 +1464,7 @@ const applyPostFilter = () => {
   mountRaindrops();
   placeRaindrops();
   collapseBookRuns();
-  if (count) count.textContent = selected.length ? ` (${selected.length})` : "";
+  if (count) count.textContent = filtering ? ` (${selected.length})` : "";
   if (emptyMessage) emptyMessage.hidden = visible > 0;
   placeStandupStickers();
 };
@@ -1479,6 +1505,10 @@ if (postFilter) {
       postFilter.querySelector("summary").focus();
     }
   });
+  new IntersectionObserver(
+    ([entry]) => postFilter.classList.toggle("is-in", entry.isIntersecting),
+    { rootMargin: "0px 0px -15% 0px" }
+  ).observe(postFilter);
 }
 
 renderLatestPosts(substackFallback);

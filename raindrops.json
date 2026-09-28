@@ -35,16 +35,6 @@
     "type": "article"
   },
   {
-    "title": "Slowie the sloth",
-    "note": "",
-    "tags": [],
-    "url": "https://www.amazon.co.uk/dp/B089WGP3KP?ref=ppx_yo2ov_dt_b_fed_asin_title",
-    "image": "https://m.media-amazon.com/images/I/81ss79rHbOL._AC_SL1500_.jpg",
-    "domain": "amazon.co.uk",
-    "type": "link",
-    "yellow": false
-  },
-  {
     "title": "Midnight green (color)",
     "note": "",
     "tags": [],
@@ -642,19 +632,6 @@
     "yellow": false
   },
   {
-    "title": "\"Fallen Kingdom\" - A Minecraft Parody of Coldplay's Viva la Vida (Music Video)",
-    "note": "",
-    "tags": [
-      "music",
-      "nostalgia"
-    ],
-    "url": "https://www.youtube.com/watch?v=I-sH53vXP2A",
-    "image": "https://i.ytimg.com/vi/I-sH53vXP2A/hqdefault.jpg?sqp=-oaymwEPCOADEOgC8quKqQMDwAIB&rs=AOn4CLAnIFIenX6y4mVqY4EbZwBFn-Doiw",
-    "domain": "youtube.com",
-    "type": "video",
-    "yellow": false
-  },
-  {
     "title": "Mamma Mia",
     "note": "",
     "tags": [
@@ -1111,18 +1088,6 @@
     "image": "https://rdl.ink/render/https%3A%2F%2Fscontent-fra5-1.cdninstagram.com%2Fv%2Ft51.71878-15%2F751915641_1309595917828374_7921444742214883741_n.jpg%3Fstp%3Dcmp1_dst-jpg_e35_s640x640_tt6%26_nc_cat%3D110%26ccb%3D7-5%26_nc_sid%3D18de74%26efg%3DeyJlZmdfdGFnIjoiQ0xJUFMuYmVzdF9pbWFnZV91cmxnZW4uQzMifQ%253D%253D%26_nc_ohc%3DcjoW5QRPZBcQ7kNvwG5l-mD%26_nc_oc%3DAdrzlbq8ThhT9QAW_xV9RllR-kPJ88bAfXcfRhWVwsWGZQDjJeIO7GZxPkvmgkxQKv4%26_nc_zt%3D23%26_nc_ht%3Dscontent-fra5-1.cdninstagram.com%26_nc_gid%3DofownJx0zr1aIwqzxKbjkQ%26_nc_ss%3D7ba02%26oh%3D00_AQHQvLNmW8E23thiwkjaRQN1hTGGBJSBgJ_y3pgo3DYGNA%26oe%3D6A867ABD",
     "domain": "instagram.com",
     "type": "image",
-    "yellow": false
-  },
-  {
-    "title": "Ragozinski",
-    "note": "",
-    "tags": [
-      "music"
-    ],
-    "url": "https://youtu.be/RNjxBPH3m74?si=L_Sa4lSTT9kzlEvc",
-    "image": "https://i.ytimg.com/vi/RNjxBPH3m74/maxresdefault.jpg?sqp=-oaymwEPCIAPELgI8quKqQMDwAIB&rs=AOn4CLAmcFWyXZKFk4nodGWjrLhBXOR2Xw",
-    "domain": "youtu.be",
-    "type": "video",
     "yellow": false
   },
   {
