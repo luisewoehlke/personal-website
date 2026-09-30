@@ -2989,8 +2989,18 @@ footer p {
     height: 6.3vw;
   }
 
-  #best-of > h2 {
-    font-size: 9.75vw;
+  #best-of > h2,
+  #latest > h2,
+  #about > h2 {
+    font-size: 14.625vw;
+  }
+
+  #best-of > h2,
+  #best-of > h2 .typeout-ghost,
+  #best-of > h2 .typeout-live,
+  #best-of > h2 .typeout-shadow,
+  #best-of > h2 .typeout-shadow-left {
+    white-space: pre-line;
   }
 
   .best-of-heading-peach {
@@ -2998,10 +3008,10 @@ footer p {
     position: absolute;
     z-index: 12;
     left: -0.35rem;
-    top: 1.35rem;
-    width: 2.6rem;
+    top: calc(20vh + 0.65rem);
+    width: calc(2.5 * var(--sticker-unit));
     height: auto;
-    rotate: -22deg;
+    rotate: -30deg;
     pointer-events: none;
     image-rendering: pixelated;
   }
@@ -3359,6 +3369,7 @@ footer p {
     --best-card-w: 100%;
     --best-h: auto;
     padding-inline: 5vw;
+    padding-top: 20vh;
     box-sizing: border-box;
   }
 
