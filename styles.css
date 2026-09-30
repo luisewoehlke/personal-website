@@ -1309,8 +1309,8 @@ h2 {
   position: absolute;
   left: 0;
   top: 0;
-  color: #f47450;
-  -webkit-text-stroke: 0.12em #f47450;
+  color: #ff6236;
+  -webkit-text-stroke: 0.12em #e8856a;
   paint-order: stroke fill;
   pointer-events: none;
   z-index: 0;
@@ -2820,15 +2820,34 @@ h2 {
 }
 
 footer {
+  position: relative;
   padding: 1.5rem 6vw 2.5rem;
   color: var(--muted);
   font-size: 0.95rem;
 }
 
-footer p {
+.footer-copy {
+  position: relative;
+  width: fit-content;
   max-width: var(--max);
   margin: 0 auto;
+}
+
+footer p {
+  margin: 0;
   text-align: center;
+}
+
+.footer-potato {
+  position: absolute;
+  right: -1.1rem;
+  bottom: -1.35rem;
+  width: 2.95rem;
+  height: auto;
+  rotate: -16deg;
+  z-index: 2;
+  pointer-events: none;
+  image-rendering: pixelated;
 }
 
 @media (max-width: 800px) {
@@ -2850,9 +2869,12 @@ footer p {
     min-width: 0;
   }
 
-  #latest,
+  #latest {
+    overflow-x: visible;
+  }
+
   .work-list {
-    overflow-x: clip;
+    overflow-x: visible;
   }
 
   #best-of,
@@ -3520,6 +3542,27 @@ footer p {
 
   #latest > h2 {
     margin-bottom: 2.5rem;
+  }
+
+  .work-list > li.photo-item,
+  .work-list > li.photo-item.is-pile {
+    width: 100%;
+    max-width: 100%;
+    overflow: visible;
+    border-radius: 0;
+  }
+
+  .work-list > li.photo-item.is-pile .photo-pile {
+    box-sizing: border-box;
+    padding: 0 calc(var(--pile-spread) + 0.85rem) var(--pile-spread) 0.85rem;
+    overflow: visible;
+  }
+
+  .work-list > li.photo-item .feed-photo,
+  .work-list > li.photo-item .feed-photo img,
+  .photo-pile-img {
+    max-width: 100%;
+    max-height: none;
   }
 
   .work-list > li.book-item {
