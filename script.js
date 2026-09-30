@@ -7,13 +7,23 @@ const siteHeader = document.querySelector(".site-header");
 const peachSticker = document.querySelector(".sticker-peach");
 const placePeachSticker = () => {
   if (!peachSticker || !siteHeader) return;
-  if (siteHeader.classList.contains("is-hidden")) return;
+  const narrow = window.matchMedia("(max-width: 800px)").matches;
+  const headerHidden = siteHeader.classList.contains("is-hidden");
+  if (narrow) {
+    peachSticker.classList.toggle("is-hidden", headerHidden);
+    if (headerHidden) return;
+  } else {
+    peachSticker.classList.remove("is-hidden");
+  }
   const brand = siteHeader.querySelector(".site-brand");
   if (!brand) return;
   const box = brand.getBoundingClientRect();
   const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-  peachSticker.style.left = `${box.left - 1.85 * rem}px`;
-  peachSticker.style.top = `${box.bottom - 1.7 * rem}px`;
+  const leftPad = 1.85 * rem;
+  const topPad = narrow ? 2.55 * rem : 1.7 * rem;
+  peachSticker.style.left = `${Math.max(0.15 * rem, box.left - leftPad)}px`;
+  peachSticker.style.top = `${box.bottom - topPad}px`;
+  peachSticker.style.width = "";
 };
 if (siteHeader) {
   let lastScrollY = window.scrollY;
@@ -28,6 +38,13 @@ if (siteHeader) {
     document
       .querySelector(".site-header-bg")
       ?.classList.toggle("is-hidden", headerHidden);
+    if (headerHidden) {
+      const end = siteHeader.querySelector(".header-end");
+      const burger = siteHeader.querySelector(".nav-burger");
+      end?.classList.remove("is-open");
+      burger?.setAttribute("aria-expanded", "false");
+    }
+    placePeachSticker();
     lastScrollY = scrollY;
   };
   const syncHeaderHeight = () => {
@@ -41,6 +58,27 @@ if (siteHeader) {
   window.addEventListener("resize", syncHeaderHeight);
   window.addEventListener("scroll", updateHeader, { passive: true });
   placePeachSticker();
+
+  const headerEnd = siteHeader.querySelector(".header-end");
+  const navBurger = siteHeader.querySelector(".nav-burger");
+  if (headerEnd && navBurger) {
+    const setNavOpen = (open) => {
+      headerEnd.classList.toggle("is-open", open);
+      navBurger.setAttribute("aria-expanded", open ? "true" : "false");
+    };
+    navBurger.addEventListener("click", (event) => {
+      event.stopPropagation();
+      setNavOpen(!headerEnd.classList.contains("is-open"));
+    });
+    document.addEventListener("pointerdown", (event) => {
+      if (!headerEnd.classList.contains("is-open")) return;
+      if (headerEnd.contains(event.target)) return;
+      setNavOpen(false);
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") setNavOpen(false);
+    });
+  }
 }
 
 const backgroundStickers = () =>
@@ -183,7 +221,10 @@ document.querySelectorAll(".scroll-hint").forEach((hint) => {
 const landingScrollHint = document.querySelector(".landing .scroll-hint");
 if (landingScrollHint) {
   const updateScrollHint = () => {
-    const hide = window.scrollY > 0;
+    const hide =
+      window.scrollY > 8 ||
+      document.documentElement.scrollTop > 8 ||
+      document.body.scrollTop > 8;
     // Cancel the gather before hiding, since a hidden hint never gets pointerleave.
     if (hide && piledHint === landingScrollHint) {
       cancelBackgroundStickerPile();
@@ -192,6 +233,7 @@ if (landingScrollHint) {
   };
   updateScrollHint();
   window.addEventListener("scroll", updateScrollHint, { passive: true });
+  document.addEventListener("scroll", updateScrollHint, { passive: true });
 }
 
 document.querySelectorAll(".location").forEach((location) => {
@@ -618,15 +660,68 @@ const sanitizeReviewHtml = (raw) => {
 
 const formatReview = (review) => {
   const html = sanitizeReviewHtml(review);
-  const parts = html
-    .split(/(?:<br\s*\/?>\s*){2,}/i)
-    .map((part) => part.replace(/^(?:<br\s*\/?>)+|(?:<br\s*\/?>)+$/gi, "").trim())
-    .filter(Boolean);
+  if (!html) return "";
+  const root = document.createElement("div");
+  root.innerHTML = html;
+
+  const inlineTags = new Set(["I", "B", "EM", "STRONG"]);
+  const parts = [""];
+  let partIndex = 0;
+  let brRun = 0;
+  const openTags = [];
+
+  const openTagHtml = () => openTags.map((tag) => `<${tag.toLowerCase()}>`).join("");
+  const closeTagHtml = () =>
+    [...openTags]
+      .reverse()
+      .map((tag) => `</${tag.toLowerCase()}>`)
+      .join("");
+
+  const startNewPart = () => {
+    parts[partIndex] += closeTagHtml();
+    partIndex += 1;
+    parts[partIndex] = openTagHtml();
+    brRun = 0;
+  };
+
+  const beforeContent = () => {
+    if (brRun >= 2) startNewPart();
+    else if (brRun === 1) parts[partIndex] += "<br>";
+    brRun = 0;
+  };
+
+  const walk = (node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      beforeContent();
+      parts[partIndex] += escapeHtml(node.textContent);
+      return;
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE) return;
+    if (node.tagName === "BR") {
+      brRun += 1;
+      return;
+    }
+    if (inlineTags.has(node.tagName)) {
+      beforeContent();
+      openTags.push(node.tagName);
+      parts[partIndex] += `<${node.tagName.toLowerCase()}>`;
+      [...node.childNodes].forEach(walk);
+      parts[partIndex] += `</${node.tagName.toLowerCase()}>`;
+      openTags.pop();
+      return;
+    }
+    [...node.childNodes].forEach(walk);
+  };
+
+  [...root.childNodes].forEach(walk);
+
   return parts
-    .map((part, index) => {
+    .map((part) => part.replace(/^(?:<br\s*\/?>)+|(?:<br\s*\/?>)+$/gi, "").trim())
+    .filter(Boolean)
+    .map((part, index, list) => {
       let body = part;
       if (index === 0) body = `"${body}`;
-      if (index === parts.length - 1) body = `${body}"`;
+      if (index === list.length - 1) body = `${body}"`;
       return `<span class="book-review-part">${body}</span>`;
     })
     .join("");
@@ -1071,7 +1166,11 @@ const sizeRaindropCards = () => {
     let width = Math.min(maxInner, naturalWidth);
     let usedHeight = width / ratio;
     let fit = "contain";
-    const minOuter = Math.min(window.innerWidth / 3, otherWidth);
+    const isNarrow = window.matchMedia("(max-width: 640px)").matches;
+    const minOuter = Math.min(
+      isNarrow ? otherWidth * 0.72 : window.innerWidth / 3,
+      otherWidth
+    );
     if (img && naturalWidth + padX + borderX < minOuter - 1) {
       width = Math.max(0, minOuter - padX - borderX);
       usedHeight = Math.max(0, maxCard - chromeFor(width));
@@ -1470,14 +1569,21 @@ const stickerLayer = stickerLayers[0];
 const landingCard = document.querySelector(".landing-card");
 const updateStickerRails = () => {
   if (!stickerLayer || !landingCard) return;
+  if (window.matchMedia("(max-width: 800px)").matches) {
+    stickerLayers.forEach((layer) => {
+      layer.style.setProperty("--sticker-left-in", "0rem");
+      layer.style.setProperty("--sticker-right-in", "0rem");
+    });
+    return;
+  }
   const board = stickerLayer.getBoundingClientRect();
   const box = landingCard.getBoundingClientRect();
   const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
   const cm = 96 / 2.54;
   const padLeft = 4.5 * cm;
   const padRight = 6 * cm;
-  const leftIn = `${(box.left - padLeft - board.left) / rem}rem`;
-  const rightIn = `${(board.right - box.right - padRight) / rem}rem`;
+  const leftIn = `${Math.max(0, (box.left - padLeft - board.left) / rem)}rem`;
+  const rightIn = `${Math.max(0, (board.right - box.right - padRight) / rem)}rem`;
   stickerLayers.forEach((layer) => {
     layer.style.setProperty("--sticker-left-in", leftIn);
     layer.style.setProperty("--sticker-right-in", rightIn);
