@@ -727,97 +727,6 @@ main {
   transition: translate 0.5s cubic-bezier(0.22, 0.8, 0.24, 1);
 }
 
-.sticker-wombat,
-.sticker-mic,
-.sticker-cow,
-.sticker-orange-2,
-.sticker-pickle {
-  transform-origin: center center;
-  scale: 1;
-}
-
-.sticker-wombat[data-exit-parked="1"],
-.sticker-mic[data-exit-parked="1"],
-.sticker-cow[data-exit-parked="1"],
-.sticker-orange-2[data-exit-parked="1"],
-.sticker-pickle[data-exit-parked="1"],
-.sticker-wombat.is-popping-out,
-.sticker-mic.is-popping-out,
-.sticker-cow.is-popping-out,
-.sticker-orange-2.is-popping-out,
-.sticker-pickle.is-popping-out,
-.sticker-wombat.is-popping-in,
-.sticker-mic.is-popping-in,
-.sticker-cow.is-popping-in,
-.sticker-orange-2.is-popping-in,
-.sticker-pickle.is-popping-in {
-  will-change: scale;
-  backface-visibility: hidden;
-}
-
-.sticker-wombat.is-exit-hidden,
-.sticker-mic.is-exit-hidden,
-.sticker-cow.is-exit-hidden,
-.sticker-orange-2.is-exit-hidden,
-.sticker-pickle.is-exit-hidden {
-  scale: 0;
-  opacity: 0;
-  pointer-events: none;
-  animation: none;
-}
-
-.sticker-wombat.is-popping-out,
-.sticker-mic.is-popping-out,
-.sticker-cow.is-popping-out,
-.sticker-orange-2.is-popping-out,
-.sticker-pickle.is-popping-out {
-  opacity: 1;
-  animation: sticker-pop-out 0.38s cubic-bezier(0.55, 0.05, 0.8, 0.3)
-    var(--exit-delay, 0ms) forwards;
-}
-
-.sticker-wombat.is-popping-in,
-.sticker-mic.is-popping-in,
-.sticker-cow.is-popping-in,
-.sticker-orange-2.is-popping-in,
-.sticker-pickle.is-popping-in {
-  opacity: 1;
-  animation: sticker-pop-in 0.46s cubic-bezier(0.18, 0.9, 0.32, 1.15)
-    var(--exit-delay, 0ms) forwards;
-}
-
-@keyframes sticker-pop-out {
-  0% {
-    scale: 1;
-  }
-
-  28% {
-    scale: 1.28;
-  }
-
-  100% {
-    scale: 0;
-  }
-}
-
-@keyframes sticker-pop-in {
-  0% {
-    scale: 0;
-  }
-
-  58% {
-    scale: 1.38;
-  }
-
-  76% {
-    scale: 0.86;
-  }
-
-  100% {
-    scale: 1;
-  }
-}
-
 body.is-piling-stickers .landing-sticker-back,
 body.is-piling-stickers .landing-stickers {
   z-index: 16;
@@ -931,7 +840,7 @@ body.is-piling-stickers .sticker-peach {
 .sticker-pickle {
   width: 2.5rem;
   bottom: 4.5rem;
-  right: 11rem;
+  right: 6rem;
   rotate: -50deg;
 }
 
@@ -955,14 +864,14 @@ body.is-piling-stickers .sticker-peach {
 .sticker-mic {
   width: 2.2rem;
   top: 17rem;
-  left: 9rem;
+  left: 2rem;
   rotate: 8deg;
 }
 
 .sticker-wombat {
   width: 2.95rem;
   top: 20rem;
-  left: 11rem;
+  left: 4rem;
   rotate: 10deg;
 }
 
@@ -982,8 +891,8 @@ body.is-piling-stickers .sticker-peach {
 
 .sticker-crab {
   width: 3.15rem;
-  bottom: 16rem;  
-  left: 0rem;
+  bottom: -1rem;
+  right: -10rem;
   rotate: 10deg;
 }
 
@@ -996,8 +905,8 @@ body.is-piling-stickers .sticker-peach {
 
 .sticker-strawberry {
   width: 1.6rem;
-  bottom: 1.8rem;
-  right: -10rem;
+  bottom: 12.5rem;  
+  left: 2rem;
   rotate: 10deg;
 }
 
@@ -2512,21 +2421,37 @@ h2 {
   top: 50vh;
   width: fit-content;
   margin: 0.25rem min(0px, calc((100% - 100vw) / 2 + 2.5rem)) 0 auto;
-  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-family: "SF Pro Display", -apple-system-headline, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   font-size: 0.9rem;
   opacity: 0;
-  translate: 2rem 0;
+  translate: 2rem -50%;
   transition: opacity 0.5s ease, translate 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .post-filter.is-in {
   opacity: 1;
-  translate: 0 0;
+  translate: 0 -50%;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .post-filter {
-    translate: 0 0;
+    translate: 0 -50%;
+  }
+
+  .post-filter summary,
+  .post-filter fieldset {
+    transition: opacity 0.2s ease !important;
+  }
+
+  .post-filter summary,
+  .post-filter[open] summary {
+    translate: 0 !important;
+  }
+
+  .post-filter fieldset,
+  .post-filter[open] fieldset {
+    translate: 0 -50% !important;
   }
 }
 
@@ -2542,6 +2467,16 @@ h2 {
   cursor: pointer;
   list-style: none;
   user-select: none;
+  /* Return: pop in from the right with leftward motion */
+  transition: opacity 0.34s ease, translate 0.52s cubic-bezier(0.18, 0.9, 0.32, 1.2);
+}
+
+.post-filter[open] summary {
+  opacity: 0;
+  translate: 2.75rem 0;
+  pointer-events: none;
+  /* Leave: more rightward fade */
+  transition: opacity 0.28s ease, translate 0.38s cubic-bezier(0.4, 0, 0.8, 0.2);
 }
 
 .post-filter summary::-webkit-details-marker {
@@ -2557,6 +2492,11 @@ h2 {
   width: 1.3rem;
   border-block: 1.5px solid currentColor;
   pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.post-filter[open] summary::after {
+  opacity: 0;
 }
 
 .post-filter summary:focus-visible {
@@ -2577,52 +2517,99 @@ h2 {
 
 .post-filter fieldset {
   position: absolute;
-  top: 100%;
+  top: 50%;
   right: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  margin: 0.25rem 0 0;
-  padding: 0.5rem 0.7rem;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 1.05rem 1.55rem 1.05rem 0.7rem;
   border: 0;
-  background: var(--bg);
+  background: none;
   color: var(--glow);
   white-space: nowrap;
+  opacity: 0;
+  translate: 2.4rem -50%;
+  pointer-events: none;
+  transition: opacity 0.32s ease, translate 0.4s cubic-bezier(0.4, 0, 0.8, 0.2);
+}
+
+.post-filter fieldset::before,
+.post-filter fieldset::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  width: 50%;
+  border-top: 1.5px solid currentColor;
+  pointer-events: none;
+}
+
+.post-filter fieldset::before {
+  top: 0;
+}
+
+.post-filter fieldset::after {
+  bottom: 0;
+}
+
+.post-filter[open] fieldset {
+  opacity: 1;
+  translate: 0 -50%;
+  pointer-events: auto;
+  transition: opacity 0.4s ease, translate 0.48s cubic-bezier(0.18, 0.9, 0.32, 1.15);
 }
 
 .post-filter label {
-  font-family: "Space Mono", ui-monospace, monospace;
-  font-size: 0.88em;
+  font-family: inherit;
+  font-size: 0.92em;
+  font-weight: 400;
+  letter-spacing: 0.01em;
   display: flex;
   align-items: center;
   gap: 0.55rem;
+  color: inherit;
   cursor: pointer;
 }
 
 .post-filter input {
   appearance: none;
+  position: relative;
   display: grid;
   place-content: center;
   width: 0.9rem;
   height: 0.9rem;
   margin: 0;
-  border: 1.5px solid var(--glow);
+  border: 1.5px solid currentColor;
   border-radius: 0;
   background: none;
+  color: inherit;
   cursor: pointer;
 }
 
-.post-filter input::before {
+.post-filter input::before,
+.post-filter input::after {
   content: "";
-  width: 0.55rem;
-  height: 0.55rem;
-  background: var(--glow);
-  clip-path: polygon(14% 44%, 0 58%, 40% 98%, 100% 26%, 86% 12%, 40% 70%);
-  transform: scale(0);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1px;
+  height: 141%;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity 0.12s ease;
 }
 
-.post-filter input:checked::before {
-  transform: scale(1);
+.post-filter input::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.post-filter input::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.post-filter input:checked::before,
+.post-filter input:checked::after {
+  opacity: 1;
 }
 
 .post-filter input:focus-visible {

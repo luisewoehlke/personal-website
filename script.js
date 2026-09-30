@@ -48,48 +48,7 @@ const backgroundStickers = () =>
     ".landing-sticker-back .sticker, .landing-stickers .sticker, .sticker-peach"
   );
 
-const EXIT_UNITS = [
-  {
-    classes: ["sticker-wombat", "sticker-mic"],
-    side: "left",
-    y: 0.34,
-  },
-  {
-    classes: ["sticker-cow", "sticker-orange-2"],
-    side: "right",
-    y: 0.3,
-  },
-  {
-    classes: ["sticker-pickle"],
-    side: "right",
-    y: 0.72,
-    extraX: 36,
-  },
-];
-
-const EXIT_STICKER_CLASSES = EXIT_UNITS.flatMap((unit) => unit.classes);
-const EXIT_CLEARANCE_LEFT = 100;
-const EXIT_CLEARANCE_RIGHT = 50;
-
-const exitStickers = () =>
-  EXIT_STICKER_CLASSES.map((cls) =>
-    document.querySelector(`.landing-stickers .${cls}, .landing-sticker-back .${cls}`)
-  ).filter(Boolean);
-
-const exitStickerClass = (el) =>
-  EXIT_STICKER_CLASSES.find((cls) => el.classList.contains(cls));
-
-const isExitSticker = (el) => Boolean(exitStickerClass(el));
-
-const isExitParked = (el) => el.dataset.exitParked === "1";
-
 let piledHint = null;
-let exitStickersReturned = false;
-let exitReturnStarted = false;
-let exitReturnMaxProgress = 0;
-let exitCycleId = 0;
-let cachedLatestSection = null;
-let cachedExitStickers = null;
 const stickerRestCenters = new WeakMap();
 
 const applyStickerPile = (el, x, y, duration = "0.5s", delay = "0s") => {
@@ -116,225 +75,12 @@ const clearStickerRestCenters = () => {
   backgroundStickers().forEach((el) => stickerRestCenters.delete(el));
 };
 
-const resetExitCycle = () => {
-  exitCycleId += 1;
-  exitStickersReturned = false;
-  exitReturnStarted = false;
-  exitReturnMaxProgress = 0;
-  cachedExitStickers = null;
-  exitStickers().forEach((el) => {
-    delete el.dataset.exitHome;
-    delete el.dataset.exitReturning;
-    delete el.dataset.exitParked;
-    el.classList.remove("is-popping-out", "is-popping-in", "is-exit-hidden");
-  });
-};
-
-const bestOfParkBounds = () => {
-  const peach = document.querySelector("#best-of .best-of-sticker-wrap.is-peach");
-  const num2 =
-    document.querySelector(
-      "#best-of .best-of-grid li:nth-child(2) .best-of-rule-num"
-    ) ||
-    document.querySelector(
-      "#best-of .best-of-grid li:nth-child(2) .best-of-num"
-    ) ||
-    document.querySelector(
-      "#best-of .best-of-grid li:nth-child(2) .best-of-sticker-wrap"
-    );
-  const peachLeft = peach ? peach.getBoundingClientRect().left : window.innerWidth * 0.28;
-  const num2Right = num2
-    ? num2.getBoundingClientRect().right
-    : window.innerWidth * 0.72;
-  return {
-    leftLimit: peachLeft - EXIT_CLEARANCE_LEFT,
-    rightLimit: num2Right + EXIT_CLEARANCE_RIGHT,
-  };
-};
-
-const parkExitUnits = (duration = "0.65s", delay = "0.1s") => {
-  const { leftLimit, rightLimit } = bestOfParkBounds();
-
-  EXIT_UNITS.forEach((unit) => {
-    const els = unit.classes
-      .map((cls) =>
-        document.querySelector(
-          `.landing-stickers .${cls}, .landing-sticker-back .${cls}`
-        )
-      )
-      .filter(Boolean);
-    if (!els.length) return;
-    cacheStickerRestCenters(els);
-    const rests = els.map((el) => ({
-      el,
-      rest: stickerRestCenters.get(el),
-      halfW: el.offsetWidth / 2 || 20,
-      halfH: el.offsetHeight / 2 || 20,
-    }));
-    const cx = rests.reduce((sum, item) => sum + item.rest.x, 0) / rests.length;
-    const cy = rests.reduce((sum, item) => sum + item.rest.y, 0) / rests.length;
-
-    // How far members extend from the unit centroid.
-    const maxRight = Math.max(
-      ...rests.map((item) => item.rest.x - cx + item.halfW)
-    );
-    const maxLeft = Math.max(
-      ...rests.map((item) => cx - item.rest.x + item.halfW)
-    );
-
-    let targetX;
-    if (unit.side === "left") {
-      // Unit must sit fully left of the peach's left edge − 100px.
-      targetX = leftLimit - maxRight;
-    } else {
-      // Unit must sit fully right of the "2"'s right edge + 50px.
-      targetX = rightLimit + maxLeft + (unit.extraX || 0);
-    }
-    const targetY = unit.y * window.innerHeight;
-    const dx = targetX - cx;
-    const dy = targetY - cy;
-    rests.forEach(({ el }) => {
-      el.classList.remove("is-popping-out", "is-popping-in", "is-exit-hidden");
-      delete el.dataset.exitHome;
-      delete el.dataset.exitReturning;
-      applyStickerPile(el, dx, dy, duration, delay);
-      el.dataset.exitParked = "1";
-    });
-  });
-};
-
-const prefersReducedMotionExit = window.matchMedia(
-  "(prefers-reduced-motion: reduce)"
-);
-
-const getLatestSection = () => {
-  if (!cachedLatestSection || !cachedLatestSection.isConnected) {
-    cachedLatestSection = document.querySelector("#latest");
-  }
-  return cachedLatestSection;
-};
-
-const getExitStickersCached = () => {
-  if (!cachedExitStickers || cachedExitStickers.some((el) => !el.isConnected)) {
-    cachedExitStickers = exitStickers();
-  }
-  return cachedExitStickers;
-};
-
-const updateExitReturnOnScroll = () => {
-  if (exitStickersReturned) return;
-  const stickers = getExitStickersCached();
-  if (!stickers.length) return;
-  if (
-    !exitReturnStarted &&
-    !stickers.some((el) => isExitParked(el) || el.dataset.exitReturning === "1")
-  ) {
-    return;
-  }
-
-  if (prefersReducedMotionExit.matches) {
-    if (!stickers.some(isExitParked)) return;
-    stickers.forEach((el) => {
-      applyStickerPile(el, 0, 0, "0s", "0s");
-      delete el.dataset.exitParked;
-      delete el.dataset.exitReturning;
-      el.dataset.exitHome = "1";
-      el.classList.remove("is-popping-out", "is-popping-in", "is-exit-hidden");
-    });
-    exitStickersReturned = true;
-    exitReturnStarted = true;
-    return;
-  }
-
-  const latest = getLatestSection();
-  if (!latest) return;
-
-  const latestTop = latest.getBoundingClientRect().top;
-  const mid = window.innerHeight / 2;
-  // Pop-outs unlock one-by-one as Latest moves past center.
-  const start = mid;
-  const end = mid - window.innerHeight * 1.98;
-  if (latestTop > start) return;
-
-  // Only advance with downward progress — ignore scrolling back up.
-  const raw = Math.min(
-    1,
-    Math.max(0, (start - latestTop) / Math.max(1, start - end))
-  );
-  if (!exitReturnStarted) {
-    exitReturnStarted = true;
-    exitReturnMaxProgress = raw;
-  } else {
-    exitReturnMaxProgress = Math.max(exitReturnMaxProgress, raw);
-  }
-
-  const progress = exitReturnMaxProgress;
-  const n = stickers.length;
-
-  stickers.forEach((el, i) => {
-    // Start first sticker slightly after threshold so it doesn't collide
-    // with other Latest scroll work at the same frame.
-    const outAt = (i + 0.12) / (n + 0.12);
-    if (progress < outAt) return;
-    if (!isExitParked(el) || el.dataset.exitReturning === "1") return;
-    if (el.dataset.exitHome === "1") return;
-
-    el.dataset.exitReturning = "1";
-    el.classList.remove("is-popping-in", "is-exit-hidden");
-    el.style.setProperty("--exit-delay", "0ms");
-    el.style.transition = "none";
-    el.classList.add("is-popping-out");
-    const cycle = exitCycleId;
-    window.setTimeout(() => {
-      if (cycle !== exitCycleId) return;
-      el.classList.add("is-exit-hidden");
-      el.classList.remove("is-popping-out");
-      el.style.transition = "none";
-      el.style.translate = "0px 0px 0px";
-      delete el.dataset.exitParked;
-      delete el.dataset.exitReturning;
-      // Avoid sync layout mid-scroll — restart pop-in next frames.
-      requestAnimationFrame(() => {
-        if (cycle !== exitCycleId) return;
-        requestAnimationFrame(() => {
-          if (cycle !== exitCycleId) return;
-          el.classList.remove("is-exit-hidden");
-          el.classList.add("is-popping-in");
-          el.dataset.exitHome = "1";
-          if (stickers.every((s) => s.dataset.exitHome === "1")) {
-            exitStickersReturned = true;
-          }
-        });
-      });
-    }, 380);
-  });
-};
-
-let exitReturnScrollQueued = false;
-const queueExitReturnOnScroll = () => {
-  if (exitReturnScrollQueued || exitStickersReturned) return;
-  exitReturnScrollQueued = true;
-  requestAnimationFrame(() => {
-    exitReturnScrollQueued = false;
-    updateExitReturnOnScroll();
-  });
-};
-
-let exitParkedBeforePile = false;
-
 // Undo a hover gather: every sticker goes back to where it was before.
 const cancelBackgroundStickerPile = () => {
   if (!piledHint) return;
   backgroundStickers().forEach((el) => {
-    if (isExitSticker(el) && exitParkedBeforePile) return;
     applyStickerPile(el, 0, 0, "0.65s", "0.1s");
-    delete el.dataset.exitParked;
-    delete el.dataset.exitReturning;
-    delete el.dataset.exitHome;
-    el.classList.remove("is-popping-out", "is-popping-in", "is-exit-hidden");
   });
-  if (exitParkedBeforePile) parkExitUnits();
-  exitParkedBeforePile = false;
   document.body.classList.remove("is-piling-stickers");
   document.querySelectorAll(".scroll-hint.is-gathering").forEach((hint) => {
     hint.classList.remove("is-gathering");
@@ -342,15 +88,12 @@ const cancelBackgroundStickerPile = () => {
   piledHint = null;
 };
 
-// Click: distribute, parking the exit units beside Best Of.
+// Click: distribute stickers back to rest positions.
 const spreadBackgroundStickers = () => {
   if (!piledHint) return;
-  exitParkedBeforePile = false;
   backgroundStickers().forEach((el) => {
-    if (isExitSticker(el)) return;
     applyStickerPile(el, 0, 0, "0.65s", "0.1s");
   });
-  parkExitUnits();
   document.body.classList.remove("is-piling-stickers");
   document.querySelectorAll(".scroll-hint.is-gathering").forEach((hint) => {
     hint.classList.remove("is-gathering");
@@ -360,11 +103,6 @@ const spreadBackgroundStickers = () => {
 
 const pileBackgroundStickers = (hint) => {
   if (!hint) return;
-  if (!piledHint) {
-    exitParkedBeforePile =
-      !exitStickersReturned && exitStickers().some(isExitParked);
-  }
-  resetExitCycle();
   const stickers = [...backgroundStickers()];
   if (!stickers.length) return;
   cacheStickerRestCenters(stickers);
@@ -436,7 +174,6 @@ document.querySelectorAll(".scroll-hint").forEach((hint) => {
     if (!hint.contains(event.relatedTarget)) cancelBackgroundStickerPile();
   });
   hint.addEventListener("click", () => {
-    resetExitCycle();
     spreadBackgroundStickers();
     const target = document.querySelector(hint.getAttribute("href"));
     if (target) target.style.scrollMarginTop = "20px";
@@ -457,26 +194,6 @@ if (landingScrollHint) {
   window.addEventListener("scroll", updateScrollHint, { passive: true });
 }
 
-let wasAtPageTop = true;
-const parkExitUnitsOnScrollAway = () => {
-  const atTop = window.scrollY <= 0;
-  if (atTop === wasAtPageTop) return;
-  wasAtPageTop = atTop;
-  if (atTop || piledHint) return;
-  const stickers = exitStickers();
-  if (
-    stickers.some(
-      (el) => isExitParked(el) || el.dataset.exitReturning === "1"
-    )
-  ) {
-    return;
-  }
-  resetExitCycle();
-  parkExitUnits();
-};
-parkExitUnitsOnScrollAway();
-window.addEventListener("scroll", parkExitUnitsOnScrollAway, { passive: true });
-
 document.querySelectorAll(".location").forEach((location) => {
   const trigger = location.querySelector(".location-trigger");
   if (!trigger) return;
@@ -493,9 +210,6 @@ document.querySelectorAll(".location").forEach((location) => {
     }
   });
 });
-
-window.addEventListener("scroll", queueExitReturnOnScroll, { passive: true });
-queueExitReturnOnScroll();
 
 const postFilter = document.querySelector(".post-filter");
 const latestPosts = document.querySelector("#latest-posts");
@@ -1737,10 +1451,6 @@ window.addEventListener("resize", () => {
   sizeRaindropCards();
   placeStandupStickers();
   const hint = piledHint;
-  const anyParked =
-    !exitStickersReturned &&
-    !exitReturnStarted &&
-    exitStickers().some(isExitParked);
   clearStickerRestCenters();
   backgroundStickers().forEach((el) => {
     el.style.transition = "none";
@@ -1749,10 +1459,7 @@ window.addEventListener("resize", () => {
   });
   if (hint) {
     pileBackgroundStickers(hint);
-  } else if (anyParked) {
-    parkExitUnits("0s", "0s");
   }
-  updateExitReturnOnScroll();
 });
 
 if (latestPosts) {
