@@ -1286,7 +1286,8 @@ const applyPostFilter = () => {
   mountRaindrops();
   placeRaindrops();
   collapseBookRuns();
-  if (count) count.textContent = filtering ? ` (${selected.length})` : "";
+  if (count) count.textContent = "";
+  postFilter.classList.toggle("is-filtered", filtering);
   if (emptyMessage) emptyMessage.hidden = visible > 0;
   placeStandupStickers();
 };
@@ -1317,19 +1318,57 @@ if (latestPosts) {
 }
 
 if (postFilter) {
+  let panelInTimer = 0;
+  let closeTimer = 0;
+  const filterSummary = postFilter.querySelector("summary");
+  /* Closed <details> stops rendering its content, so animate out before closing */
+  const closeFilter = () => {
+    if (!postFilter.open || postFilter.classList.contains("is-closing")) return;
+    clearTimeout(panelInTimer);
+    postFilter.classList.add("is-closing");
+    postFilter.classList.remove("is-panel-in");
+    closeTimer = setTimeout(() => {
+      postFilter.classList.remove("is-closing");
+      postFilter.open = false;
+    }, 520);
+  };
   postFilter.addEventListener("change", () => {
     applyPostFilter();
     syncEntranceAfterFilter();
   });
+  /* Clear before open paints so a leftover panel class can't flash visible */
+  filterSummary?.addEventListener(
+    "pointerdown",
+    () => {
+      if (postFilter.open) return;
+      clearTimeout(panelInTimer);
+      postFilter.classList.remove("is-panel-in");
+    },
+    true
+  );
+  filterSummary?.addEventListener("click", (event) => {
+    if (!postFilter.open) return;
+    event.preventDefault();
+    closeFilter();
+  });
+  postFilter.addEventListener("toggle", () => {
+    clearTimeout(panelInTimer);
+    clearTimeout(closeTimer);
+    postFilter.classList.remove("is-panel-in", "is-closing");
+    if (!postFilter.open) return;
+    panelInTimer = setTimeout(() => {
+      if (postFilter.open) postFilter.classList.add("is-panel-in");
+    }, 560);
+  });
   postFilter.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
-      postFilter.open = false;
-      postFilter.querySelector("summary").focus();
+      closeFilter();
+      filterSummary?.focus();
     }
   });
   document.addEventListener("pointerdown", (event) => {
     if (!postFilter.open || postFilter.contains(event.target)) return;
-    postFilter.open = false;
+    closeFilter();
   });
   const latestHeading = document.querySelector("#latest-heading");
   const syncFilterIn = () => {

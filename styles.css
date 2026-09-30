@@ -2468,7 +2468,7 @@ h2 {
   list-style: none;
   user-select: none;
   /* Return: pop in from the right with leftward motion */
-  transition: opacity 0.34s ease 0.12s, translate 0.52s cubic-bezier(0.18, 0.9, 0.32, 1.2) 0.12s;
+  transition: opacity 0.5s ease 0.12s, translate 0.78s cubic-bezier(0.18, 0.9, 0.32, 1.2) 0.12s;
 }
 
 .post-filter[open] summary {
@@ -2476,7 +2476,7 @@ h2 {
   translate: 2.75rem 0;
   pointer-events: none;
   /* Leave first: fade rightwards before filters arrive */
-  transition: opacity 0.3s ease, translate 0.36s cubic-bezier(0.4, 0, 0.8, 0.2);
+  transition: opacity 0.45s ease, translate 0.54s cubic-bezier(0.4, 0, 0.8, 0.2);
 }
 
 .post-filter summary::-webkit-details-marker {
@@ -2499,10 +2499,26 @@ h2 {
   outline-offset: 2px;
 }
 
-.post-filter-icon {
+.post-filter-icon-wrap {
   order: 2;
+  position: relative;
+  display: inline-flex;
+}
+
+.post-filter-icon {
   width: 1.15rem;
   height: 1.15rem;
+}
+
+.post-filter.is-filtered .post-filter-icon-wrap::after {
+  content: "";
+  position: absolute;
+  right: -0.05rem;
+  bottom: -0.20rem;
+  width: 0.40rem;
+  height: .40rem;
+  border-radius: 50%;
+  background: currentColor;
 }
 
 .post-filter-count {
@@ -2526,8 +2542,7 @@ h2 {
   opacity: 0;
   translate: 2.4rem -50%;
   pointer-events: none;
-  /* Closing: leave immediately */
-  transition: opacity 0.28s ease, translate 0.34s cubic-bezier(0.4, 0, 0.8, 0.2);
+  transition: opacity 0.42s ease, translate 0.52s cubic-bezier(0.4, 0, 0.8, 0.2);
 }
 
 .post-filter fieldset::before,
@@ -2548,14 +2563,25 @@ h2 {
   bottom: 0;
 }
 
-.post-filter[open] fieldset {
+.post-filter.is-filtered fieldset::before {
+  top: -0.5rem;
+}
+
+.post-filter.is-filtered fieldset::after {
+  bottom: -0.5rem;
+}
+
+/* While waiting to enter: stay hidden with no fade-out */
+.post-filter[open]:not(.is-panel-in):not(.is-closing) fieldset {
+  transition: none;
+  opacity: 0;
+}
+
+.post-filter[open].is-panel-in fieldset {
   opacity: 1;
   translate: 0 -50%;
   pointer-events: auto;
-  /* Opening: wait for logo to fade right first */
-  transition:
-    opacity 0.4s ease 0.24s,
-    translate 0.48s cubic-bezier(0.18, 0.9, 0.32, 1.15) 0.24s;
+  transition: opacity 0.6s ease, translate 0.72s cubic-bezier(0.18, 0.9, 0.32, 1.15);
 }
 
 .post-filter-br {
@@ -2700,6 +2726,54 @@ footer p {
 }
 
 @media (max-width: 640px) {
+  .post-filter {
+    position: fixed;
+    top: max(0.85rem, env(safe-area-inset-top, 0px) + 0.65rem);
+    right: max(0.85rem, env(safe-area-inset-right, 0px) + 0.65rem);
+    margin: 0;
+    z-index: 20;
+    translate: 2rem 0;
+  }
+
+  .post-filter.is-in {
+    translate: 0 0;
+  }
+
+  .post-filter:not(.is-in) {
+    pointer-events: none;
+  }
+
+  .post-filter summary {
+    padding: 0.7rem 0.55rem;
+    background: color-mix(in srgb, var(--bg) 78%, white);
+    box-shadow: 0 0.35rem 1.1rem rgba(92, 58, 40, 0.12);
+    transition: opacity 0.5s ease 0.12s, translate 0.78s cubic-bezier(0.18, 0.9, 0.32, 1.2) 0.12s,
+      background 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .post-filter[open] summary {
+    translate: 2rem 0;
+    background: transparent;
+    box-shadow: none;
+    transition: opacity 0.45s ease, translate 0.54s cubic-bezier(0.4, 0, 0.8, 0.2),
+      background 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .post-filter summary::after {
+    right: 0.15rem;
+  }
+
+  .post-filter fieldset {
+    top: 0;
+    translate: 2rem 0;
+  }
+
+  .post-filter[open].is-panel-in fieldset {
+    translate: 0 0;
+    background: color-mix(in srgb, var(--bg) 88%, white);
+    box-shadow: 0 0.35rem 1.1rem rgba(92, 58, 40, 0.12);
+  }
+
   .site-name,
   .about-link {
     font-size: 0.95rem;
@@ -2708,5 +2782,16 @@ footer p {
   .socials a {
     width: 2rem;
     height: 2rem;
+  }
+}
+
+@media (max-width: 640px) and (prefers-reduced-motion: reduce) {
+  .post-filter,
+  .post-filter.is-in,
+  .post-filter summary,
+  .post-filter[open] summary,
+  .post-filter fieldset,
+  .post-filter[open] fieldset {
+    translate: 0 !important;
   }
 }
