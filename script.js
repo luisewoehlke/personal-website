@@ -88,6 +88,7 @@ const backgroundStickers = () =>
 
 let piledHint = null;
 const stickerRestCenters = new WeakMap();
+const isMobileLayout = () => window.matchMedia("(max-width: 800px)").matches;
 
 const applyStickerPile = (el, x, y, duration = "0.5s", delay = "0s") => {
   el.style.transform = "";
@@ -140,7 +141,7 @@ const spreadBackgroundStickers = () => {
 };
 
 const pileBackgroundStickers = (hint) => {
-  if (!hint) return;
+  if (!hint || isMobileLayout()) return;
   const stickers = [...backgroundStickers()];
   if (!stickers.length) return;
   cacheStickerRestCenters(stickers);
@@ -1602,8 +1603,10 @@ window.addEventListener("resize", () => {
     el.style.transform = "";
     el.style.translate = "0px 0px 0px";
   });
-  if (hint) {
+  if (hint && !isMobileLayout()) {
     pileBackgroundStickers(hint);
+  } else if (hint) {
+    cancelBackgroundStickerPile();
   }
 });
 

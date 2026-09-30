@@ -1373,10 +1373,11 @@ h2 {
   --best-stagger: 2.75rem;
   --best-card-w: min(
     calc(var(--max) * 0.8),
-    calc(100% - var(--best-indent) - var(--best-stagger))
+    calc(100cqi - var(--best-indent) - var(--best-stagger))
   );
   --best-h: calc(var(--best-card-w) * 5 / 21);
   scroll-margin-top: calc(var(--header-h, 4.8rem) + 0.15rem);
+  container-type: inline-size;
 }
 
 .best-of-grid {
@@ -2972,6 +2973,12 @@ footer p {
     font-size: 4.65vw;
   }
 
+  .scroll-hint:hover > *,
+  .scroll-hint:focus-visible > *,
+  .scroll-hint.is-gathering > * {
+    translate: none;
+  }
+
   .scroll-hint svg {
     width: 6.3vw;
     height: 6.3vw;
@@ -3100,8 +3107,8 @@ footer p {
     display: block;
     position: absolute;
     right: auto;
-    bottom: -8vw;
-    left: -2.5vw;
+    bottom: -9vw;
+    left: 18vw;
     top: auto;
     z-index: 0;
     rotate: -16deg;
@@ -3174,12 +3181,12 @@ footer p {
     height: 1.5px;
   }
 
-  .nav-burger[aria-expanded="true"] span:nth-child(1) {
-    translate: 0 0.62rem;
-  }
-
+  .nav-burger[aria-expanded="true"] span:nth-child(1),
+  .nav-burger[aria-expanded="true"] span:nth-child(2),
   .nav-burger[aria-expanded="true"] span:nth-child(3) {
-    translate: 0 -0.62rem;
+    translate: none;
+    rotate: none;
+    opacity: 0;
   }
 
   .header-end {
@@ -3202,10 +3209,12 @@ footer p {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 0.55rem;
-    min-width: 7.5rem;
-    padding: 0 0.85rem;
+    gap: 2.5rem;
+    width: max-content;
+    min-width: 0;
+    padding: 0 1.35rem;
     background: none;
+    border-radius: 999px;
     box-shadow: none;
     opacity: 0;
     visibility: hidden;
@@ -3226,8 +3235,9 @@ footer p {
     visibility: visible;
     pointer-events: auto;
     translate: 0 0;
-    max-height: 16rem;
-    padding: 0.7rem 0.85rem;
+    max-height: 40rem;
+    padding: 4rem 1.35rem;
+    background: #fff;
   }
 
   .header-nav .header-rule {
@@ -3237,7 +3247,17 @@ footer p {
   .header-nav .socials {
     flex-direction: column;
     align-items: flex-end;
-    gap: 0.2rem;
+    gap: 2.25rem;
+  }
+
+  .header-nav .socials a {
+    width: 2.875rem;
+    height: 2.875rem;
+  }
+
+  .header-nav .socials svg {
+    width: 2.875rem;
+    height: 2.875rem;
   }
 
   .site-name {
@@ -3257,7 +3277,7 @@ footer p {
   }
 
   .about-link {
-    font-size: 0.92rem;
+    font-size: 1.15rem;
   }
 
   .header-rule {
@@ -3318,11 +3338,13 @@ footer p {
   #best-of {
     --best-indent: 0.35rem;
     --best-stagger: 0rem;
-    --best-card-w: min(calc(var(--max) * 0.92), calc(100% - 0.5rem));
+    --best-card-w: min(calc(var(--max) * 0.92), calc(100vw - 9vw));
+    --best-h: auto;
   }
 
   .best-of-grid {
     margin-left: 0;
+    margin-top: 2.5rem;
     max-width: 100%;
   }
 
@@ -3331,22 +3353,74 @@ footer p {
     max-width: 100%;
   }
 
-  .best-of-sticker-wrap,
-  .best-of-sticker-wrap.is-orange,
-  .best-of-sticker-wrap.is-apricot {
-    top: 0;
-    left: 0.15rem;
-    translate: 0 calc(-100% - 0.35rem);
-    width: 2.2rem;
+  .best-of-grid .post-card {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 0;
+    padding-left: 0;
   }
 
+  .best-of-grid .post-card-media {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    flex-shrink: 0;
+  }
+
+  .best-of-grid .post-card-text {
+    min-height: 0;
+    width: 100%;
+    padding: 0.75rem 1rem 1rem;
+  }
+
+  .best-of-grid h3 {
+    font-size: 1.15rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .best-of-grid p {
+    font-size: 0.95rem;
+  }
+
+  .best-of-grid .post-meta {
+    font-size: 0.85rem;
+    margin-top: 0.4rem;
+  }
+
+  .best-of-grid .post-card.is-forum .post-card-body p,
+  .best-of-grid .post-card-body p {
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+  }
+
+  .best-of-sticker-wrap,
+  .best-of-sticker-wrap.is-orange,
+  .best-of-sticker-wrap.is-apricot,
   .best-of-sticker-wrap.is-peach {
-    width: 2.45rem;
+    display: none;
   }
 
   .best-of-rule {
-    width: 1.4rem;
-    translate: -0.85rem 0.32rem;
+    left: auto;
+    right: 0.55rem;
+    top: auto;
+    bottom: 0.35rem;
+    width: auto;
+    height: auto;
+    translate: none;
+  }
+
+  .best-of-rule::before {
+    display: none;
+  }
+
+  .best-of-rule-num {
+    position: static;
+    translate: none;
   }
 
   .work-list > li:has(> .post-card) {
