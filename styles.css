@@ -383,12 +383,10 @@ main {
   transition: translate 0.5s cubic-bezier(0.22, 0.8, 0.24, 1);
 }
 
-@media (hover: hover) and (min-width: 801px) {
-  .scroll-hint:hover > *,
-  .scroll-hint:focus-visible > *,
-  .scroll-hint.is-gathering > * {
-    translate: 0 -10svh;
-  }
+.scroll-hint:hover > *,
+.scroll-hint:focus-visible > *,
+.scroll-hint.is-gathering > * {
+  translate: 0 -10svh;
 }
 
 @keyframes scroll-hint-bob {
@@ -2400,9 +2398,9 @@ h2 {
 }
 
 .book-text:has(.book-review) {
-  align-items: stretch;
+  align-items: center;
+  width: min(28rem, 100%);
   min-width: 0;
-  width: min(20rem, 100%);
 }
 
 .book-text:has(.book-review) .book-line {
@@ -2412,6 +2410,7 @@ h2 {
 .book-title {
   display: flex;
   max-width: 100%;
+  justify-content: center;
 }
 
 .book-update cite {
@@ -2434,6 +2433,7 @@ h2 {
 
 .book-review {
   display: block;
+  align-self: stretch;
   width: 100%;
   max-width: min(28rem, 100%);
   margin-top: 0.2rem;
@@ -2606,9 +2606,9 @@ h2 {
 
 .post-filter[open] summary {
   opacity: 0;
-  translate: 0;
+  translate: 2.75rem 0;
   pointer-events: none;
-  /* Leave first: fade before filters arrive */
+  /* Leave first: fade rightwards before filters arrive */
   transition: opacity 0.45s ease, translate 0.54s cubic-bezier(0.4, 0, 0.8, 0.2);
 }
 
@@ -2673,7 +2673,7 @@ h2 {
   color: var(--glow);
   white-space: nowrap;
   opacity: 0;
-  translate: 0 -50%;
+  translate: 2.4rem -50%;
   pointer-events: none;
   transition: opacity 0.42s ease, translate 0.52s cubic-bezier(0.4, 0, 0.8, 0.2);
 }
@@ -3009,6 +3009,12 @@ footer p {
     z-index: 12;
     padding-bottom: max(3vw, env(safe-area-inset-bottom, 0px));
     font-size: 4.65vw;
+  }
+
+  .scroll-hint:hover > *,
+  .scroll-hint:focus-visible > *,
+  .scroll-hint.is-gathering > * {
+    translate: none;
   }
 
   .scroll-hint svg {
@@ -3595,8 +3601,8 @@ footer p {
     z-index: 20;
     opacity: 0;
     visibility: hidden;
-    translate: 0;
-    transition: opacity 0.45s ease, visibility 0.45s ease;
+    translate: 2rem 0;
+    transition: opacity 0.45s ease, visibility 0.45s ease, translate 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
   .post-filter.is-in {
@@ -3616,14 +3622,14 @@ footer p {
     justify-content: center;
     background: color-mix(in srgb, var(--bg) 78%, white);
     box-shadow: 0 0.35rem 1.1rem rgba(92, 58, 40, 0.12);
-    transition: opacity 0.5s ease 0.12s, background 0.2s ease, box-shadow 0.2s ease;
+    transition: opacity 0.5s ease 0.12s, translate 0.78s cubic-bezier(0.22, 1, 0.36, 1) 0.12s, background 0.2s ease, box-shadow 0.2s ease;
   }
 
   .post-filter[open] summary {
-    translate: 0;
+    translate: 2rem 0;
     background: transparent;
     box-shadow: none;
-    transition: opacity 0.45s ease, background 0.2s ease, box-shadow 0.2s ease;
+    transition: opacity 0.45s ease, translate 0.54s cubic-bezier(0.4, 0, 0.8, 0.2), background 0.2s ease, box-shadow 0.2s ease;
   }
 
   .post-filter summary::after {
@@ -3632,7 +3638,7 @@ footer p {
 
   .post-filter fieldset {
     top: 0;
-    translate: 0;
+    translate: 2rem 0;
   }
 
   .post-filter[open].is-panel-in fieldset {
