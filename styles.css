@@ -2468,15 +2468,15 @@ h2 {
   list-style: none;
   user-select: none;
   /* Return: pop in from the right with leftward motion */
-  transition: opacity 0.34s ease, translate 0.52s cubic-bezier(0.18, 0.9, 0.32, 1.2);
+  transition: opacity 0.34s ease 0.12s, translate 0.52s cubic-bezier(0.18, 0.9, 0.32, 1.2) 0.12s;
 }
 
 .post-filter[open] summary {
   opacity: 0;
   translate: 2.75rem 0;
   pointer-events: none;
-  /* Leave: more rightward fade */
-  transition: opacity 0.28s ease, translate 0.38s cubic-bezier(0.4, 0, 0.8, 0.2);
+  /* Leave first: fade rightwards before filters arrive */
+  transition: opacity 0.3s ease, translate 0.36s cubic-bezier(0.4, 0, 0.8, 0.2);
 }
 
 .post-filter summary::-webkit-details-marker {
@@ -2492,11 +2492,6 @@ h2 {
   width: 1.3rem;
   border-block: 1.5px solid currentColor;
   pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-
-.post-filter[open] summary::after {
-  opacity: 0;
 }
 
 .post-filter summary:focus-visible {
@@ -2523,7 +2518,7 @@ h2 {
   flex-direction: column;
   gap: 0.75rem;
   margin: 0;
-  padding: 1.05rem 1.55rem 1.05rem 0.7rem;
+  padding: 1.55rem 1.55rem 1.55rem 0.7rem;
   border: 0;
   background: none;
   color: var(--glow);
@@ -2531,7 +2526,8 @@ h2 {
   opacity: 0;
   translate: 2.4rem -50%;
   pointer-events: none;
-  transition: opacity 0.32s ease, translate 0.4s cubic-bezier(0.4, 0, 0.8, 0.2);
+  /* Closing: leave immediately */
+  transition: opacity 0.28s ease, translate 0.34s cubic-bezier(0.4, 0, 0.8, 0.2);
 }
 
 .post-filter fieldset::before,
@@ -2556,7 +2552,14 @@ h2 {
   opacity: 1;
   translate: 0 -50%;
   pointer-events: auto;
-  transition: opacity 0.4s ease, translate 0.48s cubic-bezier(0.18, 0.9, 0.32, 1.15);
+  /* Opening: wait for logo to fade right first */
+  transition:
+    opacity 0.4s ease 0.24s,
+    translate 0.48s cubic-bezier(0.18, 0.9, 0.32, 1.15) 0.24s;
+}
+
+.post-filter-br {
+  display: none;
 }
 
 .post-filter label {
@@ -2674,6 +2677,25 @@ footer p {
     flex-direction: column;
     min-height: 0;
     padding: 1.75rem 0 5rem;
+  }
+}
+
+@media (max-width: 1280px) {
+  .post-filter-br {
+    display: block;
+  }
+
+  .post-filter label:has(.post-filter-br) {
+    align-items: flex-start;
+  }
+
+  .post-filter label:has(.post-filter-br) input {
+    margin-top: calc((1lh - 0.9rem) / 2);
+  }
+
+  .work-list > li:has(> .post-card) {
+    width: 92%;
+    justify-self: center;
   }
 }
 
