@@ -2081,6 +2081,7 @@ h2 {
 
 .raindrop-embed.is-spotify iframe {
   height: 152px;
+  pointer-events: auto;
 }
 
 .raindrop-embed.is-spotify.is-tall iframe {
@@ -2357,6 +2358,15 @@ h2 {
   min-width: 0;
 }
 
+.book-text:has(.book-review) {
+  align-items: stretch;
+  min-width: min(20rem, calc(100vw - 2.5rem));
+}
+
+.book-text:has(.book-review) .book-line {
+  align-self: center;
+}
+
 .book-title {
   display: flex;
   max-width: 100%;
@@ -2378,6 +2388,49 @@ h2 {
 
 .book-stars {
   letter-spacing: 0.08em;
+}
+
+.book-review {
+  display: block;
+  width: 100%;
+  max-width: min(28rem, calc(100vw - 2.5rem));
+  margin-top: 0.2rem;
+  text-align: left;
+  text-wrap: pretty;
+}
+
+.book-review-full {
+  display: none;
+}
+
+.book-item.is-open-review .book-review-short {
+  display: none;
+}
+
+.book-item.is-open-review .book-review-full {
+  display: block;
+}
+
+.book-item.is-open-review:has(.book-review-full) {
+  width: min(32rem, 100%);
+}
+
+.book-review-part {
+  display: block;
+}
+
+.book-review-part i,
+.book-review-part em {
+  font-style: italic;
+}
+
+.book-review-part b,
+.book-review-part strong {
+  font-weight: 700;
+}
+
+.book-review-part + .book-review-part {
+  margin-top: 0.7rem;
 }
 
 .book-source {

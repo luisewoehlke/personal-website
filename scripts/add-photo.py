@@ -5,6 +5,8 @@ Usage:
   python scripts/add-photo.py some.jpg --date 2024-05-01 --caption "a caption"
   python scripts/add-photo.py --refresh   (after editing/cropping originals)
 
+Or open a local form: python scripts/upload-form.py
+
 The date is read from names like PXL_20260806_171101013, IMG_20160615_153135,
 20160411_204910 or IMG-20230717-WA0000. Use --date to set or override it.
 Use --pile NAME to stack images into one feed item dated by the newest one.
@@ -14,6 +16,7 @@ import argparse
 import json
 import re
 from datetime import datetime, timezone
+from io import BytesIO
 from pathlib import Path
 
 from PIL import Image, ImageOps
@@ -55,14 +58,37 @@ def web_stem(source: Path) -> str:
     return re.sub(r"[^A-Za-z0-9_-]+", "-", source.stem.split(".")[0]).strip("-")
 
 
+def jpeg_bytes(img: Image.Image) -> tuple[bytes, int, int]:
+    img = ImageOps.exif_transpose(img).convert("RGB")
+    img.thumbnail((MAX_SIDE, MAX_SIDE))
+    buf = BytesIO()
+    img.save(buf, "JPEG", quality=82, optimize=True, progressive=True)
+    return buf.getvalue(), img.width, img.height
+
+
+def encode_image(data: bytes) -> tuple[bytes, int, int]:
+    with Image.open(BytesIO(data)) as img:
+        img.load()
+        return jpeg_bytes(img)
+
+
 def web_copy(source: Path) -> tuple[Path, int, int]:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     target = OUT_DIR / f"{web_stem(source)}.jpg"
-    with Image.open(source) as img:
-        img = ImageOps.exif_transpose(img).convert("RGB")
-        img.thumbnail((MAX_SIDE, MAX_SIDE))
-        img.save(target, "JPEG", quality=82, optimize=True, progressive=True)
-        return target, img.width, img.height
+    data, width, height = encode_image(source.read_bytes())
+    target.write_bytes(data)
+    return target, width, height
+
+
+def load_photos() -> list:
+    if not PHOTOS.exists():
+        return []
+    return json.loads(PHOTOS.read_text(encoding="utf-8"))
+
+
+def save_photos(photos: list) -> None:
+    photos.sort(key=lambda photo: photo["date"], reverse=True)
+    PHOTOS.write_text(json.dumps(photos, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
 def main() -> None:
@@ -81,7 +107,7 @@ def main() -> None:
     parser.add_argument("--order", type=int, help="position in its pile, 0 = top")
     args = parser.parse_args()
 
-    photos = json.loads(PHOTOS.read_text(encoding="utf-8")) if PHOTOS.exists() else []
+    photos = load_photos()
 
     if args.refresh:
         sources = {web_stem(path): path for path in SOURCE_DIR.iterdir() if path.is_file()}
@@ -119,8 +145,7 @@ def main() -> None:
         photos.append(entry)
         print(f"Added {src} dated {entry['date']}")
 
-    photos.sort(key=lambda photo: photo["date"], reverse=True)
-    PHOTOS.write_text(json.dumps(photos, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    save_photos(photos)
 
 
 if __name__ == "__main__":

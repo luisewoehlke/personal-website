@@ -7,6 +7,7 @@ import urllib.request
 import xml.etree.ElementTree as ET
 from collections import Counter
 from email.utils import parsedate_to_datetime
+from html.parser import HTMLParser
 from pathlib import Path
 
 USER_ID = "110358691"
@@ -19,7 +20,56 @@ MAX_PAGES = 20
 # Books without a finish date fall back to the date they were added; days where
 # more than this many undated books were added are bulk imports and are skipped.
 BULK_DAY = 3
-REVIEW_CHARS = 400
+ALLOWED_TAGS = frozenset({"br", "i", "b", "em", "strong"})
+
+
+class ReviewSanitizer(HTMLParser):
+    """Keep Goodreads emphasis / line breaks; escape everything else."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.parts = []
+        self.stack = []
+
+    def handle_starttag(self, tag, attrs):
+        tag = tag.lower()
+        if tag == "br":
+            self.parts.append("<br>")
+        elif tag == "p":
+            if self.parts and not "".join(self.parts).endswith("<br><br>"):
+                self.parts.append("<br><br>" if not "".join(self.parts).endswith("<br>") else "<br>")
+        elif tag in ALLOWED_TAGS:
+            self.parts.append(f"<{tag}>")
+            self.stack.append(tag)
+
+    def handle_endtag(self, tag):
+        tag = tag.lower()
+        if tag == "p":
+            if not "".join(self.parts).endswith("<br>"):
+                self.parts.append("<br><br>")
+            return
+        if tag not in ALLOWED_TAGS or tag == "br":
+            return
+        if tag in self.stack:
+            while self.stack:
+                opened = self.stack.pop()
+                self.parts.append(f"</{opened}>")
+                if opened == tag:
+                    break
+
+    def handle_data(self, data):
+        self.parts.append(html.escape(data, quote=False))
+
+    def clean(self):
+        while self.stack:
+            self.parts.append(f"</{self.stack.pop()}>")
+        text = "".join(self.parts)
+        text = text.replace("\r\n", "\n").replace("\r", "\n")
+        text = re.sub(r"\n{2,}", "<br><br>", text)
+        text = text.replace("\n", "<br>")
+        text = re.sub(r"(?:<br>){3,}", "<br><br>", text)
+        text = re.sub(r"^(?:<br>)+|(?:<br>)+$", "", text)
+        return text.strip()
 
 
 def fetch_items():
@@ -42,10 +92,14 @@ def text(item, tag):
     return (item.findtext(tag) or "").strip()
 
 
-def plain(markup):
-    markup = re.sub(r"<br\s*/?>", " ", markup, flags=re.I)
-    markup = re.sub(r"<[^>]+>", "", markup)
-    return re.sub(r"\s+", " ", html.unescape(markup)).strip()
+def clean_review(markup):
+    markup = (markup or "").replace("\r\n", "\n").replace("\r", "\n").strip()
+    if not markup:
+        return ""
+    sanitizer = ReviewSanitizer()
+    sanitizer.feed(markup)
+    sanitizer.close()
+    return sanitizer.clean()
 
 
 def parse_date(value):
@@ -70,7 +124,7 @@ def main():
     books = []
     for item in items:
         rating = int(text(item, "user_rating") or 0)
-        review = plain(text(item, "user_review"))
+        review = clean_review(text(item, "user_review"))
         if not rating and not review:
             continue
         read_at = parse_date(text(item, "user_read_at"))
@@ -80,8 +134,6 @@ def main():
             if added is None or undated_days[added.date()] > BULK_DAY:
                 continue
             when = added
-        if len(review) > REVIEW_CHARS:
-            review = review[:REVIEW_CHARS].rsplit(" ", 1)[0] + "…"
         books.append(
             {
                 "title": text(item, "title"),

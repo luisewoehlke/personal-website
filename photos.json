@@ -77,12 +77,6 @@
     "scale": 0.667
   },
   {
-    "src": "images/feed/IMG-20231227-WA0000.jpg",
-    "date": "2017-07-01T12:00:00Z",
-    "width": 900,
-    "height": 1287
-  },
-  {
     "src": "images/feed/PXL_20231022_173001443.jpg",
     "date": "2023-10-22T17:30:01.443000Z",
     "width": 1365,
@@ -131,6 +125,12 @@
     "width": 1200,
     "height": 1600,
     "pile": "mar-2023"
+  },
+  {
+    "src": "images/feed/IMG-20231227-WA0000.jpg",
+    "date": "2017-07-01T12:00:00Z",
+    "width": 900,
+    "height": 1287
   },
   {
     "src": "images/feed/IMG_20160615_153135281.jpg",

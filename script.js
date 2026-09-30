@@ -858,6 +858,86 @@ let latestRenderCursor = 0;
 let latestMonthKey = "";
 let loadMoreSentinel = null;
 
+const REVIEW_PREVIEW_WORDS = 5;
+const REVIEW_HTML_TAGS = /<\/?(?:br|i|b|em|strong)\s*\/?>/i;
+
+const reviewPlainText = (review) =>
+  String(review || "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/\u00a0/g, " ")
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim();
+
+const sanitizeReviewHtml = (raw) => {
+  const text = String(raw || "").trim();
+  if (!text) return "";
+  if (!REVIEW_HTML_TAGS.test(text) && !/<[a-z][\s\S]*>/i.test(text)) {
+    return escapeHtml(text).replace(/\n/g, "<br>");
+  }
+  const template = document.createElement("template");
+  template.innerHTML = text.replace(/\n/g, "<br>");
+  const allowed = new Set(["BR", "I", "B", "EM", "STRONG"]);
+  const walk = (parent) => {
+    let node = parent.firstChild;
+    while (node) {
+      const next = node.nextSibling;
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        if (!allowed.has(node.tagName)) {
+          const first = node.firstChild;
+          while (node.firstChild) parent.insertBefore(node.firstChild, node);
+          parent.removeChild(node);
+          node = first || next;
+          continue;
+        }
+        [...node.attributes].forEach((attr) => node.removeAttribute(attr.name));
+        walk(node);
+      }
+      node = next;
+    }
+  };
+  walk(template.content);
+  return template.innerHTML;
+};
+
+const formatReview = (review) => {
+  const html = sanitizeReviewHtml(review);
+  const parts = html
+    .split(/(?:<br\s*\/?>\s*){2,}/i)
+    .map((part) => part.replace(/^(?:<br\s*\/?>)+|(?:<br\s*\/?>)+$/gi, "").trim())
+    .filter(Boolean);
+  return parts
+    .map((part, index) => {
+      let body = part;
+      if (index === 0) body = `"${body}`;
+      if (index === parts.length - 1) body = `${body}"`;
+      return `<span class="book-review-part">${body}</span>`;
+    })
+    .join("");
+};
+
+const bookReviewHtml = (review) => {
+  const text = String(review || "").trim();
+  if (!text) return { html: "", more: false };
+  const plain = reviewPlainText(text);
+  const words = plain.split(/\s+/).filter(Boolean);
+  if (words.length <= REVIEW_PREVIEW_WORDS) {
+    return { html: `<span class="book-review">${formatReview(text)}</span>`, more: false };
+  }
+  const short = `${words
+    .slice(0, REVIEW_PREVIEW_WORDS)
+    .join(" ")
+    .replace(/[,.:;]+$/, "")}…`;
+  return {
+    html: `<span class="book-review"><span class="book-review-short">"${escapeHtml(
+      short
+    )}"</span><span class="book-review-full">${formatReview(text)}</span></span>`,
+    more: true,
+  };
+};
+
 const latestPostItemHtml = (post) => {
   const when = formatPostDate(post.date);
   const monthKey = when.datetime.slice(0, 7);
@@ -925,7 +1005,10 @@ const latestPostItemHtml = (post) => {
     const author = post.author
       ? `<span class="book-author">&nbsp;by ${escapeHtml(post.author)}</span>`
       : "";
-    return `${heading}<li class="book-item" data-category="book" data-month="${monthKey}" data-rating="${rating}">
+    const review = bookReviewHtml(post.review);
+    return `${heading}<li class="book-item" data-category="book" data-month="${monthKey}" data-rating="${rating}"${
+      review.more ? ' data-review-more="1"' : ""
+    }>
         <a class="book-update" href="${escapeHtml(
           post.url
         )}" target="_blank" rel="noopener noreferrer">
@@ -934,6 +1017,7 @@ const latestPostItemHtml = (post) => {
             <span class="book-line book-title"><cite title="${escapeHtml(
               post.title
             )}">${escapeHtml(post.title)}</cite>${author}</span>
+            ${review.html}
           </span>          <span class="book-source"><img src="images/goodreads-logo.svg" alt="Goodreads" /><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         </a>
       </li>`;
@@ -1111,9 +1195,7 @@ const raindropCard = (item) => {
           note
         )}</span></span>`
       : "";
-    body = `<a class="raindrop-card" href="${escapeHtml(
-      item.url
-    )}" target="_blank" rel="noopener noreferrer">
+    body = `<div class="raindrop-card">
       <span class="raindrop-embed is-spotify${tall ? " is-tall" : ""}">
         <iframe src="${escapeHtml(
           spotify
@@ -1122,7 +1204,7 @@ const raindropCard = (item) => {
     )}" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
       </span>
       ${noteHtml}
-    </a>`;
+    </div>`;
   } else if (isImageDrop(item)) {
     body = `<a class="raindrop-card" href="${escapeHtml(
       item.url
@@ -1150,12 +1232,24 @@ const raindropCard = (item) => {
   return `<li class="raindrop-item${teal}" hidden>${kicker}${body}${board}</li>`;
 };
 
+const visibleFeedPosts = () =>
+  [...latestPosts.children].filter(
+    (item) =>
+      !item.classList.contains("post-month") &&
+      !item.classList.contains("raindrop-item") &&
+      !item.classList.contains("book-item") &&
+      !item.classList.contains("post-load-sentinel") &&
+      !item.hidden
+  );
+
+const raindropAnchorPosts = (posts) =>
+  posts.filter(
+    (_, index) => (index + 1) % 3 === 0 && index !== posts.length - 1
+  );
+
 const mountRaindrops = () => {
   if (!latestPosts || !savedRaindrops.length) return;
-  const postCount = latestPosts.querySelectorAll(
-    ":scope > li:not(.post-month):not(.raindrop-item):not(.book-item):not(.post-load-sentinel):not([hidden])"
-  ).length;
-  const slots = Math.floor(postCount / 3);
+  const slots = raindropAnchorPosts(visibleFeedPosts()).length;
   const existing = [
     ...latestPosts.querySelectorAll(":scope > li.raindrop-item"),
   ];
@@ -1175,28 +1269,24 @@ const mountRaindrops = () => {
 
 const placeRaindrops = () => {
   if (!latestPosts) return;
+  const anchors = raindropAnchorPosts(visibleFeedPosts());
   const cards = [...latestPosts.querySelectorAll(":scope > li.raindrop-item")];
-  const posts = [...latestPosts.children].filter(
-    (item) =>
-      !item.classList.contains("post-month") &&
-      !item.classList.contains("raindrop-item") &&
-      !item.classList.contains("book-item") &&
-      !item.classList.contains("post-load-sentinel") &&
-      !item.hidden
-  );
-  let slot = 0;
-  posts.forEach((post, index) => {
-    if ((index + 1) % 3 !== 0 || index === posts.length - 1) return;
+  anchors.forEach((post, slot) => {
     const card = cards[slot];
     if (!card) return;
-    slot += 1;
     card.hidden = false;
-    post.after(card);
+    if (post.nextElementSibling !== card) post.after(card);
   });
   const parking = loadMoreSentinel || null;
-  cards.slice(slot).forEach((card) => {
+  cards.slice(anchors.length).forEach((card) => {
     card.hidden = true;
-    if (parking) parking.before(card);
+    if (!parking) return;
+    let next = card.nextElementSibling;
+    while (next && next.classList.contains("raindrop-item")) {
+      next = next.nextElementSibling;
+    }
+    if (next === parking) return;
+    parking.before(card);
   });
   sizeRaindropCards();
 };
@@ -1409,12 +1499,16 @@ const collapseBookRuns = () => {
     }
     const [first, ...rest] = run;
     first?.classList.remove("is-collapsed");
-    if (rest.length) {
-      const open = first.dataset.expanded === "1";
-      rest.forEach((item) => item.classList.toggle("is-collapsed", !open));
+    const open = first?.dataset.expanded === "1";
+    const expandable = Boolean(rest.length || first?.dataset.reviewMore === "1");
+    run.forEach((item) => item.classList.toggle("is-open-review", Boolean(open)));
+    rest.forEach((item) => item.classList.toggle("is-collapsed", !open));
+    if (expandable && first) {
       first.insertAdjacentHTML(
         "beforeend",
-        `<button type="button" class="book-more${open ? " is-open" : ""}" aria-expanded="${open}">${
+        `<button type="button" class="book-more${open ? " is-open" : ""}" aria-expanded="${
+          open ? "true" : "false"
+        }">${
           open ? "less" : "more"
         }<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6.5 6-6.5 6z" fill="currentColor"/></svg></button>`
       );
@@ -1519,10 +1613,20 @@ if (postFilter) {
       postFilter.querySelector("summary").focus();
     }
   });
-  new IntersectionObserver(
-    ([entry]) => postFilter.classList.toggle("is-in", entry.isIntersecting),
-    { rootMargin: "0px 0px -15% 0px" }
-  ).observe(postFilter);
+  document.addEventListener("pointerdown", (event) => {
+    if (!postFilter.open || postFilter.contains(event.target)) return;
+    postFilter.open = false;
+  });
+  const latestHeading = document.querySelector("#latest-heading");
+  const syncFilterIn = () => {
+    if (!latestHeading) return;
+    const mostBelowHeading =
+      latestHeading.getBoundingClientRect().bottom < window.innerHeight * 0.2;
+    postFilter.classList.toggle("is-in", mostBelowHeading);
+  };
+  syncFilterIn();
+  window.addEventListener("scroll", syncFilterIn, { passive: true });
+  window.addEventListener("resize", syncFilterIn);
 }
 
 renderLatestPosts(substackFallback);
