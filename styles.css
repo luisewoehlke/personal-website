@@ -383,10 +383,12 @@ main {
   transition: translate 0.5s cubic-bezier(0.22, 0.8, 0.24, 1);
 }
 
-.scroll-hint:hover > *,
-.scroll-hint:focus-visible > *,
-.scroll-hint.is-gathering > * {
-  translate: 0 -10svh;
+@media (hover: hover) and (min-width: 801px) {
+  .scroll-hint:hover > *,
+  .scroll-hint:focus-visible > *,
+  .scroll-hint.is-gathering > * {
+    translate: 0 -10svh;
+  }
 }
 
 @keyframes scroll-hint-bob {
@@ -1378,6 +1380,11 @@ h2 {
   --best-h: calc(var(--best-card-w) * 5 / 21);
   scroll-margin-top: calc(var(--header-h, 4.8rem) + 0.15rem);
   container-type: inline-size;
+  position: relative;
+}
+
+.best-of-heading-peach {
+  display: none;
 }
 
 .best-of-grid {
@@ -2843,10 +2850,14 @@ footer p {
     min-width: 0;
   }
 
-  .feed,
   #latest,
   .work-list {
     overflow-x: clip;
+  }
+
+  #best-of,
+  .feed {
+    overflow: visible;
   }
 
   .site-header {
@@ -2860,13 +2871,13 @@ footer p {
     min-height: calc(100svh - var(--header-h, 4.8rem));
     max-height: calc(100svh - var(--header-h, 4.8rem));
     width: 100%;
-    padding: 3vw 0 10vw;
-    gap: 9.5vw;
-    justify-content: flex-start;
+    padding: 0 0 calc(max(10svh, 4.5rem) + max(3vw, env(safe-area-inset-bottom, 0px)));
+    gap: 5.5vw;
+    justify-content: center;
     overflow: visible;
     box-sizing: border-box;
     --photo-size: 50vw;
-    --photo-top: 20vw;
+    --photo-top: 0;
     --text-size: 5.98vw;
     --text-pad-right: 10vw;
     --text-para-gap: 5.5vw;
@@ -2888,7 +2899,7 @@ footer p {
     z-index: 11;
     width: var(--photo-size);
     height: var(--photo-size);
-    margin-top: var(--photo-top);
+    margin-top: 0;
   }
 
   .landing-photo {
@@ -2973,12 +2984,6 @@ footer p {
     font-size: 4.65vw;
   }
 
-  .scroll-hint:hover > *,
-  .scroll-hint:focus-visible > *,
-  .scroll-hint.is-gathering > * {
-    translate: none;
-  }
-
   .scroll-hint svg {
     width: 6.3vw;
     height: 6.3vw;
@@ -2986,6 +2991,19 @@ footer p {
 
   #best-of > h2 {
     font-size: 9.75vw;
+  }
+
+  .best-of-heading-peach {
+    display: block;
+    position: absolute;
+    z-index: 12;
+    left: -0.35rem;
+    top: 1.35rem;
+    width: 2.6rem;
+    height: auto;
+    rotate: -22deg;
+    pointer-events: none;
+    image-rendering: pixelated;
   }
 
   .sticker-peach.is-hidden {
@@ -3338,8 +3356,10 @@ footer p {
   #best-of {
     --best-indent: 0.35rem;
     --best-stagger: 0rem;
-    --best-card-w: min(calc(var(--max) * 0.92), calc(100vw - 9vw));
+    --best-card-w: 100%;
     --best-h: auto;
+    padding-inline: 5vw;
+    box-sizing: border-box;
   }
 
   .best-of-grid {
@@ -3406,9 +3426,9 @@ footer p {
 
   .best-of-rule {
     left: auto;
-    right: 0.55rem;
+    right: -0.85rem;
     top: auto;
-    bottom: 0.35rem;
+    bottom: -2.25rem;
     width: auto;
     height: auto;
     translate: none;
@@ -3421,10 +3441,70 @@ footer p {
   .best-of-rule-num {
     position: static;
     translate: none;
+    font-size: 4.25rem;
   }
 
   .work-list > li:has(> .post-card) {
     width: 100%;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .work-list .post-card {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 0;
+    padding-left: 0;
+  }
+
+  .work-list .post-card-media {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    flex-shrink: 0;
+  }
+
+  .work-list .post-card-text {
+    min-height: 0;
+    width: 100%;
+    padding: 0.75rem 1rem 1rem;
+  }
+
+  .work-list .post-card h3,
+  .work-list > li:has(> .post-card) h3 {
+    font-size: 1.15rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .work-list .post-card p {
+    font-size: 0.95rem;
+  }
+
+  .work-list .post-meta {
+    font-size: 0.85rem;
+    margin-top: 0.4rem;
+  }
+
+  .work-list .post-card.is-forum .post-card-body p,
+  .work-list .post-card-body p {
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+  }
+
+  .work-list .post-card-external {
+    top: 0.75rem;
+    right: 0.7rem;
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+
+  #latest {
+    padding-inline: 5vw;
+    box-sizing: border-box;
   }
 
   .work-list > li.book-item {
