@@ -1309,8 +1309,8 @@ h2 {
   position: absolute;
   left: 0;
   top: 0;
-  color: #ff6236;
-  -webkit-text-stroke: 0.12em #e8856a;
+  color: #f47450;
+  -webkit-text-stroke: 0.12em #f47450;
   paint-order: stroke fill;
   pointer-events: none;
   z-index: 0;
@@ -2871,7 +2871,7 @@ footer p {
     min-height: calc(100svh - var(--header-h, 4.8rem));
     max-height: calc(100svh - var(--header-h, 4.8rem));
     width: 100%;
-    padding: 0 0 calc(max(10svh, 4.5rem) + max(3vw, env(safe-area-inset-bottom, 0px)));
+    padding: 10vh 0 calc(max(10svh, 4.5rem) + max(3vw, env(safe-area-inset-bottom, 0px)));
     gap: 5.5vw;
     justify-content: center;
     overflow: visible;
@@ -3516,6 +3516,10 @@ footer p {
   #latest {
     padding-inline: 5vw;
     box-sizing: border-box;
+  }
+
+  #latest > h2 {
+    margin-bottom: 2.5rem;
   }
 
   .work-list > li.book-item {
