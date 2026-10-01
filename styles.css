@@ -1791,6 +1791,9 @@ h2 {
 .work-list li.post-month {
   height: auto;
   min-height: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   margin: 3.25rem 0 1.5rem;
   padding: 0 0 0 1.5rem;
   overflow: visible;
@@ -1840,6 +1843,7 @@ h2 {
 }
 
 .work-list li.post-month .month-label {
+  flex-shrink: 0;
   opacity: 0;
 }
 
@@ -1850,10 +1854,11 @@ h2 {
 
 .work-list li.post-month::after {
   content: "";
-  width: 4cm;
+  flex: 1 1 0;
+  width: auto;
+  min-width: 0;
   height: 1px;
   background: currentColor;
-  flex-shrink: 0;
   transform: scaleX(0);
   transform-origin: left center;
 }
@@ -3350,7 +3355,7 @@ footer p {
     min-height: calc(100svh - var(--header-h, 4.8rem));
     max-height: calc(100svh - var(--header-h, 4.8rem));
     width: 100%;
-    padding: 10vh 0 calc(max(10svh, 4.5rem) + max(3vw, env(safe-area-inset-bottom, 0px)));
+    padding: 3.5vh 0 calc(max(10svh, 4.5rem) + max(3vw, env(safe-area-inset-bottom, 0px)));
     gap: 12vw;
     justify-content: center;
     overflow: visible;
@@ -3562,7 +3567,7 @@ footer p {
 
   .sticker-strawberry {
     --sticker-w: 1.6;
-    top: 50%;
+    top: 46%;
     right: 1%;
     left: auto;
     bottom: auto;
@@ -3570,7 +3575,7 @@ footer p {
 
   .sticker-cow {
     --sticker-w: 4.35;
-    top: 42%;
+    top: 38%;
     right: 6%;
     left: auto;
     bottom: auto;
@@ -3655,10 +3660,6 @@ footer p {
   .work-list > li.photo-item.is-pile:hover .photo-expand,
   .work-list > li.photo-item.is-pile .photo-pile:focus-visible ~ .photo-expand {
     right: calc(var(--pile-spread) + var(--pile-fan));
-  }
-
-  .work-list > li.photo-item.is-pile .photo-expand {
-    display: none;
   }
 
   .photo-lightbox.is-pile .photo-lightbox-nav {
