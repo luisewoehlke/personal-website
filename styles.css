@@ -3799,6 +3799,11 @@ footer p {
     flex-direction: column;
     align-items: center;
     gap: 2.15rem;
+    width: max-content;
+    min-width: 0;
+    padding: 0 1rem;
+    background: none;
+    border-radius: 999px;
     box-shadow: none;
     opacity: 0;
     visibility: hidden;
@@ -4175,8 +4180,8 @@ footer p {
   .post-filter {
     position: fixed;
     top: auto;
-    bottom: max(1.45rem, env(safe-area-inset-bottom, 0px) + 1.15rem);
-    right: max(1.45rem, env(safe-area-inset-right, 0px) + 1.15rem);
+    bottom: max(2.9rem, env(safe-area-inset-bottom, 0px) + 2.3rem);
+    right: max(1.85rem, env(safe-area-inset-right, 0px) + 1.4rem);
     margin: 0;
     z-index: 20;
     opacity: 0;
@@ -4201,10 +4206,10 @@ footer p {
     place-items: center;
     place-content: center;
     padding: 0;
-    width: 3.35rem;
-    height: 3.35rem;
-    min-width: 3.35rem;
-    min-height: 3.35rem;
+    width: 4.35rem;
+    height: 4.35rem;
+    min-width: 4.35rem;
+    min-height: 4.35rem;
     gap: 0;
     border-radius: 50%;
     background: color-mix(in srgb, var(--bg) 78%, white);
@@ -4212,8 +4217,8 @@ footer p {
   }
 
   .post-filter-icon {
-    width: 1.35rem;
-    height: 1.35rem;
+    width: 1.75rem;
+    height: 1.75rem;
   }
 
   .post-filter-icon-wrap {
@@ -4255,7 +4260,7 @@ footer p {
     left: 50%;
     right: auto;
     top: auto;
-    bottom: max(6.35rem, env(safe-area-inset-bottom, 0px) + 5.75rem);
+    bottom: max(8.8rem, env(safe-area-inset-bottom, 0px) + 8.2rem);
     display: flex;
     flex-direction: column;
     align-items: flex-start;
