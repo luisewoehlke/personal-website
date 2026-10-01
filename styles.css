@@ -4215,6 +4215,8 @@ footer p {
     padding-bottom: env(safe-area-inset-bottom, 0px);
     max-height: 23rem;
     overflow: hidden;
+    touch-action: none;
+    overscroll-behavior: none;
     transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   }
 

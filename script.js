@@ -640,10 +640,13 @@ const alignStandupLabel = (label) => {
   if (!label) return;
   label.style.marginTop = "";
   if (!label.textContent) return;
-  const card = label.closest("li");
-  if (!card) return;
+  const mark = label.closest(".standup-mark");
+  if (!mark) return;
   const labelBox = label.getBoundingClientRect();
-  const targetY = card.getBoundingClientRect().bottom - 10;
+  const markBox = mark.getBoundingClientRect();
+  /* Custom font metrics read low on real phones; bias toward the orange’s upper half */
+  const optical = isMobileLayout() ? 0.34 : 0.48;
+  const targetY = markBox.top + markBox.height * optical;
   const dy = targetY - (labelBox.top + labelBox.height / 2);
   if (Math.abs(dy) >= 0.5) {
     label.style.marginTop = `${dy}px`;
@@ -1809,30 +1812,34 @@ if (postFilter) {
   let sheetPointerId = null;
   let sheetStartY = 0;
   let sheetDragging = false;
-  const sheetGestureTarget = (event) => {
-    if (!isFilterSheet() || !postFilter.open || event.button !== 0) return false;
-    if (event.target instanceof Element && event.target.closest("label, input")) {
-      return false;
-    }
-    return true;
-  };
   postFilter.addEventListener("pointerdown", (event) => {
-    if (!sheetGestureTarget(event)) return;
+    if (!isFilterSheet() || !postFilter.open || event.button !== 0) return;
     sheetPointerId = event.pointerId;
     sheetStartY = event.clientY;
     sheetDragging = false;
-    postFilter.setPointerCapture?.(event.pointerId);
+    try {
+      postFilter.setPointerCapture?.(event.pointerId);
+    } catch (_) {
+      /* ignore */
+    }
   });
   postFilter.addEventListener("pointermove", (event) => {
     if (event.pointerId !== sheetPointerId) return;
     if (Math.abs(event.clientY - sheetStartY) > 8) sheetDragging = true;
   });
+  postFilter.addEventListener(
+    "touchmove",
+    (event) => {
+      if (!isFilterSheet() || !postFilter.open) return;
+      event.preventDefault();
+    },
+    { passive: false }
+  );
   const endSheetGesture = (event) => {
     if (event.pointerId !== sheetPointerId) return;
     const dy = event.clientY - sheetStartY;
     sheetPointerId = null;
     if (!sheetDragging) return;
-    event.preventDefault();
     if (dy < -36) expandSheet();
     else if (dy > 36) {
       if (postFilter.classList.contains("is-sheet-expanded")) collapseSheet();
@@ -1842,15 +1849,14 @@ if (postFilter) {
   postFilter.addEventListener("pointerup", endSheetGesture);
   postFilter.addEventListener("pointercancel", () => {
     sheetPointerId = null;
+    sheetDragging = false;
   });
   postFilter.addEventListener(
     "click",
     (event) => {
       if (!isFilterSheet() || !sheetDragging) return;
-      if (event.target instanceof Element && event.target.closest("label, input")) {
-        return;
-      }
       event.preventDefault();
+      event.stopPropagation();
       sheetDragging = false;
     },
     true
@@ -1991,6 +1997,7 @@ const updateStickerRails = () => {
 };
 updateStickerRails();
 placeStandupStickers();
+if (document.fonts?.ready) document.fonts.ready.then(placeStandupStickers);
 window.addEventListener("resize", () => {
   updateStickerRails();
   sizeRaindropCards();
