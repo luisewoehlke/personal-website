@@ -621,7 +621,7 @@ const postCardHtml = (post) => {
   )}" target="_blank" rel="noopener noreferrer">
           ${image}
           <svg class="post-card-external" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
           <div class="post-card-text">
             <div class="post-card-body">
@@ -1771,47 +1771,19 @@ if (latestPosts) {
 }
 
 if (postFilter) {
-  let panelInTimer = 0;
-  let closeTimer = 0;
   const filterSummary = postFilter.querySelector("summary");
-  /* Closed <details> stops rendering its content, so animate out before closing */
   const closeFilter = () => {
-    if (!postFilter.open || postFilter.classList.contains("is-closing")) return;
-    clearTimeout(panelInTimer);
-    postFilter.classList.add("is-closing");
-    postFilter.classList.remove("is-panel-in");
-    closeTimer = setTimeout(() => {
-      postFilter.classList.remove("is-closing");
-      postFilter.open = false;
-    }, 520);
+    if (!postFilter.open) return;
+    postFilter.open = false;
   };
   postFilter.addEventListener("change", () => {
     applyPostFilter();
     syncEntranceAfterFilter();
   });
-  /* Clear before open paints so a leftover panel class can't flash visible */
-  filterSummary?.addEventListener(
-    "pointerdown",
-    () => {
-      if (postFilter.open) return;
-      clearTimeout(panelInTimer);
-      postFilter.classList.remove("is-panel-in");
-    },
-    true
-  );
   filterSummary?.addEventListener("click", (event) => {
     if (!postFilter.open) return;
     event.preventDefault();
     closeFilter();
-  });
-  postFilter.addEventListener("toggle", () => {
-    clearTimeout(panelInTimer);
-    clearTimeout(closeTimer);
-    postFilter.classList.remove("is-panel-in", "is-closing");
-    if (!postFilter.open) return;
-    panelInTimer = setTimeout(() => {
-      if (postFilter.open) postFilter.classList.add("is-panel-in");
-    }, 560);
   });
   postFilter.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {

@@ -1383,8 +1383,9 @@ h2 {
 }
 
 .feed section + section {
+  --latest-pad-top: 3.25rem;
   margin-top: 3.25rem;
-  padding-top: 3.25rem;
+  padding-top: var(--latest-pad-top);
 }
 
 #latest {
@@ -1453,7 +1454,7 @@ h2 {
 }
 
 .latest-heading-peach {
-  top: 7.8rem;
+  top: calc(var(--latest-pad-top, 3.25rem) + 4.55rem);
 }
 
 #best-of-heading,
@@ -2166,6 +2167,10 @@ h2 {
   cursor: pointer;
   overflow: hidden;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+  touch-action: manipulation;
 }
 
 .photo-lightbox[hidden] {
@@ -2180,6 +2185,15 @@ h2 {
   height: auto;
   object-fit: contain;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+  pointer-events: auto;
+}
+
+.photo-lightbox-close,
+.photo-lightbox-nav {
+  -webkit-tap-highlight-color: transparent;
 }
 
 .photo-lightbox.is-pile img {
@@ -2629,13 +2643,29 @@ body.has-photo-lightbox {
   right: 1.2rem;
   width: 1.9rem;
   height: 1.9rem;
-  color: #7a736b;
+  color: #fff;
   pointer-events: none;
-  transition: color 0.25s ease, transform 0.45s ease;
+  background-color: #fff;
+  /* Snap backdrop to B/W, then difference → pure black or white stroke */
+  backdrop-filter: grayscale(1) contrast(100);
+  -webkit-backdrop-filter: grayscale(1) contrast(100);
+  mix-blend-mode: difference;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 17 17 7M9 7h8v8' fill='none' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 17 17 7M9 7h8v8' fill='none' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  transition: transform 0.45s ease;
+}
+
+.post-card-external path {
+  opacity: 0;
 }
 
 .post-card:hover .post-card-external {
-  color: var(--accent);
   transform: translate(0.3rem, -0.3rem);
 }
 
@@ -2856,7 +2886,7 @@ body.has-photo-lightbox {
 }
 
 .post-filter {
-  --glow: #74584a;
+  --glow: #000;
   position: sticky;
   top: 50vh;
   width: fit-content;
@@ -2877,11 +2907,6 @@ body.has-photo-lightbox {
 @media (prefers-reduced-motion: reduce) {
   .post-filter {
     translate: 0 -50%;
-  }
-
-  .post-filter summary,
-  .post-filter fieldset {
-    transition: opacity 0.2s ease !important;
   }
 
   .post-filter summary,
@@ -2907,16 +2932,11 @@ body.has-photo-lightbox {
   cursor: pointer;
   list-style: none;
   user-select: none;
-  /* Return: pop in from the right with leftward motion */
-  transition: opacity 0.5s ease 0.12s, translate 0.78s cubic-bezier(0.22, 1, 0.36, 1) 0.12s;
 }
 
 .post-filter[open] summary {
   opacity: 0;
-  translate: 2.75rem 0;
   pointer-events: none;
-  /* Leave first: fade rightwards before filters arrive */
-  transition: opacity 0.45s ease, translate 0.54s cubic-bezier(0.4, 0, 0.8, 0.2);
 }
 
 .post-filter summary::-webkit-details-marker {
@@ -2987,9 +3007,8 @@ body.has-photo-lightbox {
   color: var(--glow);
   white-space: nowrap;
   opacity: 0;
-  translate: 2.4rem -50%;
+  translate: 0 -50%;
   pointer-events: none;
-  transition: opacity 0.42s ease, translate 0.52s cubic-bezier(0.4, 0, 0.8, 0.2);
 }
 
 .post-filter fieldset::before,
@@ -3018,21 +3037,9 @@ body.has-photo-lightbox {
   bottom: -0.5rem;
 }
 
-/* While waiting to enter: stay hidden with no fade-out */
-.post-filter[open]:not(.is-panel-in):not(.is-closing) fieldset {
-  transition: none;
-  opacity: 0;
-}
-
-.post-filter[open].is-panel-in fieldset {
+.post-filter[open] fieldset {
   opacity: 1;
-  translate: 0 -50%;
   pointer-events: auto;
-  transition: opacity 0.6s ease, translate 0.72s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.post-filter-br {
-  display: none;
 }
 
 .post-filter label {
@@ -3260,7 +3267,6 @@ footer p {
   }
 
   .post-card:hover .post-card-external {
-    color: #7a736b;
     transform: none;
   }
 
@@ -3548,7 +3554,7 @@ footer p {
   }
 
   .latest-heading-peach {
-    top: 7.5rem;
+    top: calc(var(--latest-pad-top, 3.25rem) + 4.25rem);
     translate: 0 -85%;
   }
 
@@ -3712,18 +3718,6 @@ footer p {
 }
 
 @media (max-width: 1280px) {
-  .post-filter-br {
-    display: block;
-  }
-
-  .post-filter label:has(.post-filter-br) {
-    align-items: flex-start;
-  }
-
-  .post-filter label:has(.post-filter-br) input {
-    margin-top: calc((1lh - 0.9rem) / 2);
-  }
-
   .work-list > li:has(> .post-card) {
     width: 92%;
     justify-self: center;
@@ -3804,12 +3798,7 @@ footer p {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
-    width: max-content;
-    min-width: 0;
-    padding: 0 1rem;
-    background: none;
-    border-radius: 999px;
+    gap: 2.15rem;
     box-shadow: none;
     opacity: 0;
     visibility: hidden;
@@ -3847,7 +3836,7 @@ footer p {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    gap: 1.35rem;
+    gap: 2rem;
   }
 
   .header-nav .socials li {
@@ -4108,7 +4097,9 @@ footer p {
   }
 
   #latest {
+    --latest-pad-top: 7rem;
     padding-inline: 5vw;
+    padding-top: var(--latest-pad-top);
     box-sizing: border-box;
   }
 
@@ -4184,20 +4175,21 @@ footer p {
   .post-filter {
     position: fixed;
     top: auto;
-    bottom: max(0.85rem, env(safe-area-inset-bottom, 0px) + 0.65rem);
-    right: max(0.85rem, env(safe-area-inset-right, 0px) + 0.65rem);
+    bottom: max(1.45rem, env(safe-area-inset-bottom, 0px) + 1.15rem);
+    right: max(1.45rem, env(safe-area-inset-right, 0px) + 1.15rem);
     margin: 0;
     z-index: 20;
     opacity: 0;
     visibility: hidden;
-    translate: 2rem 0;
-    transition: opacity 0.45s ease, visibility 0.45s ease, translate 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    /* Avoid translate here — it makes position:fixed fieldset use this box as containing block */
+    translate: none;
+    transition: opacity 0.45s ease, visibility 0.45s ease;
   }
 
   .post-filter.is-in {
     opacity: 1;
     visibility: visible;
-    translate: 0;
+    translate: none;
   }
 
   .post-filter:not(.is-in) {
@@ -4209,15 +4201,19 @@ footer p {
     place-items: center;
     place-content: center;
     padding: 0;
-    width: 2.75rem;
-    height: 2.75rem;
-    min-width: 2.75rem;
-    min-height: 2.75rem;
+    width: 3.35rem;
+    height: 3.35rem;
+    min-width: 3.35rem;
+    min-height: 3.35rem;
     gap: 0;
     border-radius: 50%;
     background: color-mix(in srgb, var(--bg) 78%, white);
     box-shadow: 0 0.35rem 1.1rem rgba(92, 58, 40, 0.12);
-    transition: opacity 0.5s ease 0.12s, translate 0.78s cubic-bezier(0.22, 1, 0.36, 1) 0.12s, background 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .post-filter-icon {
+    width: 1.35rem;
+    height: 1.35rem;
   }
 
   .post-filter-icon-wrap {
@@ -4239,10 +4235,10 @@ footer p {
   }
 
   .post-filter[open] summary {
-    translate: 2rem 0;
+    opacity: 0;
     background: transparent;
     box-shadow: none;
-    transition: opacity 0.45s ease, translate 0.54s cubic-bezier(0.4, 0, 0.8, 0.2), background 0.2s ease, box-shadow 0.2s ease;
+    pointer-events: none;
   }
 
   .post-filter summary::after {
@@ -4259,7 +4255,7 @@ footer p {
     left: 50%;
     right: auto;
     top: auto;
-    bottom: max(5.25rem, env(safe-area-inset-bottom, 0px) + 4.75rem);
+    bottom: max(6.35rem, env(safe-area-inset-bottom, 0px) + 5.75rem);
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -4267,32 +4263,19 @@ footer p {
     margin: 0;
     padding: 1.85rem 2.1rem;
     border: 0;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--bg) 88%, white);
-    color: var(--glow);
-    font-size: 1.2rem;
+    border-radius: 1.75rem;
     white-space: nowrap;
     opacity: 0;
-    translate: -50% 1.25rem;
+    translate: -50% 0;
     pointer-events: none;
     box-shadow: 0 0.35rem 1.1rem rgba(92, 58, 40, 0.12);
-    transition: opacity 0.42s ease, translate 0.52s cubic-bezier(0.4, 0, 0.8, 0.2);
   }
 
-  .post-filter[open]:not(.is-panel-in):not(.is-closing) fieldset {
-    translate: -50% 1.25rem;
-  }
-
-  .post-filter[open].is-panel-in fieldset {
+  .post-filter[open] fieldset {
     opacity: 1;
-    translate: -50% 0;
     pointer-events: auto;
     background: color-mix(in srgb, var(--bg) 88%, white);
     box-shadow: 0 0.35rem 1.1rem rgba(92, 58, 40, 0.12);
-  }
-
-  .post-filter.is-closing fieldset {
-    translate: -50% 1.25rem;
   }
 
   .post-filter label {
@@ -4333,8 +4316,12 @@ footer p {
 
 @media (max-width: 640px) and (prefers-reduced-motion: reduce) {
   .post-filter,
-  .post-filter.is-in,
+  .post-filter.is-in {
+    translate: none !important;
+  }
+
   .post-filter summary,
+  .post-filter.is-in summary,
   .post-filter[open] summary {
     translate: 0 !important;
   }
