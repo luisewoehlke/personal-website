@@ -1546,9 +1546,9 @@ h2 {
 }
 
 .best-of-grid li {
-  --best-item-delay: 0.9s;
+  --best-item-delay: 0.12s;
   --best-post-dur: 0.55s;
-  --best-num-delay: 2.7s;
+  --best-num-delay: 0.55s;
   --best-num-dur: 0.45s;
   --card-w: var(--best-card-w);
   --card-h: var(--best-h);
@@ -1561,23 +1561,23 @@ h2 {
 }
 
 .best-of-grid li:nth-child(1) {
-  --best-item-delay: 0.9s;
-  --best-num-delay: 2.7s;
+  --best-item-delay: 0.12s;
+  --best-num-delay: 0.55s;
 }
 
 .best-of-grid li:nth-child(2) {
-  --best-item-delay: 1.2s;
-  --best-num-delay: 2.9s;
+  --best-item-delay: 0.28s;
+  --best-num-delay: 0.7s;
 }
 
 .best-of-grid li:nth-child(3) {
-  --best-item-delay: 1.5s;
-  --best-num-delay: 3.1s;
+  --best-item-delay: 0.44s;
+  --best-num-delay: 0.85s;
 }
 
 .best-of-grid li:nth-child(4) {
-  --best-item-delay: 1.8s;
-  --best-num-delay: 3.3s;
+  --best-item-delay: 0.6s;
+  --best-num-delay: 1s;
 }
 
 .best-of-grid li > a,
@@ -2364,7 +2364,7 @@ body.has-photo-lightbox {
 
 .work-list > li.raindrop-item:nth-child(3n + 3 of li.raindrop-item:not(:has(.is-spotify))) {
   background: #b04f2f;
-  border-color: #142fff;
+  border-color: #4290ff;
 }
 
 .work-list > li.raindrop-item.is-teal:nth-child(n of li.raindrop-item:not(:has(.is-spotify))) {
@@ -3803,11 +3803,11 @@ footer p {
     z-index: 16;
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    gap: 2.5rem;
+    align-items: center;
+    gap: 1.5rem;
     width: max-content;
     min-width: 0;
-    padding: 0 1.35rem;
+    padding: 0 1rem;
     background: none;
     border-radius: 999px;
     box-shadow: none;
@@ -3831,7 +3831,7 @@ footer p {
     pointer-events: auto;
     translate: 0 0;
     max-height: 40rem;
-    padding: 4rem 1.35rem;
+    padding: 3.25rem 1rem;
     background: #fff;
   }
 
@@ -3839,20 +3839,31 @@ footer p {
     display: none;
   }
 
+  .header-nav .about-link {
+    font-size: 1rem;
+  }
+
   .header-nav .socials {
     flex-direction: column;
-    align-items: flex-end;
-    gap: 2.25rem;
+    align-items: center;
+    width: 100%;
+    gap: 1.35rem;
+  }
+
+  .header-nav .socials li {
+    display: flex;
+    justify-content: center;
+    width: 100%;
   }
 
   .header-nav .socials a {
-    width: 2.875rem;
-    height: 2.875rem;
+    width: 2rem;
+    height: 2rem;
   }
 
   .header-nav .socials svg {
-    width: 2.875rem;
-    height: 2.875rem;
+    width: 2rem;
+    height: 2rem;
   }
 
   .site-name {
@@ -4244,20 +4255,54 @@ footer p {
   }
 
   .post-filter fieldset {
+    position: fixed;
+    left: 50%;
+    right: auto;
     top: auto;
-    bottom: 0;
-    translate: 2rem 0;
+    bottom: max(5.25rem, env(safe-area-inset-bottom, 0px) + 4.75rem);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.1rem;
+    margin: 0;
+    padding: 1.85rem 2.1rem;
+    border: 0;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--bg) 88%, white);
+    color: var(--glow);
+    font-size: 1.2rem;
+    white-space: nowrap;
+    opacity: 0;
+    translate: -50% 1.25rem;
+    pointer-events: none;
+    box-shadow: 0 0.35rem 1.1rem rgba(92, 58, 40, 0.12);
+    transition: opacity 0.42s ease, translate 0.52s cubic-bezier(0.4, 0, 0.8, 0.2);
+  }
+
+  .post-filter[open]:not(.is-panel-in):not(.is-closing) fieldset {
+    translate: -50% 1.25rem;
   }
 
   .post-filter[open].is-panel-in fieldset {
-    translate: 0;
+    opacity: 1;
+    translate: -50% 0;
+    pointer-events: auto;
     background: color-mix(in srgb, var(--bg) 88%, white);
     box-shadow: 0 0.35rem 1.1rem rgba(92, 58, 40, 0.12);
   }
 
+  .post-filter.is-closing fieldset {
+    translate: -50% 1.25rem;
+  }
+
+  .post-filter label {
+    font-size: 1.15rem;
+    gap: 0.7rem;
+  }
+
   .post-filter input {
-    width: 1.05rem;
-    height: 1.05rem;
+    width: 1.15rem;
+    height: 1.15rem;
   }
 
   .about-snap-hint .about-snap-q {
@@ -4290,9 +4335,12 @@ footer p {
   .post-filter,
   .post-filter.is-in,
   .post-filter summary,
-  .post-filter[open] summary,
+  .post-filter[open] summary {
+    translate: 0 !important;
+  }
+
   .post-filter fieldset,
   .post-filter[open] fieldset {
-    translate: 0 !important;
+    translate: -50% 0 !important;
   }
 }

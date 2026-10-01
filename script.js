@@ -333,6 +333,23 @@ if (landingScrollHint) {
   document.addEventListener("scroll", updateScrollHint, { passive: true });
 }
 
+const latestScrollHint = document.querySelector("#best-of > .scroll-hint");
+if (latestScrollHint) {
+  const updateLatestScrollHint = () => {
+    if (!window.matchMedia("(min-width: 1041px)").matches) {
+      latestScrollHint.classList.remove("is-hidden");
+      return;
+    }
+    const rect = latestScrollHint.getBoundingClientRect();
+    // Hide once the hint has moved ~20px up from the bottom of the viewport.
+    const hide = window.innerHeight - rect.bottom > 20;
+    latestScrollHint.classList.toggle("is-hidden", hide);
+  };
+  updateLatestScrollHint();
+  window.addEventListener("scroll", updateLatestScrollHint, { passive: true });
+  window.addEventListener("resize", updateLatestScrollHint);
+}
+
 document.querySelectorAll(".location").forEach((location) => {
   const trigger = location.querySelector(".location-trigger");
   if (!trigger) return;
