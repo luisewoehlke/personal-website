@@ -1930,7 +1930,7 @@ if (sectionHeadings.length) {
           if (!entry.isIntersecting) return;
           const heading = entry.target;
           typeoutHeading(heading, () => {
-            if (heading.id === "best-of-heading") {
+            if (heading.matches("#best-of > h2")) {
               document.querySelector("#best-of")?.classList.add("is-showing-stickers");
             }
           });
