@@ -1606,6 +1606,8 @@ if (latestPosts) {
   latestPosts.addEventListener("click", (event) => {
     const more = event.target.closest(".book-more");
     if (more) {
+      event.preventDefault();
+      event.stopPropagation();
       const item = more.closest("li");
       item.dataset.expanded = item.dataset.expanded === "1" ? "0" : "1";
       collapseBookRuns();
@@ -1662,7 +1664,18 @@ if (latestPosts) {
 
   document.addEventListener("click", (event) => {
     if (!latestPosts.querySelector(".book-item.is-open-review")) return;
-    if (event.target.closest(".book-item.is-open-review")) return;
+    const path =
+      typeof event.composedPath === "function" ? event.composedPath() : [];
+    const fromToggleOrOpen = path.some(
+      (node) =>
+        node instanceof Element &&
+        (node.classList.contains("book-more") ||
+          node.classList.contains("is-open-review"))
+    );
+    if (fromToggleOrOpen) return;
+    if (event.target instanceof Element && event.target.closest(".book-item.is-open-review")) {
+      return;
+    }
     latestPosts.querySelectorAll(".book-item[data-expanded='1']").forEach((item) => {
       item.dataset.expanded = "0";
     });
