@@ -3311,7 +3311,7 @@ footer p {
     max-height: calc(100svh - var(--header-h, 4.8rem));
     width: 100%;
     padding: 10vh 0 calc(max(10svh, 4.5rem) + max(3vw, env(safe-area-inset-bottom, 0px)));
-    gap: 5.5vw;
+    gap: 12vw;
     justify-content: center;
     overflow: visible;
     box-sizing: border-box;
@@ -3391,7 +3391,7 @@ footer p {
   .location {
     order: 3;
     align-self: flex-end;
-    translate: 0;
+    translate: -3.5vw 0;
     font-size: var(--text-size);
     padding-left: 0;
     padding-right: var(--text-pad-left);
@@ -3441,7 +3441,13 @@ footer p {
   #best-of > h2,
   #latest > h2,
   #about > h2 {
-    font-size: 16.5vw;
+    font-size: 12vw;
+    line-height: 0.85;
+  }
+
+  #best-of-heading,
+  #best-of > h2 {
+    scroll-margin-top: calc(var(--header-h, 4.8rem) + 0.15rem);
   }
 
   #best-of > h2,
@@ -3466,7 +3472,7 @@ footer p {
   }
 
   .best-of-heading-peach {
-    top: calc(10vh + 2.75rem);
+    top: calc(10vh + 4rem);
   }
 
   .latest-heading-peach {
@@ -3516,7 +3522,7 @@ footer p {
 
   .sticker-strawberry {
     --sticker-w: 1.6;
-    top: 33%;
+    top: 50%;
     right: 1%;
     left: auto;
     bottom: auto;
@@ -3524,7 +3530,7 @@ footer p {
 
   .sticker-cow {
     --sticker-w: 4.35;
-    top: 25%;
+    top: 42%;
     right: 6%;
     left: auto;
     bottom: auto;
@@ -3773,7 +3779,7 @@ footer p {
   }
 
   .location {
-    translate: 0;
+    translate: -3.5vw 0;
   }
 
   .location-trail {
