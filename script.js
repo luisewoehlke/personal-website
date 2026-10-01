@@ -117,6 +117,42 @@ let piledHint = null;
 const stickerRestCenters = new WeakMap();
 const isMobileLayout = () => window.matchMedia("(max-width: 800px)").matches;
 
+const placeBestOfNums = () => {
+  const items = document.querySelectorAll("#best-of .best-of-grid > li");
+  if (!items.length) return;
+  if (!isMobileLayout()) {
+    items.forEach((li) => {
+      const rule = li.querySelector(":scope > .best-of-rule");
+      if (!rule) return;
+      rule.style.left = "";
+      rule.style.right = "";
+      rule.style.top = "";
+      rule.style.translate = "";
+    });
+    return;
+  }
+  const vv = window.visualViewport;
+  const viewLeft = vv?.offsetLeft ?? 0;
+  const viewRight = viewLeft + (vv?.width ?? window.innerWidth);
+  items.forEach((li, i) => {
+    const rule = li.querySelector(":scope > .best-of-rule");
+    if (!rule) return;
+    const liRect = li.getBoundingClientRect();
+    const midX =
+      i % 2 === 0
+        ? (liRect.right + viewRight) / 2
+        : (viewLeft + liRect.left) / 2;
+    rule.style.left = `${midX - liRect.left}px`;
+    rule.style.right = "auto";
+    rule.style.top = "50%";
+    rule.style.translate = "-50% -50%";
+  });
+};
+
+window.addEventListener("resize", placeBestOfNums);
+window.visualViewport?.addEventListener("resize", placeBestOfNums);
+window.visualViewport?.addEventListener("scroll", placeBestOfNums);
+
 const applyStickerPile = (el, x, y, duration = "0.5s", delay = "0s") => {
   el.style.transform = "";
   el.style.transition = `translate ${duration} cubic-bezier(0.22, 0.8, 0.24, 1) ${delay}`;
@@ -671,6 +707,7 @@ const renderBestOf = (posts = []) => {
     const { card, date } = postCardHtml(post);
     return `<li>${card}${date}<span class="best-of-rule" aria-hidden="true"><span class="best-of-rule-num">${i + 1}</span></span></li>`;
   }).join("");
+  placeBestOfNums();
 };
 
 const POST_BATCH = 5;
@@ -1304,6 +1341,33 @@ window.addEventListener(
   { passive: true }
 );
 
+const updateMonthLineVisibility = () => {
+  if (!latestPosts) return;
+  const rem =
+    parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+  const dot = 0.42 * rem;
+  latestPosts.querySelectorAll(":scope > li.post-month").forEach((month) => {
+    const label = month.querySelector(".month-label");
+    if (!label) return;
+    const style = getComputedStyle(month);
+    const gap = parseFloat(style.columnGap || style.gap) || 0;
+    const padLeft = parseFloat(style.paddingLeft) || 0;
+    const padRight = parseFloat(style.paddingRight) || 0;
+    const space =
+      month.clientWidth -
+      padLeft -
+      padRight -
+      dot -
+      label.offsetWidth -
+      gap * 2;
+    const afterMax = getComputedStyle(month, "::after").maxWidth;
+    const maxLine =
+      afterMax && afterMax !== "none" ? parseFloat(afterMax) : Infinity;
+    const lineWidth = Math.min(space, maxLine);
+    month.classList.toggle("is-line-hidden", !(lineWidth >= 25));
+  });
+};
+
 const monthLineObserver = new IntersectionObserver(
   (entries) => {
     entries.forEach((entry) => {
@@ -1325,7 +1389,13 @@ const watchMonthLines = () => {
     }
     monthLineObserver.observe(item);
   });
+  updateMonthLineVisibility();
 };
+
+window.addEventListener("resize", updateMonthLineVisibility);
+if (document.fonts?.ready) {
+  document.fonts.ready.then(updateMonthLineVisibility);
+}
 
 const syncEntranceAfterFilter = () => {
   if (!latestPosts) return;
@@ -1977,6 +2047,7 @@ if (sectionHeadings.length) {
           typeoutHeading(heading, () => {
             if (heading.matches("#best-of > h2")) {
               document.querySelector("#best-of")?.classList.add("is-showing-stickers");
+              placeBestOfNums();
             }
           });
           observer.unobserve(heading);
@@ -1995,3 +2066,6 @@ const bestOfSection = document.querySelector("#best-of");
 if (bestOfSection && prefersReducedMotion) {
   bestOfSection.classList.add("is-showing-stickers");
 }
+placeBestOfNums();
+window.addEventListener("load", placeBestOfNums);
+if (document.fonts?.ready) document.fonts.ready.then(placeBestOfNums);
