@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Playfair+Display:wght@500&family=Space+Mono:wght@400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Inter:wght@300&family=Playfair+Display:wght@500&family=Space+Mono:wght@400;700&display=swap"
     />
     <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/block-craft" />
     <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/bytebounce" />
@@ -17,15 +17,15 @@
   </head>
   <body id="top">
     <div class="site-header-bg" aria-hidden="true"></div>
-    <img
-      class="sticker sticker-peach"
-      src="images/stickers/peach.png"
-      alt=""
-      aria-hidden="true"
-    />
     <header class="site-header">
       <div class="header-start">
         <span class="site-brand">
+          <img
+            class="sticker sticker-peach"
+            src="images/stickers/peach.png"
+            alt=""
+            aria-hidden="true"
+          />
           <a class="site-name" href="#top">Luise Woehlke</a>
           <span class="wolky-hint" tabindex="0" data-tip="In stand-up, I go by Luise Wolky" aria-label="In stand-up, I go by Luise Wolky"><span aria-hidden="true">?</span></span>
         </span>
@@ -262,10 +262,6 @@
 my stuff</h2>
           <ul class="best-of-grid">
             <li>
-              <span class="best-of-sticker-wrap is-peach">
-                <img class="sticker best-of-sticker" src="images/stickers/peach.png" alt="" />
-                <span class="best-of-num" aria-hidden="true">1</span>
-              </span>
               <a
                 href="https://luisew.substack.com/p/unreasonably-easy-ways-to-make-people"
                 target="_blank"
@@ -279,10 +275,6 @@ my stuff</h2>
               <span class="best-of-rule" aria-hidden="true"><span class="best-of-rule-num">1</span></span>
             </li>
             <li>
-              <span class="best-of-sticker-wrap is-lemon">
-                <img class="sticker best-of-sticker" src="images/stickers/lemon.png" alt="" />
-                <span class="best-of-num" aria-hidden="true">2</span>
-              </span>
               <a
                 href="https://www.lesswrong.com/posts/7Q7DPSk4iGFJd8DRk/an-opinionated-guide-to-using-anki-correctly"
                 target="_blank"
@@ -297,10 +289,6 @@ my stuff</h2>
               <span class="best-of-rule" aria-hidden="true"><span class="best-of-rule-num">2</span></span>
             </li>
             <li>
-              <span class="best-of-sticker-wrap is-apricot">
-                <img class="sticker best-of-sticker" src="images/stickers/apricot.png" alt="" />
-                <span class="best-of-num" aria-hidden="true">3</span>
-              </span>
               <a
                 href="https://luisew.substack.com/p/5-things-i-learned-about-people-from"
                 target="_blank"
@@ -314,10 +302,6 @@ my stuff</h2>
               <span class="best-of-rule" aria-hidden="true"><span class="best-of-rule-num">3</span></span>
             </li>
             <li>
-              <span class="best-of-sticker-wrap is-orange">
-                <img class="sticker best-of-sticker" src="images/stickers/orange%202.png" alt="" />
-                <span class="best-of-num" aria-hidden="true">4</span>
-              </span>
               <a
                 href="https://forum.effectivealtruism.org/posts/yMptv5msFnnfESCqm/how-i-solved-my-problems-with-low-energy-or-burnout"
                 target="_blank"
@@ -332,9 +316,27 @@ my stuff</h2>
               <span class="best-of-rule" aria-hidden="true"><span class="best-of-rule-num">4</span></span>
             </li>
           </ul>
+          <a class="scroll-hint" href="#latest-heading">
+            <span>latest</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M4 8h16l-8 9z"
+                fill="currentColor"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </a>
         </section>
 
         <section id="latest">
+          <img
+            class="latest-heading-peach"
+            src="images/stickers/peach.png"
+            alt=""
+            aria-hidden="true"
+          />
           <h2 id="latest-heading">Latest</h2>
           <details class="post-filter">
             <summary>
@@ -373,7 +375,7 @@ my stuff</h2>
               <label
                 ><input type="checkbox" value="book" checked />
                 <span class="post-filter-text"
-                  >goodreads <br class="post-filter-br" />updates</span
+                  >Book <br class="post-filter-br" />updates</span
                 ></label
               >
             </fieldset>

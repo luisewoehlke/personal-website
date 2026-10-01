@@ -3,28 +3,46 @@ if (year) {
   year.textContent = String(new Date().getFullYear());
 }
 
+document.querySelectorAll(".wolky-hint").forEach((hint) => {
+  let hoverTimer = null;
+  let dismissOnLeave = false;
+
+  const clearHoverTimer = () => {
+    if (!hoverTimer) return;
+    clearTimeout(hoverTimer);
+    hoverTimer = null;
+  };
+
+  const onEnter = () => {
+    if (hint.classList.contains("is-dismissed")) return;
+    clearHoverTimer();
+    hoverTimer = setTimeout(() => {
+      dismissOnLeave = true;
+      hoverTimer = null;
+    }, 1000);
+  };
+
+  const onLeave = () => {
+    clearHoverTimer();
+    if (!dismissOnLeave) return;
+    hint.classList.add("is-dismissed");
+    hint.setAttribute("aria-hidden", "true");
+    hint.tabIndex = -1;
+  };
+
+  hint.addEventListener("pointerenter", onEnter);
+  hint.addEventListener("pointerleave", onLeave);
+  hint.addEventListener("focus", onEnter);
+  hint.addEventListener("blur", onLeave);
+});
+
 const siteHeader = document.querySelector(".site-header");
 const peachSticker = document.querySelector(".sticker-peach");
-const placePeachSticker = () => {
-  if (!peachSticker || !siteHeader) return;
-  const narrow = window.matchMedia("(max-width: 800px)").matches;
-  const headerHidden = siteHeader.classList.contains("is-hidden");
-  if (narrow) {
-    peachSticker.classList.toggle("is-hidden", headerHidden);
-    if (headerHidden) return;
-  } else {
-    peachSticker.classList.remove("is-hidden");
-  }
-  const brand = siteHeader.querySelector(".site-brand");
-  if (!brand) return;
-  const box = brand.getBoundingClientRect();
-  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-  const leftPad = 1.85 * rem;
-  const topPad = narrow ? 2.55 * rem : 1.7 * rem;
-  peachSticker.style.left = `${Math.max(0.15 * rem, box.left - leftPad)}px`;
-  peachSticker.style.top = `${box.bottom - topPad}px`;
+if (peachSticker) {
+  peachSticker.style.left = "";
+  peachSticker.style.top = "";
   peachSticker.style.width = "";
-};
+}
 if (siteHeader) {
   let lastScrollY = window.scrollY;
   let headerHidden = false;
@@ -44,7 +62,6 @@ if (siteHeader) {
       end?.classList.remove("is-open");
       burger?.setAttribute("aria-expanded", "false");
     }
-    placePeachSticker();
     lastScrollY = scrollY;
   };
   const syncHeaderHeight = () => {
@@ -52,12 +69,10 @@ if (siteHeader) {
       "--header-h",
       `${siteHeader.offsetHeight}px`
     );
-    placePeachSticker();
   };
   syncHeaderHeight();
   window.addEventListener("resize", syncHeaderHeight);
   window.addEventListener("scroll", updateHeader, { passive: true });
-  placePeachSticker();
 
   const headerEnd = siteHeader.querySelector(".header-end");
   const navBurger = siteHeader.querySelector(".nav-burger");
@@ -199,7 +214,7 @@ const pileBackgroundStickers = (hint) => {
   piledHint = hint;
 };
 
-document.querySelectorAll(".scroll-hint").forEach((hint) => {
+document.querySelectorAll(".landing .scroll-hint").forEach((hint) => {
   hint.addEventListener("pointerenter", () => {
     if (hint.classList.contains("is-hidden")) return;
     pileBackgroundStickers(hint);
@@ -214,10 +229,43 @@ document.querySelectorAll(".scroll-hint").forEach((hint) => {
   });
   hint.addEventListener("click", () => {
     spreadBackgroundStickers();
-    const target = document.querySelector(hint.getAttribute("href"));
-    if (target) target.style.scrollMarginTop = "20px";
   });
 });
+
+const scrollToBestOfHeadingHash = () => {
+  if (location.hash !== "#best-of-heading") return;
+  const el = document.getElementById("best-of-heading");
+  if (!el) return;
+
+  const apply = () => {
+    const margin =
+      parseFloat(getComputedStyle(el).scrollMarginTop) ||
+      window.innerHeight * 0.1;
+    const y = el.getBoundingClientRect().top + window.scrollY - margin;
+    const root = document.documentElement;
+    const prev = root.style.scrollBehavior;
+    root.style.scrollBehavior = "auto";
+    window.scrollTo(0, Math.max(0, y));
+    root.style.scrollBehavior = prev;
+  };
+
+  apply();
+  requestAnimationFrame(() => {
+    apply();
+    requestAnimationFrame(apply);
+  });
+  window.setTimeout(apply, 0);
+  window.setTimeout(apply, 50);
+  window.setTimeout(apply, 200);
+  if (document.fonts?.ready) document.fonts.ready.then(apply);
+};
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", scrollToBestOfHeadingHash);
+} else {
+  scrollToBestOfHeadingHash();
+}
+window.addEventListener("load", scrollToBestOfHeadingHash);
 
 const landingScrollHint = document.querySelector(".landing .scroll-hint");
 if (landingScrollHint) {
@@ -416,13 +464,6 @@ const monthHeading = (iso) => {
   });
 };
 
-const BEST_OF_STICKERS = [
-  { src: "images/stickers/peach.png", cls: "is-peach" },
-  { src: "images/stickers/lemon.png", cls: "is-lemon" },
-  { src: "images/stickers/apricot.png", cls: "is-apricot" },
-  { src: "images/stickers/orange%202.png", cls: "is-orange" },
-];
-
 const BEST_OF_POSTS = [
   {
     url: "https://luisew.substack.com/p/unreasonably-easy-ways-to-make-people",
@@ -604,8 +645,7 @@ const renderBestOf = (posts = []) => {
       url: fallback.url,
     };
     const { card, date } = postCardHtml(post);
-    const sticker = BEST_OF_STICKERS[i];
-    return `<li><span class="best-of-sticker-wrap ${sticker.cls}"><img class="sticker best-of-sticker" src="${sticker.src}" alt="" /><span class="best-of-num" aria-hidden="true">${i + 1}</span></span>${card}${date}<span class="best-of-rule" aria-hidden="true"><span class="best-of-rule-num">${i + 1}</span></span></li>`;
+    return `<li>${card}${date}<span class="best-of-rule" aria-hidden="true"><span class="best-of-rule-num">${i + 1}</span></span></li>`;
   }).join("");
 };
 
@@ -767,12 +807,14 @@ const latestPostItemHtml = (post) => {
           ? ` width="${Number(photo.width)}" height="${Number(photo.height)}"`
           : ""
       } loading="lazy" />`;
-    const dateHtml = `<time class="post-date" datetime="${when.datetime}">${when.label}</time>`;
     const [top] = post.items;
     const ratio =
       top.width && top.height ? Number(top.width) / Number(top.height) : 0.75;
     const count = post.items.length;
+    const countLabel = count === 1 ? "1 image" : `${count} images`;
+    const metaHtml = `<p class="photo-meta"><span class="photo-meta-count">${countLabel}</span><span class="photo-meta-dot" aria-hidden="true">•</span><time datetime="${when.datetime}">${when.label}</time></p>`;
     const scale = Number(post.scale) || 1;
+    const expandBtn = `<button type="button" class="photo-expand" aria-label="View full size"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19L19 5M13 5h6v6M11 19H5v-6" fill="none" stroke="currentColor" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
     if (count > 1) {
       const step = Math.min(1.3, 3 / (count - 1));
       const imgs = post.items
@@ -789,19 +831,25 @@ const latestPostItemHtml = (post) => {
       return `${heading}<li class="photo-item is-pile" data-category="photo" style="--photo-ratio: ${ratio}; --photo-scale: ${scale}; --pile-step: ${step}rem; --pile-spread: ${
         step * (count - 1)
       }rem">
-        <button type="button" class="photo-pile" aria-label="Show the next picture">${imgs}</button>
-        ${dateHtml}
+        <div class="photo-media">
+          <button type="button" class="photo-pile" aria-label="Show the next picture">${imgs}</button>
+          ${expandBtn}
+        </div>
+        ${metaHtml}
       </li>`;
     }
     const caption = top.caption
       ? `<figcaption>${escapeHtml(top.caption)}</figcaption>`
       : "";
     return `${heading}<li class="photo-item" data-category="photo" style="--photo-ratio: ${ratio}; --photo-scale: ${scale}">
-        <figure class="feed-photo">
-          ${photoImg(top)}
-          ${caption}
-        </figure>
-        ${dateHtml}
+        <div class="photo-media">
+          <figure class="feed-photo">
+            ${photoImg(top)}
+            ${caption}
+          </figure>
+          ${expandBtn}
+        </div>
+        ${metaHtml}
       </li>`;
   }
   if (post.kind === "book") {
@@ -1393,6 +1441,133 @@ const applyPostFilter = () => {
 };
 
 if (latestPosts) {
+  const photoLightbox = document.createElement("div");
+  photoLightbox.className = "photo-lightbox";
+  photoLightbox.hidden = true;
+  photoLightbox.setAttribute("role", "dialog");
+  photoLightbox.setAttribute("aria-modal", "true");
+  photoLightbox.setAttribute("aria-label", "Full size photo");
+  photoLightbox.innerHTML = `
+    <button type="button" class="photo-lightbox-close" aria-label="Close"></button>
+    <button type="button" class="photo-lightbox-nav is-prev" aria-label="Previous image" tabindex="-1">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5L8 12l7 7" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <img alt="" />
+    <button type="button" class="photo-lightbox-nav is-next" aria-label="Next image" tabindex="-1">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  `;
+  document.body.appendChild(photoLightbox);
+  const photoLightboxImg = photoLightbox.querySelector("img");
+  let lightboxImgs = [];
+  let lightboxIndex = 0;
+
+  const showLightboxImage = () => {
+    const current = lightboxImgs[lightboxIndex];
+    if (!current) return;
+    photoLightboxImg.src = current.currentSrc || current.src;
+    photoLightboxImg.alt = current.alt || "";
+  };
+
+  const syncPileToLightbox = () => {
+    const count = lightboxImgs.length;
+    if (count < 2) return;
+    lightboxImgs.forEach((img, i) => {
+      const pos = (i - lightboxIndex + count) % count;
+      img.style.setProperty("--pos", pos);
+      img.style.zIndex = count - pos;
+      img.classList.toggle("is-front", pos === 0);
+    });
+  };
+
+  const stepLightbox = (delta) => {
+    const count = lightboxImgs.length;
+    if (count < 2) return;
+    lightboxIndex = (lightboxIndex + delta + count) % count;
+    showLightboxImage();
+    syncPileToLightbox();
+  };
+
+  const openPhotoLightbox = (img) => {
+    if (!img) return;
+    const item = img.closest(".photo-item");
+    if (item?.classList.contains("is-pile")) {
+      lightboxImgs = [...item.querySelectorAll(".photo-pile-img")].sort(
+        (a, b) =>
+          Number(a.style.getPropertyValue("--pos")) -
+          Number(b.style.getPropertyValue("--pos"))
+      );
+      lightboxIndex = Math.max(
+        0,
+        lightboxImgs.findIndex((entry) => entry === img)
+      );
+      if (lightboxIndex < 0) lightboxIndex = 0;
+      photoLightbox.classList.add("is-pile");
+    } else {
+      lightboxImgs = [img];
+      lightboxIndex = 0;
+      photoLightbox.classList.remove("is-pile");
+    }
+    showLightboxImage();
+    photoLightbox.hidden = false;
+    document.documentElement.classList.add("has-photo-lightbox");
+    document.body.classList.add("has-photo-lightbox");
+  };
+
+  const closePhotoLightbox = () => {
+    if (photoLightbox.hidden) return;
+    photoLightbox.hidden = true;
+    photoLightbox.classList.remove("is-pile");
+    photoLightboxImg.removeAttribute("src");
+    photoLightboxImg.alt = "";
+    lightboxImgs = [];
+    lightboxIndex = 0;
+    document.documentElement.classList.remove("has-photo-lightbox");
+    document.body.classList.remove("has-photo-lightbox");
+  };
+
+  photoLightbox.addEventListener("click", (event) => {
+    if (photoLightbox.hidden) return;
+    if (event.target.closest(".photo-lightbox-close")) {
+      closePhotoLightbox();
+      return;
+    }
+    if (lightboxImgs.length > 1) {
+      stepLightbox(event.clientX < window.innerWidth / 2 ? -1 : 1);
+      return;
+    }
+    closePhotoLightbox();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (photoLightbox.hidden) return;
+    if (event.key === "Escape") {
+      closePhotoLightbox();
+      return;
+    }
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      stepLightbox(-1);
+    } else if (event.key === "ArrowRight") {
+      event.preventDefault();
+      stepLightbox(1);
+    }
+  });
+  const stopLightboxScroll = (event) => {
+    if (!document.body.classList.contains("has-photo-lightbox")) return;
+    event.preventDefault();
+  };
+  document.addEventListener("wheel", stopLightboxScroll, { passive: false });
+  document.addEventListener("touchmove", stopLightboxScroll, { passive: false });
+
+  latestPosts.addEventListener("pointerout", (event) => {
+    const item = event.target.closest(".photo-item");
+    if (!item || !latestPosts.contains(item)) return;
+    const related = event.relatedTarget;
+    if (related instanceof Node && item.contains(related)) return;
+    const active = document.activeElement;
+    if (active instanceof HTMLElement && item.contains(active)) active.blur();
+  });
+
   latestPosts.addEventListener("click", (event) => {
     const more = event.target.closest(".book-more");
     if (more) {
@@ -1404,16 +1579,52 @@ if (latestPosts) {
         .forEach((book) => book.classList.add("is-drawn", "is-settled"));
       return;
     }
+
+    const expand = event.target.closest(".photo-expand");
+    if (expand) {
+      event.preventDefault();
+      const item = expand.closest(".photo-item");
+      openPhotoLightbox(
+        item?.querySelector(".photo-pile-img.is-front, .feed-photo img")
+      );
+      return;
+    }
+
     const pile = event.target.closest(".photo-pile");
-    if (!pile) return;
-    const imgs = [...pile.querySelectorAll(".photo-pile-img")];
-    const count = imgs.length;
-    imgs.forEach((img) => {
-      const pos = (Number(img.style.getPropertyValue("--pos")) + count - 1) % count;
-      img.style.setProperty("--pos", pos);
-      img.style.zIndex = count - pos;
-      img.classList.toggle("is-front", pos === 0);
+    if (pile) {
+      const clickedImg = event.target.closest(".photo-pile-img");
+      const finePointer = window.matchMedia(
+        "(hover: hover) and (pointer: fine)"
+      ).matches;
+      if (finePointer && clickedImg?.classList.contains("is-front")) {
+        openPhotoLightbox(clickedImg);
+        return;
+      }
+      const imgs = [...pile.querySelectorAll(".photo-pile-img")];
+      const count = imgs.length;
+      imgs.forEach((img) => {
+        const pos =
+          (Number(img.style.getPropertyValue("--pos")) + count - 1) % count;
+        img.style.setProperty("--pos", pos);
+        img.style.zIndex = count - pos;
+        img.classList.toggle("is-front", pos === 0);
+      });
+      return;
+    }
+
+    const singleImg = event.target.closest(
+      ".photo-item:not(.is-pile) .feed-photo img"
+    );
+    if (singleImg) openPhotoLightbox(singleImg);
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!latestPosts.querySelector(".book-item.is-open-review")) return;
+    if (event.target.closest(".book-item.is-open-review")) return;
+    latestPosts.querySelectorAll(".book-item[data-expanded='1']").forEach((item) => {
+      item.dataset.expanded = "0";
     });
+    collapseBookRuns();
   });
 }
 
@@ -1648,11 +1859,15 @@ const prefersReducedMotion = window.matchMedia(
   "(prefers-reduced-motion: reduce)"
 ).matches;
 
-const typeoutHeading = (heading) => {
+const typeoutHeading = (heading, onDone) => {
   const text = heading.dataset.typeout || "";
   const live = heading.querySelector(".typeout-live");
   const shadows = heading.querySelectorAll(".typeout-shadow, .typeout-shadow-left");
-  if (!live || heading.dataset.typed === "1") return;
+  const done = typeof onDone === "function" ? onDone : null;
+  if (!live || heading.dataset.typed === "1") {
+    done?.();
+    return;
+  }
   heading.dataset.typed = "1";
   let i = 0;
   const step = () => {
@@ -1663,6 +1878,7 @@ const typeoutHeading = (heading) => {
       shadow.textContent = slice;
     });
     if (i < text.length) window.setTimeout(step, 48);
+    else done?.();
   };
   step();
 };
@@ -1700,8 +1916,13 @@ if (sectionHeadings.length) {
       (entries, observer) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
-          typeoutHeading(entry.target);
-          observer.unobserve(entry.target);
+          const heading = entry.target;
+          typeoutHeading(heading, () => {
+            if (heading.matches("#best-of > h2")) {
+              document.querySelector("#best-of")?.classList.add("is-showing-stickers");
+            }
+          });
+          observer.unobserve(heading);
         });
       },
       { threshold: 0.35, rootMargin: "0px 0px -8% 0px" }
@@ -1714,20 +1935,6 @@ if (sectionHeadings.length) {
 }
 
 const bestOfSection = document.querySelector("#best-of");
-if (bestOfSection) {
-  if (prefersReducedMotion) {
-    bestOfSection.classList.add("is-showing-stickers");
-  } else {
-    const bestOfStickerObserver = new IntersectionObserver(
-      (entries, observer) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          bestOfSection.classList.add("is-showing-stickers");
-          observer.disconnect();
-        });
-      },
-      { threshold: 0.2, rootMargin: "0px 0px -10% 0px" }
-    );
-    bestOfStickerObserver.observe(bestOfSection);
-  }
+if (bestOfSection && prefersReducedMotion) {
+  bestOfSection.classList.add("is-showing-stickers");
 }
