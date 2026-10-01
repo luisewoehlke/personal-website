@@ -598,12 +598,24 @@ const alignStandupLabel = (label) => {
 };
 
 const placeStandupStickers = () => {
+  const mobile = isMobileLayout();
   document
     .querySelectorAll('.work-list > li[data-category="stand-up"] .standup-mark')
     .forEach((mark) => {
       const card = mark.closest("li");
       if (!card || card.hidden) return;
-      alignStandupLabel(mark.querySelector(".standup-label"));
+      const label = mark.querySelector(".standup-label");
+      if (!label) return;
+      if (mobile) {
+        const live = label.querySelector(".typeout-live") || label;
+        if (live.textContent !== "stand-up") {
+          typeStandupLabel(label, true);
+        } else {
+          alignStandupLabel(label);
+        }
+      } else {
+        alignStandupLabel(label);
+      }
     });
 };
 
@@ -1545,7 +1557,10 @@ if (latestPosts) {
       return;
     }
     if (lightboxImgs.length > 1) {
-      stepLightbox(event.clientX < window.innerWidth / 2 ? -1 : 1);
+      const rect = photoLightboxImg.getBoundingClientRect();
+      const mid =
+        rect.width > 0 ? rect.left + rect.width / 2 : window.innerWidth / 2;
+      stepLightbox(event.clientX < mid ? -1 : 1);
       return;
     }
     closePhotoLightbox();
@@ -1608,7 +1623,14 @@ if (latestPosts) {
       const finePointer = window.matchMedia(
         "(hover: hover) and (pointer: fine)"
       ).matches;
-      if (finePointer && clickedImg?.classList.contains("is-front")) {
+      // Mobile: tap anywhere on the stack opens the lightbox
+      if (!finePointer || isMobileLayout()) {
+        openPhotoLightbox(
+          pile.querySelector(".photo-pile-img.is-front") || clickedImg
+        );
+        return;
+      }
+      if (clickedImg?.classList.contains("is-front")) {
         openPhotoLightbox(clickedImg);
         return;
       }
@@ -1847,6 +1869,7 @@ if (latestPosts) {
   latestPosts.addEventListener(
     "pointerenter",
     (event) => {
+      if (isMobileLayout()) return;
       const item = event.target;
       if (item.parentElement !== latestPosts || item.dataset.category !== "stand-up") return;
       typeStandupLabel(item.querySelector(".standup-label"), true);
@@ -1856,6 +1879,7 @@ if (latestPosts) {
   latestPosts.addEventListener(
     "pointerleave",
     (event) => {
+      if (isMobileLayout()) return;
       const item = event.target;
       if (item.parentElement !== latestPosts || item.dataset.category !== "stand-up") return;
       typeStandupLabel(item.querySelector(".standup-label"), false);
