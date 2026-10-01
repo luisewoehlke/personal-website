@@ -1556,14 +1556,22 @@ if (latestPosts) {
       closePhotoLightbox();
       return;
     }
-    if (lightboxImgs.length > 1) {
-      const rect = photoLightboxImg.getBoundingClientRect();
-      const mid =
-        rect.width > 0 ? rect.left + rect.width / 2 : window.innerWidth / 2;
-      stepLightbox(event.clientX < mid ? -1 : 1);
+    const rect = photoLightboxImg.getBoundingClientRect();
+    const pad = 28;
+    const outside =
+      !rect.width ||
+      event.clientX < rect.left - pad ||
+      event.clientX > rect.right + pad ||
+      event.clientY < rect.top - pad ||
+      event.clientY > rect.bottom + pad;
+    if (outside) {
+      closePhotoLightbox();
       return;
     }
-    closePhotoLightbox();
+    if (lightboxImgs.length > 1) {
+      const mid = rect.left + rect.width / 2;
+      stepLightbox(event.clientX < mid ? -1 : 1);
+    }
   });
   document.addEventListener("keydown", (event) => {
     if (photoLightbox.hidden) return;

@@ -3295,6 +3295,33 @@ footer p {
     translate: none;
   }
 
+  .best-of-rule {
+    top: 50%;
+    bottom: auto;
+    width: auto;
+    height: auto;
+    translate: -50% -50%;
+  }
+
+  .best-of-rule::before {
+    display: none;
+  }
+
+  .best-of-grid li:nth-child(odd) .best-of-rule {
+    left: calc(100% + (100% * 0.12 / 0.88 / 2));
+    right: auto;
+  }
+
+  .best-of-grid li:nth-child(even) .best-of-rule {
+    left: calc(0% - (100% * 0.12 / 0.88 / 2));
+    right: auto;
+  }
+
+  .best-of-rule-num {
+    position: static;
+    translate: none;
+  }
+
   #best-of > h2 {
     margin-left: 0;
   }
@@ -3885,11 +3912,16 @@ footer p {
   }
 
   .best-of-grid li {
-    width: 100%;
-    max-width: 100%;
+    width: 88%;
+    max-width: 88%;
+  }
+
+  .best-of-grid li:nth-child(odd) {
+    margin-inline-start: 0;
   }
 
   .best-of-grid li:nth-child(even) {
+    margin-inline-start: 12%;
     translate: none;
   }
 
@@ -3938,17 +3970,25 @@ footer p {
   }
 
   .best-of-rule {
-    left: auto;
-    right: -0.85rem;
-    top: auto;
-    bottom: -2.25rem;
+    top: 50%;
+    bottom: auto;
     width: auto;
     height: auto;
-    translate: none;
+    translate: -50% -50%;
   }
 
   .best-of-rule::before {
     display: none;
+  }
+
+  .best-of-grid li:nth-child(odd) .best-of-rule {
+    left: calc(100% + (100% * 0.12 / 0.88 / 2));
+    right: auto;
+  }
+
+  .best-of-grid li:nth-child(even) .best-of-rule {
+    left: calc(0% - (100% * 0.12 / 0.88 / 2));
+    right: auto;
   }
 
   .best-of-rule-num {
