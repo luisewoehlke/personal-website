@@ -3,7 +3,21 @@ if (year) {
   year.textContent = String(new Date().getFullYear());
 }
 
+const WOLKY_HINT_KEY = "wolky-hint-dismissed";
+const wolkyHintDismissed = () => sessionStorage.getItem(WOLKY_HINT_KEY) === "1";
+const dismissWolkyHint = (hint) => {
+  hint.classList.add("is-dismissed");
+  hint.setAttribute("aria-hidden", "true");
+  hint.tabIndex = -1;
+  sessionStorage.setItem(WOLKY_HINT_KEY, "1");
+};
+
 document.querySelectorAll(".wolky-hint").forEach((hint) => {
+  if (wolkyHintDismissed()) {
+    dismissWolkyHint(hint);
+    return;
+  }
+
   let hoverTimer = null;
   let dismissOnLeave = false;
 
@@ -19,15 +33,13 @@ document.querySelectorAll(".wolky-hint").forEach((hint) => {
     hoverTimer = setTimeout(() => {
       dismissOnLeave = true;
       hoverTimer = null;
-    }, 1000);
+    }, 700);
   };
 
   const onLeave = () => {
     clearHoverTimer();
     if (!dismissOnLeave) return;
-    hint.classList.add("is-dismissed");
-    hint.setAttribute("aria-hidden", "true");
-    hint.tabIndex = -1;
+    dismissWolkyHint(hint);
   };
 
   hint.addEventListener("pointerenter", onEnter);

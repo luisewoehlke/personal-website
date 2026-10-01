@@ -1064,12 +1064,12 @@ body.is-piling-stickers .sticker-peach {
 
 .about-fig {
   position: absolute;
-  left: -0.35rem;
-  bottom: -0.85rem;
-  width: 3.1rem;
+  left: -2rem;
+  top: -1.4rem;
+  width: 3.4rem;
   height: auto;
-  rotate: -18deg;
-  z-index: 1;
+  rotate: -22deg;
+  z-index: 2;
   pointer-events: none;
   image-rendering: pixelated;
 }
@@ -1240,6 +1240,11 @@ body.is-piling-stickers .sticker-peach {
   .about-page #about > h2 {
     top: 0;
     margin-bottom: 0.5rem;
+  }
+
+  .about-fig {
+    top: 0.15rem;
+    left: -0.25rem;
   }
 
   .about-page #about .about-gap {
