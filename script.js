@@ -1773,6 +1773,15 @@ if (latestPosts) {
 if (postFilter) {
   const filterSummary = postFilter.querySelector("summary");
   const isFilterSheet = () => window.matchMedia("(max-width: 640px)").matches;
+  const filterBoxes = () =>
+    [...postFilter.querySelectorAll("input[type=checkbox]")];
+  const selectAllFilters = () => {
+    filterBoxes().forEach((box) => {
+      box.checked = true;
+    });
+  };
+  selectAllFilters();
+  applyPostFilter();
   const closeFilter = () => {
     if (!postFilter.open) return;
     postFilter.classList.remove("is-sheet-expanded");
