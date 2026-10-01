@@ -340,23 +340,27 @@ my stuff</h2>
           <h2 id="latest-heading">Latest</h2>
           <details class="post-filter">
             <summary>
-              <span class="post-filter-icon-wrap">
-                <svg
-                  class="post-filter-icon"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M3 5h18l-7 8.5V19l-4 2v-7.5z"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.4"
-                    stroke-linejoin="round"
-                  />
-                </svg>
+              <span class="post-filter-handle" aria-hidden="true"></span>
+              <span class="post-filter-tab">
+                <span class="post-filter-icon-wrap">
+                  <svg
+                    class="post-filter-icon"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M3 5h18l-7 8.5V19l-4 2v-7.5z"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.4"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </span>
+                <span class="post-filter-label">Filter</span>
+                <span class="post-filter-count" aria-live="polite"></span>
               </span>
-              <span class="visually-hidden">Filter</span
-              ><span class="post-filter-count" aria-live="polite"></span>
+              <span class="visually-hidden">Filter posts</span>
             </summary>
             <fieldset>
               <legend class="visually-hidden">Show posts about</legend>

@@ -373,6 +373,7 @@ main {
   letter-spacing: 0.08em;
   text-transform: lowercase;
   transition: opacity 0.2s ease, visibility 0.2s;
+  animation: scroll-hint-bob 2s ease-in-out infinite;
 }
 
 .scroll-hint.is-hidden {
@@ -385,7 +386,6 @@ main {
   width: 1.1rem;
   height: 1.1rem;
   color: var(--peach);
-  animation: scroll-hint-bob 2s ease-in-out infinite;
 }
 
 .scroll-hint > * {
@@ -404,12 +404,12 @@ main {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(4px);
+    transform: translateY(3px);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .scroll-hint svg {
+  .scroll-hint {
     animation: none;
   }
 
@@ -2932,6 +2932,7 @@ body.has-photo-lightbox {
   cursor: pointer;
   list-style: none;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .post-filter[open] summary {
@@ -2988,9 +2989,16 @@ body.has-photo-lightbox {
   background: currentColor;
 }
 
-.post-filter-count {
-  order: 1;
-  font-weight: 600;
+.post-filter-label {
+  display: none;
+}
+
+.post-filter-handle {
+  display: none;
+}
+
+.post-filter-tab {
+  display: contents;
 }
 
 .post-filter fieldset {
@@ -3063,35 +3071,27 @@ body.has-photo-lightbox {
   height: 0.9rem;
   margin: 0;
   border: 1.5px solid currentColor;
-  border-radius: 0;
+  border-radius: 50%;
   background: none;
   color: inherit;
   cursor: pointer;
 }
 
-.post-filter input::before,
-.post-filter input::after {
+.post-filter input::before {
   content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 1px;
-  height: 141%;
+  width: 48%;
+  height: 48%;
+  border-radius: 50%;
   background: currentColor;
   opacity: 0;
   transition: opacity 0.12s ease;
 }
 
-.post-filter input::before {
-  transform: translate(-50%, -50%) rotate(45deg);
-}
-
 .post-filter input::after {
-  transform: translate(-50%, -50%) rotate(-45deg);
+  content: none;
 }
 
-.post-filter input:checked::before,
-.post-filter input:checked::after {
+.post-filter input:checked::before {
   opacity: 1;
 }
 
@@ -3499,6 +3499,7 @@ footer p {
     z-index: 12;
     padding-bottom: max(3vw, env(safe-area-inset-bottom, 0px));
     font-size: 4.65vw;
+    animation: scroll-hint-bob 2.2s ease-in-out infinite;
   }
 
   .landing .scroll-hint:hover > *,
@@ -3513,7 +3514,6 @@ footer p {
   .scroll-hint svg {
     width: 6.3vw;
     height: 6.3vw;
-    animation: none;
   }
 
   #best-of > h2,
@@ -4105,6 +4105,7 @@ footer p {
     --latest-pad-top: 7rem;
     padding-inline: 5vw;
     padding-top: var(--latest-pad-top);
+    padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px));
     box-sizing: border-box;
   }
 
@@ -4180,15 +4181,21 @@ footer p {
   .post-filter {
     position: fixed;
     top: auto;
-    bottom: max(2.9rem, env(safe-area-inset-bottom, 0px) + 2.3rem);
+    left: auto;
     right: max(1.85rem, env(safe-area-inset-right, 0px) + 1.4rem);
+    bottom: max(2.9rem, env(safe-area-inset-bottom, 0px) + 2.3rem);
+    width: auto;
     margin: 0;
     z-index: 20;
     opacity: 0;
     visibility: hidden;
-    /* Avoid translate here — it makes position:fixed fieldset use this box as containing block */
     translate: none;
-    transition: opacity 0.45s ease, visibility 0.45s ease;
+    display: block;
+    background: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding-bottom: 0;
+    transition: opacity 0.35s ease, visibility 0.35s ease;
   }
 
   .post-filter.is-in {
@@ -4201,19 +4208,92 @@ footer p {
     pointer-events: none;
   }
 
+  .post-filter[open] {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    background: color-mix(in srgb, var(--bg) 92%, white);
+    border-radius: 2.35rem 2.35rem 0 0;
+    box-shadow: 0 -0.35rem 1.4rem rgba(92, 58, 40, 0.12);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    max-height: 20rem;
+    overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .post-filter[open].is-sheet-expanded {
+    max-height: min(90vh, 36rem);
+  }
+
+  .post-filter-handle {
+    display: none;
+  }
+
+  .post-filter[open] .post-filter-handle {
+    display: none;
+  }
+
+  .post-filter-label {
+    display: none;
+    font-size: 1.05rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  .post-filter[open] .post-filter-label {
+    display: none;
+  }
+
   .post-filter summary {
     display: grid;
     place-items: center;
     place-content: center;
-    padding: 0;
+    gap: 0;
     width: 4.35rem;
     height: 4.35rem;
     min-width: 4.35rem;
     min-height: 4.35rem;
-    gap: 0;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
     border-radius: 50%;
     background: color-mix(in srgb, var(--bg) 78%, white);
     box-shadow: 0 0.35rem 1.1rem rgba(92, 58, 40, 0.12);
+    color: var(--glow);
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+  }
+
+  .post-filter summary .post-filter-tab {
+    display: grid;
+    place-items: center;
+    place-content: center;
+  }
+
+  .post-filter[open] summary .post-filter-tab {
+    display: none;
+  }
+
+  .post-filter[open] summary {
+    display: block;
+    width: 100%;
+    height: 1.1rem;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    opacity: 1;
+    pointer-events: auto;
+    cursor: grab;
+    touch-action: none;
   }
 
   .post-filter-icon {
@@ -4221,11 +4301,22 @@ footer p {
     height: 1.75rem;
   }
 
+  .post-filter[open] .post-filter-icon {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+
   .post-filter-icon-wrap {
     order: 0;
     grid-area: 1 / 1;
+    position: relative;
     display: grid;
     place-items: center;
+  }
+
+  .post-filter[open] .post-filter-icon-wrap {
+    display: inline-flex;
+    grid-area: auto;
   }
 
   .post-filter-count {
@@ -4236,14 +4327,16 @@ footer p {
     margin: 0.15rem 0.2rem 0 0;
     font-size: 0.65rem;
     line-height: 1;
+    font-weight: 600;
     pointer-events: none;
   }
 
-  .post-filter[open] summary {
-    opacity: 0;
-    background: transparent;
-    box-shadow: none;
-    pointer-events: none;
+  .post-filter[open] .post-filter-count {
+    grid-area: auto;
+    align-self: auto;
+    justify-self: auto;
+    margin: 0;
+    font-size: 0.85rem;
   }
 
   .post-filter summary::after {
@@ -4256,41 +4349,47 @@ footer p {
   }
 
   .post-filter fieldset {
-    position: fixed;
-    left: 50%;
+    position: static;
+    left: auto;
     right: auto;
     top: auto;
-    bottom: max(8.8rem, env(safe-area-inset-bottom, 0px) + 8.2rem);
+    bottom: auto;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 1.1rem;
+    align-items: stretch;
+    gap: 1.75rem;
+    width: 100%;
     margin: 0;
-    padding: 1.85rem 2.1rem;
+    padding: 2.25rem 1.5rem 3.75rem 3.25rem;
+    min-width: 0;
     border: 0;
-    border-radius: 1.75rem;
+    border-radius: 0;
     white-space: nowrap;
-    opacity: 0;
-    translate: -50% 0;
-    pointer-events: none;
-    box-shadow: 0 0.35rem 1.1rem rgba(92, 58, 40, 0.12);
+    opacity: 1;
+    translate: none;
+    pointer-events: auto;
+    box-shadow: none;
+    box-sizing: border-box;
+    background: none;
   }
 
   .post-filter[open] fieldset {
     opacity: 1;
     pointer-events: auto;
-    background: color-mix(in srgb, var(--bg) 88%, white);
-    box-shadow: 0 0.35rem 1.1rem rgba(92, 58, 40, 0.12);
+    background: none;
+    box-shadow: none;
   }
 
   .post-filter label {
-    font-size: 1.15rem;
-    gap: 0.7rem;
+    font-size: 2.3rem;
+    gap: 1.25rem;
+    align-items: flex-start;
   }
 
   .post-filter input {
-    width: 1.15rem;
-    height: 1.15rem;
+    width: 2rem;
+    height: 2rem;
+    margin-top: 1.2rem;
   }
 
   .about-snap-hint .about-snap-q {
@@ -4333,6 +4432,6 @@ footer p {
 
   .post-filter fieldset,
   .post-filter[open] fieldset {
-    translate: -50% 0 !important;
+    translate: none !important;
   }
 }

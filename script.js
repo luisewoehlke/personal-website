@@ -1772,23 +1772,87 @@ if (latestPosts) {
 
 if (postFilter) {
   const filterSummary = postFilter.querySelector("summary");
+  const isFilterSheet = () => window.matchMedia("(max-width: 640px)").matches;
   const closeFilter = () => {
     if (!postFilter.open) return;
+    postFilter.classList.remove("is-sheet-expanded");
     postFilter.open = false;
+  };
+  const collapseSheet = () => {
+    postFilter.classList.remove("is-sheet-expanded");
+  };
+  const expandSheet = () => {
+    postFilter.classList.add("is-sheet-expanded");
   };
   postFilter.addEventListener("change", () => {
     applyPostFilter();
     syncEntranceAfterFilter();
   });
+  postFilter.addEventListener("toggle", () => {
+    if (!postFilter.open) postFilter.classList.remove("is-sheet-expanded");
+  });
   filterSummary?.addEventListener("click", (event) => {
+    if (isFilterSheet()) return;
     if (!postFilter.open) return;
     event.preventDefault();
     closeFilter();
   });
+  let sheetPointerId = null;
+  let sheetStartY = 0;
+  let sheetDragging = false;
+  const sheetGestureTarget = (event) => {
+    if (!isFilterSheet() || !postFilter.open || event.button !== 0) return false;
+    if (event.target instanceof Element && event.target.closest("label, input")) {
+      return false;
+    }
+    return true;
+  };
+  postFilter.addEventListener("pointerdown", (event) => {
+    if (!sheetGestureTarget(event)) return;
+    sheetPointerId = event.pointerId;
+    sheetStartY = event.clientY;
+    sheetDragging = false;
+    postFilter.setPointerCapture?.(event.pointerId);
+  });
+  postFilter.addEventListener("pointermove", (event) => {
+    if (event.pointerId !== sheetPointerId) return;
+    if (Math.abs(event.clientY - sheetStartY) > 8) sheetDragging = true;
+  });
+  const endSheetGesture = (event) => {
+    if (event.pointerId !== sheetPointerId) return;
+    const dy = event.clientY - sheetStartY;
+    sheetPointerId = null;
+    if (!sheetDragging) return;
+    event.preventDefault();
+    if (dy < -36) expandSheet();
+    else if (dy > 36) {
+      if (postFilter.classList.contains("is-sheet-expanded")) collapseSheet();
+      else closeFilter();
+    }
+  };
+  postFilter.addEventListener("pointerup", endSheetGesture);
+  postFilter.addEventListener("pointercancel", () => {
+    sheetPointerId = null;
+  });
+  postFilter.addEventListener(
+    "click",
+    (event) => {
+      if (!isFilterSheet() || !sheetDragging) return;
+      if (event.target instanceof Element && event.target.closest("label, input")) {
+        return;
+      }
+      event.preventDefault();
+      sheetDragging = false;
+    },
+    true
+  );
   postFilter.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
-      closeFilter();
-      filterSummary?.focus();
+      if (postFilter.classList.contains("is-sheet-expanded")) collapseSheet();
+      else {
+        closeFilter();
+        filterSummary?.focus();
+      }
     }
   });
   document.addEventListener("pointerdown", (event) => {
@@ -1801,6 +1865,7 @@ if (postFilter) {
     const mostBelowHeading =
       latestHeading.getBoundingClientRect().bottom < window.innerHeight * 0.2;
     postFilter.classList.toggle("is-in", mostBelowHeading);
+    if (!mostBelowHeading) closeFilter();
   };
   syncFilterIn();
   window.addEventListener("scroll", syncFilterIn, { passive: true });
