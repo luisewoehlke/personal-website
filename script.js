@@ -1711,9 +1711,6 @@ if (latestPosts) {
   let lbPanStartY = 0;
   let lbPanOriginX = 0;
   let lbPanOriginY = 0;
-  let lbLastTap = 0;
-  let lbLastTapX = 0;
-  let lbLastTapY = 0;
 
   const applyLightboxZoom = () => {
     photoLightboxImg.style.transform = `translate(${lbX}px, ${lbY}px) scale(${lbScale})`;
@@ -1850,30 +1847,6 @@ if (latestPosts) {
     if (!isMobileLayout() || photoLightbox.hidden) return;
     if (event.touches.length < 2) lbPinchDist = 0;
     if (lbScale < 1.05) resetLightboxZoom();
-    if (event.touches.length > 0 || event.changedTouches.length !== 1) return;
-    if (lbMoved) return;
-    if (event.target.closest(".photo-lightbox-close")) return;
-    const touch = event.changedTouches[0];
-    const now = Date.now();
-    if (
-      now - lbLastTap < 320 &&
-      Math.hypot(touch.clientX - lbLastTapX, touch.clientY - lbLastTapY) < 36
-    ) {
-      lbMoved = true;
-      if (lbScale > 1.01) {
-        resetLightboxZoom();
-      } else {
-        lbScale = 2.4;
-        lbX = 0;
-        lbY = 0;
-        applyLightboxZoom();
-      }
-      lbLastTap = 0;
-    } else {
-      lbLastTap = now;
-      lbLastTapX = touch.clientX;
-      lbLastTapY = touch.clientY;
-    }
   });
 
   photoLightbox.addEventListener("click", (event) => {
@@ -2232,12 +2205,22 @@ if (postFilter) {
     }
   });
   let suppressFilterOutsideClickUntil = 0;
-  document.addEventListener("pointerdown", (event) => {
-    if (!postFilter.open || postFilter.contains(event.target)) return;
-    closeFilter();
-    /* Same tap must not activate links under the dismiss target */
-    if (isFilterSheet()) suppressFilterOutsideClickUntil = performance.now() + 500;
-  });
+  document.addEventListener(
+    "pointerdown",
+    (event) => {
+      if (!postFilter.open || postFilter.contains(event.target)) return;
+      closeFilter();
+      /* Same tap must not activate / flash links under the dismiss target */
+      if (!isFilterSheet()) return;
+      suppressFilterOutsideClickUntil = performance.now() + 500;
+      if (event.target.closest?.("a, button, summary, [href]")) {
+        event.preventDefault();
+        const active = document.activeElement;
+        if (active instanceof HTMLElement && !postFilter.contains(active)) active.blur();
+      }
+    },
+    true
+  );
   document.addEventListener(
     "click",
     (event) => {

@@ -1473,6 +1473,10 @@ body.is-piling-stickers .sticker-peach {
     margin: 0;
   }
 
+  .about-loves {
+    padding-left: 5.75vw;
+  }
+
   .about-loves li {
     line-height: 1.4;
   }
@@ -1791,7 +1795,8 @@ body.is-piling-stickers .sticker-peach {
   }
 
   .about-snap-captioned figcaption {
-    max-width: min(16rem, 78vw);
+    width: max-content;
+    max-width: 66vw;
     left: 50%;
     right: auto;
     translate: -50% 0;
@@ -3871,12 +3876,23 @@ footer p {
 @media (max-width: 800px) {
   html.is-filter-tap-guard,
   html.is-filter-tap-guard * {
-    -webkit-tap-highlight-color: transparent;
+    -webkit-tap-highlight-color: transparent !important;
   }
 
+  html.is-filter-tap-guard .work-list a:active,
   html.is-filter-tap-guard .work-list a:focus,
-  html.is-filter-tap-guard .best-of-grid a:focus {
+  html.is-filter-tap-guard .work-list a:focus-visible,
+  html.is-filter-tap-guard .best-of-grid a:active,
+  html.is-filter-tap-guard .best-of-grid a:focus,
+  html.is-filter-tap-guard .best-of-grid a:focus-visible {
+    color: inherit;
     outline: none;
+  }
+
+  html.is-filter-tap-guard .post-card:active h3,
+  html.is-filter-tap-guard .post-card:focus h3,
+  html.is-filter-tap-guard .post-card:hover h3 {
+    color: var(--ink);
   }
 
   .post-filter.is-filtered .post-filter-icon-wrap::after {
@@ -4244,15 +4260,26 @@ footer p {
   }
 
   #about h2 {
-    font-size: 17.2vw;
+    font-size: 1em;
+    line-height: inherit;
+    margin: 0;
   }
 
   .about-heading {
+    display: block;
+    position: relative;
+    width: fit-content;
+    max-width: 100%;
     margin-left: 11vw;
+    font-size: 17.2vw;
+    line-height: 0.85;
   }
 
   .about-fig {
-    font-size: 17.2vw;
+    left: -0.9em;
+    top: 0.35em;
+    width: 1.5em;
+    font-size: 1em;
   }
 
   #best-of-heading {
