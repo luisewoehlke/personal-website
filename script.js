@@ -340,45 +340,49 @@ if (landingScrollHint) {
 const latestScrollHint = document.querySelector(
   '#best-of > .scroll-hint[href="#latest-heading"]'
 );
-if (latestScrollHint) {
-  const updateLatestScrollHint = () => {
-    if (!window.matchMedia("(min-width: 1041px)").matches) {
-      latestScrollHint.classList.remove("is-hidden");
-      return;
-    }
-    const section = document.getElementById("best-of");
-    if (!section) {
-      latestScrollHint.classList.add("is-hidden");
-      return;
-    }
-    const margin = parseFloat(getComputedStyle(section).scrollMarginTop) || 0;
-    const idealY =
-      section.getBoundingClientRect().top + window.scrollY - margin;
-    const show = Math.abs(window.scrollY - idealY) <= 20;
-    latestScrollHint.classList.toggle("is-hidden", !show);
+const bestOfTopHint = document.querySelector(".scroll-hint-top");
+const bestOfHintsSection = document.getElementById("best-of");
+if ((latestScrollHint || bestOfTopHint) && bestOfHintsSection) {
+  let bestOfHintSettleTimer = 0;
+  const bestOfHintIdealY = () => {
+    const margin =
+      parseFloat(getComputedStyle(bestOfHintsSection).scrollMarginTop) || 0;
+    return (
+      bestOfHintsSection.getBoundingClientRect().top + window.scrollY - margin
+    );
   };
-  updateLatestScrollHint();
-  window.addEventListener("scroll", updateLatestScrollHint, { passive: true });
-  window.addEventListener("resize", updateLatestScrollHint);
-}
-
-const bestOfTopHint = document.querySelector("#best-of > .scroll-hint-top");
-if (bestOfTopHint) {
-  const updateBestOfTopHint = () => {
+  const bestOfHintsInBounds = () =>
+    Math.abs(window.scrollY - bestOfHintIdealY()) <= 40;
+  const setBestOfHintsVisible = (visible) => {
+    bestOfHintsSection.classList.toggle("is-hints-visible", visible);
+    latestScrollHint?.classList.toggle("is-hidden", !visible);
+    bestOfTopHint?.classList.toggle("is-hidden", !visible);
+  };
+  const updateBestOfLandingHints = () => {
+    window.clearTimeout(bestOfHintSettleTimer);
     if (!window.matchMedia("(min-width: 1041px)").matches) {
-      bestOfTopHint.classList.add("is-hidden");
+      bestOfHintsSection.classList.remove("is-hints-visible");
+      latestScrollHint?.classList.remove("is-hidden");
+      bestOfTopHint?.classList.add("is-hidden");
       return;
     }
-    const section = document.getElementById("best-of");
-    if (!section) return;
-    const rect = section.getBoundingClientRect();
-    const show =
-      rect.top < window.innerHeight * 0.2 && rect.bottom > window.innerHeight * 0.55;
-    bestOfTopHint.classList.toggle("is-hidden", !show);
+    if (!bestOfHintsInBounds()) {
+      setBestOfHintsVisible(false);
+      return;
+    }
+    if (bestOfHintsSection.classList.contains("is-hints-visible")) return;
+    bestOfHintSettleTimer = window.setTimeout(() => {
+      if (
+        bestOfHintsInBounds() &&
+        window.matchMedia("(min-width: 1041px)").matches
+      ) {
+        setBestOfHintsVisible(true);
+      }
+    }, 1000);
   };
-  updateBestOfTopHint();
-  window.addEventListener("scroll", updateBestOfTopHint, { passive: true });
-  window.addEventListener("resize", updateBestOfTopHint);
+  updateBestOfLandingHints();
+  window.addEventListener("scroll", updateBestOfLandingHints, { passive: true });
+  window.addEventListener("resize", updateBestOfLandingHints);
 }
 
 const bestOfBackHint = document.querySelector("#latest > .scroll-hint-back");

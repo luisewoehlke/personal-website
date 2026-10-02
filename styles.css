@@ -307,6 +307,13 @@ a {
   color: var(--accent);
 }
 
+@media (min-width: 801px) {
+  .header-nav:has(.about-link[aria-current="page"]) .about-link,
+  .header-nav:has(.about-link[aria-current="page"]) .header-rule {
+    display: none;
+  }
+}
+
 .socials {
   display: flex;
   align-items: center;
@@ -372,7 +379,7 @@ main {
   font-size: 0.8rem;
   letter-spacing: 0.08em;
   text-transform: lowercase;
-  transition: opacity 0.2s ease, visibility 0.2s;
+  transition: opacity 0.45s ease, visibility 0s linear 0s;
   animation: scroll-hint-bob 2s ease-in-out infinite;
   -webkit-tap-highlight-color: transparent;
   outline: none;
@@ -386,6 +393,7 @@ main {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
 }
 
 .scroll-hint svg {
@@ -1147,6 +1155,10 @@ body.is-piling-stickers .sticker-peach {
   z-index: 1;
 }
 
+.about-snap-group {
+  display: contents;
+}
+
 .about-snap-captioned {
   height: auto;
   margin: 0;
@@ -1251,25 +1263,75 @@ body.is-piling-stickers .sticker-peach {
   }
 
   .about-page #about > h2 {
-    top: 0;
-    margin-bottom: 0.5rem;
+    position: relative;
+    top: -2.6rem;
+    z-index: 2;
+    margin-bottom: 1.35rem;
   }
 
   .about-fig {
-    top: 0.15rem;
-    left: -0.25rem;
+    top: -0.75rem;
+    left: -1.5rem;
+    width: 6.12rem;
   }
 
   .about-page #about .about-gap {
     margin-top: 1.35rem;
   }
 
-  .about-page #about p {
-    font-size: 0.92rem;
+  .about-page #about p,
+  .about-loves,
+  .about-snap-captioned figcaption {
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    font-size: 6.12vw;
+    line-height: 1.55;
+    letter-spacing: 0.01em;
+    color: #000;
   }
 
-  .about-loves {
-    font-size: 0.95rem;
+  .about-snap-group {
+    display: block;
+    position: relative;
+    width: 100%;
+    margin: 0.55rem 0 0.85rem;
+  }
+
+  .about-snap-group-loves {
+    min-height: 14.5rem;
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .about-snap-group-loves .about-snap {
+    position: absolute;
+    margin: 0;
+    height: auto;
+  }
+
+  .about-snap-group-loves .about-snap-out-l {
+    left: 0;
+    top: 0;
+    width: min(48%, 10.5rem);
+    aspect-ratio: calc(128 / 169);
+    z-index: 1;
+  }
+
+  .about-snap-group-loves .about-snap-out-r.about-snap-end {
+    left: auto;
+    right: 4%;
+    top: 42%;
+    width: min(42%, 9.5rem);
+    aspect-ratio: calc(128 / 96);
+    z-index: 1;
+  }
+
+  .about-snap-group-loves .about-snap-front {
+    left: auto;
+    right: 0;
+    top: 18%;
+    width: min(36%, 8rem);
+    aspect-ratio: 1;
+    z-index: 2;
   }
 
   .about-snap {
@@ -1280,7 +1342,7 @@ body.is-piling-stickers .sticker-peach {
     height: auto;
     aspect-ratio: calc(var(--w) / var(--h));
     margin: 0.55rem 0 0.15rem;
-    rotate: -3deg;
+    rotate: none;
   }
 
   .about-snap-captioned {
@@ -1299,10 +1361,18 @@ body.is-piling-stickers .sticker-peach {
     top: auto;
   }
 
+  .about-snap-hint figcaption {
+    position: absolute;
+    top: calc(100% + 0.35rem);
+    margin-top: 0;
+    z-index: 3;
+  }
+
   .about-snap-hint .about-snap-q {
     top: auto;
-    bottom: 0.35rem;
-    left: 0.15rem;
+    bottom: 0.25rem;
+    left: -0.15rem;
+    z-index: 2;
   }
 
   .about-snap-start {
@@ -1311,7 +1381,19 @@ body.is-piling-stickers .sticker-peach {
 
   .about-snap-end {
     align-self: flex-end;
-    rotate: 3.5deg;
+    rotate: none;
+  }
+
+  .about-snap-heading-bg {
+    position: absolute;
+    left: auto;
+    right: 0;
+    top: -0.2rem;
+    width: min(32%, 6rem);
+    height: auto;
+    aspect-ratio: 1;
+    margin: 0;
+    z-index: 0;
   }
 
   .about-snap-out-l,
@@ -1491,6 +1573,7 @@ h2 {
 }
 
 #best-of > .scroll-hint,
+.scroll-hint-top,
 #latest > .scroll-hint-back,
 .scroll-hint-rail {
   display: none;
@@ -1574,7 +1657,7 @@ h2 {
     pointer-events: none;
   }
 
-  #best-of > .scroll-hint-top {
+  .scroll-hint-top {
     display: flex;
     position: fixed;
     top: max(2.2rem, env(safe-area-inset-top, 0px) + 1.3rem);
@@ -1588,7 +1671,7 @@ h2 {
     translate: -50% 0;
     justify-content: flex-start;
     align-items: center;
-    z-index: 16;
+    z-index: 30;
     animation-delay: -1s;
   }
 }
@@ -3686,6 +3769,11 @@ footer p {
     line-height: 0.85;
   }
 
+  #about > h2 {
+    font-size: 20.28vw;
+    margin-left: 7vw;
+  }
+
   #best-of-heading,
   #best-of > h2 {
     scroll-margin-top: calc(var(--header-h, 4.8rem) + 0.15rem);
@@ -4009,14 +4097,32 @@ footer p {
   }
 
   .header-nav .about-link {
+    order: 2;
     font-size: 1rem;
   }
 
   .header-nav .socials {
+    order: 1;
     flex-direction: column;
     align-items: center;
     width: 100%;
     gap: 2rem;
+  }
+
+  .header-end.is-open .header-nav:has(.about-link[aria-current="page"]) {
+    min-height: calc(3.25rem * 2 + 2rem * 3 + 2rem * 2 + 2.15rem + 1em);
+    min-width: 5.5rem;
+  }
+
+  .header-nav:has(.about-link[aria-current="page"]) .about-link {
+    display: none;
+  }
+
+  .header-nav:has(.about-link[aria-current="page"]) .socials {
+    flex: 1 1 auto;
+    align-self: stretch;
+    gap: 0;
+    justify-content: space-evenly;
   }
 
   .header-nav .socials li {
