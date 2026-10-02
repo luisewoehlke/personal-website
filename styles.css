@@ -134,6 +134,7 @@ a {
   body,
   .site-header-bg,
   body::before,
+  body::after,
   .site-header-bg::before {
     animation: none;
   }
@@ -1095,6 +1096,10 @@ body.is-piling-stickers .sticker-peach {
   image-rendering: pixelated;
 }
 
+.about-stickers {
+  display: none;
+}
+
 .about-page + footer {
   padding-top: 0.5rem;
   padding-bottom: 1rem;
@@ -1262,10 +1267,43 @@ body.is-piling-stickers .sticker-peach {
     gap: 2.25rem;
   }
 
-  .about-page #about > h2 {
+  .about-stickers {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    overflow: visible;
+  }
+
+  .about-sticker {
+    position: absolute;
+    top: var(--t);
+    left: var(--l);
+    width: calc(2.15rem * var(--s, 1));
+    max-width: 11vw;
+    height: auto;
+    rotate: var(--r, 0deg);
+    image-rendering: pixelated;
+    opacity: 0.92;
+  }
+
+  .about-page #about > h2,
+  .about-page #about > p,
+  .about-page #about > .about-snap,
+  .about-page #about > .about-snap-group,
+  .about-page #about > .about-loves {
     position: relative;
+    z-index: 1;
+  }
+
+  .about-fig {
+    z-index: 4;
+  }
+
+  .about-page #about > h2 {
     top: -2.6rem;
-    z-index: 2;
+    z-index: 4;
     margin-bottom: 1.35rem;
   }
 
@@ -1279,18 +1317,42 @@ body.is-piling-stickers .sticker-peach {
     margin-top: 3.5rem;
   }
 
+  .about-page {
+    padding-bottom: 6.5rem;
+  }
+
+  .about-page + footer {
+    padding-top: 3.5rem;
+  }
+
   .about-page #about p,
   .about-loves,
   .about-snap-captioned figcaption {
     font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-    font-size: 6.12vw;
+    font-size: 4.8vw;
     line-height: 1.55;
     letter-spacing: 0.01em;
     color: #000;
   }
 
-  .about-page #about p {
+  .about-page #about > p {
+    width: 66.666%;
+    max-width: 66.666%;
     margin: 0 0 0.75rem;
+    align-self: flex-start;
+    text-align: left;
+  }
+
+  .about-page #about > p:first-of-type {
+    align-self: center;
+    text-align: left;
+    margin-top: calc(-2.75rem - 2.25rem - 0.85rem);
+    margin-bottom: 1.25rem;
+  }
+
+  .about-page #about p:nth-of-type(even) {
+    align-self: flex-end;
+    text-align: right;
   }
 
   .about-loves {
@@ -1305,7 +1367,7 @@ body.is-piling-stickers .sticker-peach {
   }
 
   .about-snap-group-loves {
-    min-height: 14.5rem;
+    min-height: 11rem;
     margin-top: 2.5rem;
     margin-bottom: 2.5rem;
   }
@@ -1319,7 +1381,7 @@ body.is-piling-stickers .sticker-peach {
   .about-snap-group-loves .about-snap-out-l {
     left: 0;
     top: 0;
-    width: min(48%, 10.5rem);
+    width: min(38%, 8rem);
     aspect-ratio: calc(128 / 169);
     z-index: 1;
   }
@@ -1328,7 +1390,7 @@ body.is-piling-stickers .sticker-peach {
     left: auto;
     right: 4%;
     top: 42%;
-    width: min(42%, 9.5rem);
+    width: min(32%, 7.25rem);
     aspect-ratio: calc(128 / 96);
     z-index: 1;
   }
@@ -1337,7 +1399,7 @@ body.is-piling-stickers .sticker-peach {
     left: auto;
     right: 0;
     top: 18%;
-    width: min(36%, 8rem);
+    width: min(28%, 6rem);
     aspect-ratio: 1;
     z-index: 2;
   }
@@ -1346,7 +1408,7 @@ body.is-piling-stickers .sticker-peach {
     position: static;
     left: auto;
     top: auto;
-    width: min(58%, 13.5rem);
+    width: min(44%, 10rem);
     height: auto;
     aspect-ratio: calc(var(--w) / var(--h));
     margin: 1.5rem 0 2.75rem;
@@ -1354,8 +1416,12 @@ body.is-piling-stickers .sticker-peach {
   }
 
   .about-snap-captioned {
-    width: min(64%, 15rem);
+    width: min(48%, 11rem);
     aspect-ratio: auto;
+  }
+
+  .about-snap-hippo {
+    width: min(32%, 7rem);
   }
 
   .about-snap-captioned img {
@@ -1397,7 +1463,7 @@ body.is-piling-stickers .sticker-peach {
     left: auto;
     right: 0;
     top: -0.2rem;
-    width: min(32%, 6rem);
+    width: min(24%, 4.5rem);
     height: auto;
     aspect-ratio: 1;
     margin: 0;
@@ -3491,6 +3557,44 @@ footer p {
     --text-pad-left: 5.5vw;
   }
 
+  /* Fixed peach wash: iOS ignores background-attachment:fixed on body */
+  body {
+    background-image: none;
+    background-color: var(--bg);
+    animation: none;
+  }
+
+  body::before {
+    background-color: var(--bg);
+    background-image:
+      radial-gradient(ellipse 100vw 116vh at 82% 22%, rgba(255, 143, 85, 0.38) 0%, rgba(255, 160, 110, 0.14) 46%, transparent 72%),
+      radial-gradient(ellipse 140vw 96vh at 48% 84%, rgba(255, 200, 150, 0.32) 0%, rgba(255, 186, 140, 0.12) 48%, transparent 74%),
+      radial-gradient(ellipse 76vw 80vh at 68% 58%, rgba(255, 176, 122, 0.3) 0%, transparent 68%),
+      radial-gradient(ellipse 100vw 116vh at 0% 42%, rgba(255, 143, 85, 0.38) 0%, rgba(255, 160, 110, 0.14) 46%, transparent 72%);
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    background-size: 155% 155%, 140% 140%, 165% 165%, 155% 155%;
+    animation: peach-glow 48s ease-in-out infinite alternate;
+    z-index: -1;
+  }
+
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: radial-gradient(
+      ellipse 120vw 108vh at 36% 28%,
+      rgba(255, 162, 124, 0.34) 0%,
+      rgba(255, 184, 148, 0.14) 48%,
+      transparent 74%
+    );
+    background-repeat: no-repeat;
+    background-size: 180% 180%;
+    animation: pink-peach-glow 80s ease-in-out infinite alternate;
+  }
+
   .best-of-grid li {
     --best-item-delay: 0.08s;
     --best-post-dur: 0.4s;
@@ -4452,14 +4556,6 @@ footer p {
   .work-list > li.book-item {
     min-width: 0;
     width: 100%;
-  }
-
-  body {
-    background-attachment: scroll;
-  }
-
-  body::before {
-    background-attachment: scroll;
   }
 
   .site-header-bg {
