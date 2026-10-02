@@ -1164,6 +1164,10 @@ body.is-piling-stickers .sticker-peach {
   display: contents;
 }
 
+.about-hero {
+  display: contents;
+}
+
 .about-snap-captioned {
   height: auto;
   margin: 0;
@@ -1292,7 +1296,8 @@ body.is-piling-stickers .sticker-peach {
   .about-page #about > p,
   .about-page #about > .about-snap,
   .about-page #about > .about-snap-group,
-  .about-page #about > .about-loves {
+  .about-page #about > .about-loves,
+  .about-page #about > .about-hero {
     position: relative;
     z-index: 1;
   }
@@ -1343,11 +1348,31 @@ body.is-piling-stickers .sticker-peach {
     text-align: left;
   }
 
-  .about-page #about > p:first-of-type {
+  .about-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    width: 100%;
+    margin: 0.25rem 0 1.5rem;
+  }
+
+  .about-hero .about-snap {
+    margin: 0;
+    align-self: center;
+  }
+
+  .about-lede {
+    width: 66.666%;
+    max-width: 66.666%;
+    margin: 0;
     align-self: center;
     text-align: left;
-    margin-top: calc(-2.75rem - 2.25rem - 0.85rem);
-    margin-bottom: 1.25rem;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    font-size: 4.8vw;
+    line-height: 1.55;
+    letter-spacing: 0.01em;
+    color: #000;
   }
 
   .about-page #about p:nth-of-type(even) {
