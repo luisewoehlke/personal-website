@@ -3869,6 +3869,28 @@ footer p {
 }
 
 @media (max-width: 800px) {
+  html.is-filter-tap-guard,
+  html.is-filter-tap-guard * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html.is-filter-tap-guard .work-list a:focus,
+  html.is-filter-tap-guard .best-of-grid a:focus {
+    outline: none;
+  }
+
+  .post-filter.is-filtered .post-filter-icon-wrap::after {
+    content: none;
+  }
+
+  .post-filter.is-filtered .post-filter-icon path {
+    stroke-width: 3;
+  }
+
+  .post-filter.is-filtered .post-filter-label {
+    font-weight: 700;
+  }
+
   html {
     --sticker-unit: 6.15vw;
     --text-pad-left: 5.5vw;
@@ -5206,10 +5228,15 @@ footer p {
   }
 
   .post-filter.is-filtered .post-filter-icon-wrap::after {
-    right: -0.35rem;
-    bottom: -0.35rem;
-    width: 0.8rem;
-    height: 0.8rem;
+    content: none;
+  }
+
+  .post-filter.is-filtered .post-filter-icon path {
+    stroke-width: 3;
+  }
+
+  .post-filter.is-filtered .post-filter-label {
+    font-weight: 700;
   }
 
   .about-snap-hint .about-snap-q {

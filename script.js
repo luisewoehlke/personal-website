@@ -2079,14 +2079,20 @@ if (postFilter) {
     },
     true
   );
+  let filterTapGuardTimer = 0;
   postFilter.addEventListener("toggle", () => {
     clearTimeout(panelInTimer);
     clearTimeout(closeTimer);
+    clearTimeout(filterTapGuardTimer);
     postFilter.classList.remove("is-panel-in", "is-closing");
     if (!postFilter.open) {
       postFilter.classList.remove("is-sheet-expanded");
+      filterTapGuardTimer = setTimeout(() => {
+        document.documentElement.classList.remove("is-filter-tap-guard");
+      }, 600);
       return;
     }
+    if (isFilterSheet()) document.documentElement.classList.add("is-filter-tap-guard");
     if (isFilterSheet()) return;
     panelInTimer = setTimeout(() => {
       if (postFilter.open) postFilter.classList.add("is-panel-in");
@@ -2127,11 +2133,6 @@ if (postFilter) {
     sheetStartHeight = postFilter.getBoundingClientRect().height;
     sheetDragging = false;
     sheetSuppressClick = false;
-    try {
-      postFilter.setPointerCapture?.(event.pointerId);
-    } catch (_) {
-      /* ignore */
-    }
   });
   postFilter.addEventListener("pointermove", (event) => {
     if (event.pointerId !== sheetPointerId) return;
@@ -2146,6 +2147,12 @@ if (postFilter) {
       sheetDragging = true;
       sheetSuppressClick = true;
       postFilter.classList.add("is-sheet-dragging");
+      /* Capture only once dragging, or taps get retargeted away from the checkboxes */
+      try {
+        postFilter.setPointerCapture?.(event.pointerId);
+      } catch (_) {
+        /* ignore */
+      }
     }
     if (!sheetDragging) return;
     const peek = sheetPeekHeight();
@@ -2238,6 +2245,8 @@ if (postFilter) {
       event.preventDefault();
       event.stopPropagation();
       suppressFilterOutsideClickUntil = 0;
+      const active = document.activeElement;
+      if (active instanceof HTMLElement && !postFilter.contains(active)) active.blur();
     },
     true
   );
