@@ -281,8 +281,12 @@ document.querySelectorAll(".landing .scroll-hint").forEach((hint) => {
 });
 
 const scrollToBestOfHeadingHash = () => {
-  if (location.hash !== "#best-of-heading") return;
-  const el = document.getElementById("best-of-heading");
+  const hash = location.hash;
+  if (hash !== "#best-of-heading" && hash !== "#best-of") return;
+  const wide = window.matchMedia("(min-width: 1041px)").matches;
+  const el = document.getElementById(
+    wide || hash === "#best-of" ? "best-of" : "best-of-heading"
+  );
   if (!el) return;
 
   const apply = () => {
@@ -333,7 +337,9 @@ if (landingScrollHint) {
   document.addEventListener("scroll", updateScrollHint, { passive: true });
 }
 
-const latestScrollHint = document.querySelector("#best-of > .scroll-hint");
+const latestScrollHint = document.querySelector(
+  '#best-of > .scroll-hint[href="#latest-heading"]'
+);
 if (latestScrollHint) {
   const updateLatestScrollHint = () => {
     if (!window.matchMedia("(min-width: 1041px)").matches) {
@@ -348,6 +354,61 @@ if (latestScrollHint) {
   updateLatestScrollHint();
   window.addEventListener("scroll", updateLatestScrollHint, { passive: true });
   window.addEventListener("resize", updateLatestScrollHint);
+}
+
+const bestOfTopHint = document.querySelector("#best-of > .scroll-hint-top");
+if (bestOfTopHint) {
+  const updateBestOfTopHint = () => {
+    if (!window.matchMedia("(min-width: 1041px)").matches) {
+      bestOfTopHint.classList.add("is-hidden");
+      return;
+    }
+    const section = document.getElementById("best-of");
+    if (!section) return;
+    const rect = section.getBoundingClientRect();
+    const show =
+      rect.top < window.innerHeight * 0.2 && rect.bottom > window.innerHeight * 0.55;
+    bestOfTopHint.classList.toggle("is-hidden", !show);
+  };
+  updateBestOfTopHint();
+  window.addEventListener("scroll", updateBestOfTopHint, { passive: true });
+  window.addEventListener("resize", updateBestOfTopHint);
+}
+
+const bestOfBackHint = document.querySelector("#latest > .scroll-hint-back");
+const latestSection = document.getElementById("latest");
+if (bestOfBackHint && latestSection) {
+  const updateBestOfBackHint = () => {
+    if (!window.matchMedia("(min-width: 801px)").matches) {
+      bestOfBackHint.classList.add("is-hidden");
+      return;
+    }
+    const rect = latestSection.getBoundingClientRect();
+    // Show once Latest has moved into the upper half of the viewport.
+    const show = rect.top < window.innerHeight * 0.45 && rect.bottom > 120;
+    bestOfBackHint.classList.toggle("is-hidden", !show);
+  };
+  updateBestOfBackHint();
+  window.addEventListener("scroll", updateBestOfBackHint, { passive: true });
+  window.addEventListener("resize", updateBestOfBackHint);
+}
+
+const bestOfSideRail = document.querySelector("#best-of > .scroll-hint-rail");
+const bestOfSection = document.getElementById("best-of");
+if (bestOfSideRail && bestOfSection) {
+  const updateBestOfSideRail = () => {
+    if (!window.matchMedia("(min-width: 801px) and (max-width: 1040px)").matches) {
+      bestOfSideRail.classList.add("is-hidden");
+      return;
+    }
+    const rect = bestOfSection.getBoundingClientRect();
+    const show =
+      rect.top < window.innerHeight * 0.55 && rect.bottom > window.innerHeight * 0.35;
+    bestOfSideRail.classList.toggle("is-hidden", !show);
+  };
+  updateBestOfSideRail();
+  window.addEventListener("scroll", updateBestOfSideRail, { passive: true });
+  window.addEventListener("resize", updateBestOfSideRail);
 }
 
 document.querySelectorAll(".location").forEach((location) => {
@@ -638,19 +699,32 @@ const postCardHtml = (post) => {
 
 const alignStandupLabel = (label) => {
   if (!label) return;
+  label.style.top = "";
   label.style.marginTop = "";
+  label.style.translate = "";
   if (!label.textContent) return;
+  const live = label.querySelector(".typeout-live") || label;
   const mark = label.closest(".standup-mark");
-  if (!mark) return;
-  const labelBox = label.getBoundingClientRect();
+  const card = label.closest("li")?.querySelector(".post-card");
+  if (!mark || !card) return;
+
+  const mobile = isMobileLayout();
+  /* Natural layout height (no vertical % translate fighting margin). */
+  label.style.top = "0";
+  label.style.translate = mobile ? "0.45rem 0" : "1.2rem 0.1rem";
+
   const markBox = mark.getBoundingClientRect();
-  /* Custom font metrics read low on real phones; bias toward the orange’s upper half */
-  const optical = isMobileLayout() ? 0.34 : 0.48;
-  const targetY = markBox.top + markBox.height * optical;
-  const dy = targetY - (labelBox.top + labelBox.height / 2);
-  if (Math.abs(dy) >= 0.5) {
-    label.style.marginTop = `${dy}px`;
+  const liveBox = live.getBoundingClientRect();
+  let targetY = card.getBoundingClientRect().bottom;
+  if (mobile) {
+    /* Custom font metrics read low on real phones; bias toward the orange’s upper half */
+    targetY = markBox.top + markBox.height * 0.34;
+  } else {
+    /* Slight optical lift on desktop */
+    targetY -= 5;
   }
+  const topPx = targetY - markBox.top - liveBox.height / 2;
+  label.style.top = `${topPx}px`;
 };
 
 const placeStandupStickers = () => {
@@ -1654,6 +1728,11 @@ if (latestPosts) {
       event.clientX > rect.right + pad ||
       event.clientY < rect.top - pad ||
       event.clientY > rect.bottom + pad;
+    if (lightboxImgs.length > 1 && !isMobileLayout()) {
+      const mid = window.innerWidth / 2;
+      stepLightbox(event.clientX < mid ? -1 : 1);
+      return;
+    }
     if (outside) {
       closePhotoLightbox();
       return;
@@ -1774,6 +1853,8 @@ if (latestPosts) {
 }
 
 if (postFilter) {
+  let panelInTimer = 0;
+  let closeTimer = 0;
   const filterSummary = postFilter.querySelector("summary");
   const isFilterSheet = () => window.matchMedia("(max-width: 640px)").matches;
   const filterBoxes = () =>
@@ -1785,10 +1866,22 @@ if (postFilter) {
   };
   selectAllFilters();
   applyPostFilter();
+  /* Closed <details> stops rendering its content, so animate out before closing */
   const closeFilter = () => {
     if (!postFilter.open) return;
-    postFilter.classList.remove("is-sheet-expanded");
-    postFilter.open = false;
+    if (isFilterSheet()) {
+      postFilter.classList.remove("is-sheet-expanded");
+      postFilter.open = false;
+      return;
+    }
+    if (postFilter.classList.contains("is-closing")) return;
+    clearTimeout(panelInTimer);
+    postFilter.classList.add("is-closing");
+    postFilter.classList.remove("is-panel-in");
+    closeTimer = setTimeout(() => {
+      postFilter.classList.remove("is-closing");
+      postFilter.open = false;
+    }, 520);
   };
   const collapseSheet = () => {
     postFilter.classList.remove("is-sheet-expanded");
@@ -1800,8 +1893,28 @@ if (postFilter) {
     applyPostFilter();
     syncEntranceAfterFilter();
   });
+  /* Clear before open paints so a leftover panel class can't flash visible */
+  filterSummary?.addEventListener(
+    "pointerdown",
+    () => {
+      if (isFilterSheet() || postFilter.open) return;
+      clearTimeout(panelInTimer);
+      postFilter.classList.remove("is-panel-in");
+    },
+    true
+  );
   postFilter.addEventListener("toggle", () => {
-    if (!postFilter.open) postFilter.classList.remove("is-sheet-expanded");
+    clearTimeout(panelInTimer);
+    clearTimeout(closeTimer);
+    postFilter.classList.remove("is-panel-in", "is-closing");
+    if (!postFilter.open) {
+      postFilter.classList.remove("is-sheet-expanded");
+      return;
+    }
+    if (isFilterSheet()) return;
+    panelInTimer = setTimeout(() => {
+      if (postFilter.open) postFilter.classList.add("is-panel-in");
+    }, 560);
   });
   filterSummary?.addEventListener("click", (event) => {
     if (isFilterSheet()) return;
@@ -2132,7 +2245,6 @@ if (sectionHeadings.length) {
   }
 }
 
-const bestOfSection = document.querySelector("#best-of");
 if (bestOfSection && prefersReducedMotion) {
   bestOfSection.classList.add("is-showing-stickers");
 }

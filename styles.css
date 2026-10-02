@@ -885,11 +885,18 @@ body.is-piling-stickers .sticker-peach {
   translate: 0.45rem -50%;
   font-family: "Block Craft", "Space Mono", ui-monospace, monospace;
   font-weight: 500;
-  font-size: 1.3rem;
+  font-size: 1.8rem;
   line-height: 1;
   color: #ec3503;
   white-space: nowrap;
   pointer-events: none;
+  margin: 0;
+}
+
+@media (min-width: 801px) {
+  .standup-label {
+    translate: 1.2rem 0.1rem;
+  }
 }
 
 .standup-label .typeout-shadow,
@@ -1483,14 +1490,16 @@ h2 {
   box-sizing: border-box;
 }
 
-#best-of > .scroll-hint {
+#best-of > .scroll-hint,
+#latest > .scroll-hint-back,
+.scroll-hint-rail {
   display: none;
 }
 
 /* 2-col: one screen tall under the sticky header; hint pinned in the bottom slot */
 @media (min-width: 1041px) {
   #best-of {
-    --best-pad-top: 3.5vh;
+    --best-pad-top: 0px;
     --best-hint-h: max(10svh, 4.5rem);
     --best-heading-block: 5.75rem;
     --best-grid-margin: 2.4rem;
@@ -1502,7 +1511,7 @@ h2 {
       calc(var(--best-card-w) * 2 / 7),
       calc(
         (
-            var(--best-view-h) - var(--best-pad-top) - var(--best-hint-h) -
+            var(--best-view-h) - (2 * var(--best-hint-h)) -
               var(--best-heading-block) - var(--best-grid-margin) -
               var(--best-grid-gap-y)
           ) / 2.5
@@ -1511,21 +1520,29 @@ h2 {
     z-index: 13;
     display: flex;
     flex-direction: column;
-    padding-top: var(--best-pad-top);
+    padding-top: 0;
     padding-bottom: 0;
     height: var(--best-view-h);
     min-height: var(--best-view-h);
     max-height: var(--best-view-h);
     overflow: visible;
+    scroll-margin-top: calc(var(--header-h, 4.8rem) + 0.15rem);
+  }
+
+  #best-of::before {
+    content: "";
+    flex-shrink: 0;
+    height: var(--best-hint-h);
+    pointer-events: none;
   }
 
   .best-of-heading-peach {
-    top: calc(var(--best-pad-top) + 4.5rem);
+    top: calc(var(--best-hint-h) + 4.5rem);
   }
 
   #best-of-heading,
   #best-of > h2 {
-    scroll-margin-top: calc(var(--header-h, 4.8rem) + var(--best-pad-top));
+    scroll-margin-top: calc(var(--header-h, 4.8rem) + var(--best-hint-h));
     flex-shrink: 0;
   }
 
@@ -1539,7 +1556,7 @@ h2 {
     align-content: start;
   }
 
-  #best-of > .scroll-hint {
+  #best-of > .scroll-hint:not(.scroll-hint-top) {
     display: flex;
     position: relative;
     left: auto;
@@ -1549,6 +1566,82 @@ h2 {
     min-height: var(--best-hint-h);
     flex-shrink: 0;
     z-index: 14;
+  }
+
+  #best-of > .scroll-hint-top {
+    display: flex;
+    position: fixed;
+    top: calc(var(--header-h, 4.8rem) + 0.35rem);
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    width: auto;
+    height: auto;
+    min-height: 0;
+    padding: 0;
+    translate: -50% 0;
+    justify-content: flex-start;
+    align-items: center;
+    z-index: 14;
+  }
+}
+
+@media (min-width: 801px) {
+  #latest > .scroll-hint-back {
+    display: flex;
+    position: fixed;
+    top: 48vh;
+    bottom: auto;
+    left: 2.5rem;
+    right: auto;
+    width: auto;
+    height: auto;
+    min-height: 0;
+    padding: 0;
+    z-index: 14;
+    translate: 0 -50%;
+    animation: none;
+  }
+}
+
+/* 1-col best-of (desktop/tablet only): left rail with top / latest */
+@media (min-width: 801px) and (max-width: 1040px) {
+  .scroll-hint-rail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2.75rem;
+    position: fixed;
+    top: 50%;
+    left: 1.5rem;
+    z-index: 14;
+    translate: 0 -50%;
+    transition: opacity 0.2s ease, visibility 0.2s;
+  }
+
+  .scroll-hint-rail.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .scroll-hint-rail .scroll-hint-side {
+    position: static;
+    left: auto;
+    bottom: auto;
+    width: auto;
+    height: auto;
+    min-height: 0;
+    padding: 0;
+    justify-content: center;
+    animation: none;
+    font-size: 0.8rem;
+  }
+
+  .scroll-hint-rail .scroll-hint-side svg {
+    width: 1.1rem;
+    height: 1.1rem;
   }
 }
 
@@ -2892,7 +2985,7 @@ body.has-photo-lightbox {
 }
 
 .post-filter {
-  --glow: #000;
+  --glow: #74584a;
   position: sticky;
   top: 50vh;
   width: fit-content;
@@ -2913,6 +3006,11 @@ body.has-photo-lightbox {
 @media (prefers-reduced-motion: reduce) {
   .post-filter {
     translate: 0 -50%;
+  }
+
+  .post-filter summary,
+  .post-filter fieldset {
+    transition: opacity 0.2s ease !important;
   }
 
   .post-filter summary,
@@ -2939,11 +3037,16 @@ body.has-photo-lightbox {
   list-style: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  /* Return: pop in from the right with leftward motion */
+  transition: opacity 0.5s ease 0.12s, translate 0.78s cubic-bezier(0.22, 1, 0.36, 1) 0.12s;
 }
 
 .post-filter[open] summary {
   opacity: 0;
+  translate: 2.75rem 0;
   pointer-events: none;
+  /* Leave first: fade rightwards before filters arrive */
+  transition: opacity 0.45s ease, translate 0.54s cubic-bezier(0.4, 0, 0.8, 0.2);
 }
 
 .post-filter summary::-webkit-details-marker {
@@ -2987,12 +3090,17 @@ body.has-photo-lightbox {
 .post-filter.is-filtered .post-filter-icon-wrap::after {
   content: "";
   position: absolute;
-  right: -0.35rem;
-  bottom: -0.35rem;
-  width: 0.8rem;
-  height: 0.8rem;
+  right: -0.05rem;
+  bottom: -0.2rem;
+  width: 0.4rem;
+  height: 0.4rem;
   border-radius: 50%;
   background: currentColor;
+}
+
+.post-filter-count {
+  order: 1;
+  font-weight: 600;
 }
 
 .post-filter-label {
@@ -3021,8 +3129,9 @@ body.has-photo-lightbox {
   color: var(--glow);
   white-space: nowrap;
   opacity: 0;
-  translate: 0 -50%;
+  translate: 2.4rem -50%;
   pointer-events: none;
+  transition: opacity 0.42s ease, translate 0.52s cubic-bezier(0.4, 0, 0.8, 0.2);
 }
 
 .post-filter fieldset::before,
@@ -3051,16 +3160,28 @@ body.has-photo-lightbox {
   bottom: -0.5rem;
 }
 
-.post-filter[open] fieldset {
+/* While waiting to enter: stay hidden with no fade-out */
+.post-filter[open]:not(.is-panel-in):not(.is-closing) fieldset {
+  transition: none;
+  opacity: 0;
+}
+
+.post-filter[open].is-panel-in fieldset {
   opacity: 1;
+  translate: 0 -50%;
   pointer-events: auto;
+  transition: opacity 0.6s ease, translate 0.72s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.post-filter-br {
+  display: none;
 }
 
 .post-filter label {
-  font-family: Inter, system-ui, sans-serif;
+  font-family: inherit;
   font-size: 0.92em;
-  font-weight: 300;
-  letter-spacing: 0.04em;
+  font-weight: 400;
+  letter-spacing: 0.01em;
   display: flex;
   align-items: center;
   gap: 0.55rem;
@@ -3073,19 +3194,40 @@ body.has-photo-lightbox {
   position: relative;
   display: grid;
   place-content: center;
-  flex-shrink: 0;
   width: 0.9rem;
   height: 0.9rem;
   margin: 0;
-  border: 2px solid #555;
-  border-radius: 50%;
+  border: 1.5px solid currentColor;
+  border-radius: 0;
   background: none;
-  color: #555;
+  color: inherit;
   cursor: pointer;
 }
 
-.post-filter input:checked {
-  background: radial-gradient(circle, #555 0 41%, transparent 42% 100%);
+.post-filter input::before,
+.post-filter input::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1px;
+  height: 141%;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.post-filter input::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.post-filter input::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.post-filter input:checked::before,
+.post-filter input:checked::after {
+  opacity: 1;
 }
 
 .post-filter input:focus-visible {
@@ -3253,6 +3395,27 @@ footer p {
   html {
     --sticker-unit: 6.15vw;
     --text-pad-left: 5.5vw;
+  }
+
+  .best-of-grid li {
+    --best-item-delay: 0.08s;
+    --best-post-dur: 0.4s;
+  }
+
+  .best-of-grid li:nth-child(1) {
+    --best-item-delay: 0.08s;
+  }
+
+  .best-of-grid li:nth-child(2) {
+    --best-item-delay: 0.45s;
+  }
+
+  .best-of-grid li:nth-child(3) {
+    --best-item-delay: 0.82s;
+  }
+
+  .best-of-grid li:nth-child(4) {
+    --best-item-delay: 1.19s;
   }
 
   .post-card:hover .post-card-image {
@@ -3711,6 +3874,18 @@ footer p {
 }
 
 @media (max-width: 1280px) {
+  .post-filter-br {
+    display: block;
+  }
+
+  .post-filter label:has(.post-filter-br) {
+    align-items: flex-start;
+  }
+
+  .post-filter label:has(.post-filter-br) input {
+    margin-top: calc((1lh - 0.9rem) / 2);
+  }
+
   .work-list > li:has(> .post-card) {
     width: 92%;
     justify-self: center;
@@ -4261,13 +4436,15 @@ footer p {
     padding: 0;
     box-sizing: border-box;
     border-radius: 50%;
-    background: color-mix(in srgb, var(--bg) 78%, white);
+    background: #fff;
     box-shadow: 0 0.35rem 1.1rem rgba(92, 58, 40, 0.12);
     color: var(--glow);
     touch-action: manipulation;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
     outline: none;
+    transition: none;
+    translate: none;
   }
 
   .post-filter summary .post-filter-tab {
@@ -4293,6 +4470,7 @@ footer p {
     background: none;
     box-shadow: none;
     opacity: 1;
+    translate: none;
     pointer-events: auto;
     cursor: grab;
     touch-action: none;
@@ -4359,7 +4537,7 @@ footer p {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 1.75rem;
+    gap: 0;
     width: 100%;
     margin: 0;
     padding: 3.5rem 1.5rem 3.75rem 3.25rem;
@@ -4373,25 +4551,58 @@ footer p {
     box-shadow: none;
     box-sizing: border-box;
     background: none;
+    transition: none;
   }
 
+  .post-filter[open]:not(.is-panel-in):not(.is-closing) fieldset,
+  .post-filter[open].is-panel-in fieldset,
   .post-filter[open] fieldset {
     opacity: 1;
+    translate: none;
     pointer-events: auto;
     background: none;
     box-shadow: none;
+    transition: none;
   }
 
   .post-filter label {
+    font-family: Inter, system-ui, sans-serif;
     font-size: 2rem;
+    font-weight: 300;
+    letter-spacing: 0.04em;
     gap: 1.25rem;
     align-items: flex-start;
+    padding: 1.35rem 0;
+  }
+
+  .post-filter label + label {
+    border-top: 1px solid #d8d8d8;
   }
 
   .post-filter input {
+    flex-shrink: 0;
     width: 2rem;
     height: 2rem;
     margin-top: 0.75rem;
+    border: 2px solid #555;
+    border-radius: 50%;
+    color: #555;
+  }
+
+  .post-filter input::before,
+  .post-filter input::after {
+    content: none;
+  }
+
+  .post-filter input:checked {
+    background: radial-gradient(circle, #555 0 41%, transparent 42% 100%);
+  }
+
+  .post-filter.is-filtered .post-filter-icon-wrap::after {
+    right: -0.35rem;
+    bottom: -0.35rem;
+    width: 0.8rem;
+    height: 0.8rem;
   }
 
   .about-snap-hint .about-snap-q {

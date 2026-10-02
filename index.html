@@ -236,7 +236,7 @@
           </p>
           <p>This page has my collected writings and doings.</p>
         </div>
-          <a class="scroll-hint" href="#best-of-heading">
+          <a class="scroll-hint" href="#best-of">
           <span>best of my stuff</span>
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path
@@ -252,6 +252,18 @@
 
       <div class="feed">
         <section id="best-of">
+          <a class="scroll-hint scroll-hint-top is-hidden" href="#top">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M4 16h16l-8-9z"
+                fill="currentColor"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linejoin="round"
+              />
+            </svg>
+            <span>to the top</span>
+          </a>
           <img
             class="best-of-heading-peach"
             src="images/stickers/peach.png"
@@ -328,6 +340,32 @@ my stuff</h2>
               />
             </svg>
           </a>
+          <nav class="scroll-hint-rail is-hidden" aria-label="Section">
+            <a class="scroll-hint scroll-hint-side" href="#top">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M4 16h16l-8-9z"
+                  fill="currentColor"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <span>to the top</span>
+            </a>
+            <a class="scroll-hint scroll-hint-side" href="#latest-heading">
+              <span>latest</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M4 8h16l-8 9z"
+                  fill="currentColor"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+          </nav>
         </section>
 
         <section id="latest">
@@ -377,13 +415,27 @@ my stuff</h2>
                 ><input type="checkbox" value="photo" checked /> Art</label
               >
               <label
-                ><input type="checkbox" value="book" checked /> Book
-                updates</label
+                ><input type="checkbox" value="book" checked />
+                <span class="post-filter-text"
+                  >Book <br class="post-filter-br" />updates</span
+                ></label
               >
             </fieldset>
           </details>
           <ul class="work-list" id="latest-posts"></ul>
           <p class="post-empty" hidden>No posts match this filter yet.</p>
+          <a class="scroll-hint scroll-hint-back is-hidden" href="#best-of">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M4 16h16l-8-9z"
+                fill="currentColor"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linejoin="round"
+              />
+            </svg>
+            <span>best of</span>
+          </a>
         </section>
       </div>
     </main>
