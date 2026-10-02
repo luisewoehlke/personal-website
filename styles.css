@@ -260,6 +260,13 @@ a {
   justify-content: center;
   align-items: center;
   gap: 0.32rem;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+.nav-burger:focus {
+  outline: none;
 }
 
 .nav-burger span {
@@ -1086,17 +1093,30 @@ body.is-piling-stickers .sticker-peach {
 
 .about-fig {
   position: absolute;
-  left: -2rem;
-  top: -1.4rem;
-  width: 3.4rem;
+  left: -0.9em;
+  top: .35em;
+  width: 1.5em;
   height: auto;
+  font-size: 2.55rem;
   rotate: -22deg;
   z-index: 2;
   pointer-events: none;
   image-rendering: pixelated;
 }
 
+.about-heading {
+  position: relative;
+}
+
 .about-stickers {
+  display: none;
+}
+
+.about-sticker-wombat {
+  display: none;
+}
+
+.about-sticker-group-flow {
   display: none;
 }
 
@@ -1122,8 +1142,13 @@ body.is-piling-stickers .sticker-peach {
   margin: 0 auto;
 }
 
-.about-page #about > h2 {
+.about-page #about > .about-heading {
+  position: relative;
   top: -3rem;
+}
+
+.about-page #about > h2 {
+  position: relative;
 }
 
 .about-page #about .about-gap {
@@ -1173,6 +1198,10 @@ body.is-piling-stickers .sticker-peach {
 }
 
 .about-hero {
+  display: contents;
+}
+
+.about-para-anchor {
   display: contents;
 }
 
@@ -1276,7 +1305,7 @@ body.is-piling-stickers .sticker-peach {
     align-items: stretch;
     min-height: 0;
     max-width: 100%;
-    gap: 2.25rem;
+    gap: clamp(0.7rem, 1.8vh, 2.25rem);
   }
 
   .about-stickers {
@@ -1298,6 +1327,17 @@ body.is-piling-stickers .sticker-peach {
     rotate: var(--r, 0deg);
     image-rendering: pixelated;
     opacity: 0.92;
+  }
+
+  .about-sticker-wombat {
+    display: block;
+    position: relative;
+    top: auto;
+    left: auto;
+    translate: none;
+    z-index: 3;
+    align-self: flex-end;
+    margin: 0 0.2rem calc(0.12rem - clamp(0.7rem, 1.8vh, 2.25rem)) 0;
   }
 
   .about-sticker-group {
@@ -1325,12 +1365,64 @@ body.is-piling-stickers .sticker-peach {
     left: 9vw;
   }
 
+  .about-sticker-group-peach .about-sticker-peach {
+    top: 0;
+    left: 0;
+  }
+
+  .about-sticker-group-peach .about-sticker-lemon {
+    top: -.5rem;
+    left: 1.9rem;
+    rotate: 70deg;
+  }
+
+  .about-sticker-group-cow .about-sticker-cow,
+  .about-sticker-group-cow .about-sticker-mic {
+    top: auto;
+    bottom: 0;
+  }
+
+  .about-sticker-group-cow .about-sticker-cow {
+    left: 0;
+  }
+
+  .about-sticker-group-cow .about-sticker-mic {
+    left: calc(2.15rem * 1.55 - 0.1rem);
+    bottom: -2rem;
+    scale: -1 1;
+  }
+
+  .about-sticker-group-flow {
+    display: block;
+    position: relative;
+    top: auto;
+    left: auto;
+    width: calc(2.15rem + 2.15rem * 0.75 + 0.35rem);
+    height: calc(2.15rem + 0.55rem);
+    z-index: 3;
+    align-self: flex-end;
+    margin: clamp(0.15rem, 0.8vh, 1.1rem) 4% clamp(0.15rem, 0.8vh, 1.1rem) 0;
+  }
+
+  .about-sticker-group-cd .about-sticker-cd {
+    top: 0;
+    left: 0;
+  }
+
+  .about-sticker-group-cd .about-sticker-orange {
+    top: auto;
+    bottom: 0;
+    left: calc(2.15rem + 0.2rem);
+  }
+
   .about-page #about > h2,
   .about-page #about > p,
   .about-page #about > .about-snap,
   .about-page #about > .about-snap-group,
   .about-page #about > .about-loves,
   .about-page #about > .about-loves-block,
+  .about-page #about > .about-heading,
+  .about-page #about > .about-para-anchor,
   .about-page #about > .about-hero {
     position: relative;
     z-index: 1;
@@ -1351,28 +1443,35 @@ body.is-piling-stickers .sticker-peach {
     margin: 0;
   }
 
-  .about-fig {
-    z-index: 4;
-  }
-
-  .about-page #about > h2 {
+  .about-page #about > .about-heading {
     top: -2.6rem;
     z-index: 4;
     margin-bottom: 1.35rem;
   }
 
+  .about-page #about > h2 {
+    top: auto;
+    z-index: 4;
+    margin-bottom: 0;
+  }
+
   .about-fig {
-    top: -0.75rem;
-    left: -1.5rem;
-    width: 5.2rem;
+    z-index: 4;
   }
 
   .about-page #about .about-gap {
-    margin-top: 3.5rem;
+    margin-top: clamp(1.1rem, 2.8vh, 3.5rem);
+  }
+
+  .about-page #about .about-para-peek {
+    /* Keep a few lines visible at the bottom of short viewports */
+    margin-top: clamp(0.65rem, 1.6vh, 2rem);
+    margin-bottom: 0;
   }
 
   .about-page {
     --about-end-gap: 14rem; /* half of prior last-para→footer space */
+    padding-top: calc(var(--header-h, 4.8rem) + clamp(0.55rem, 1.4vh, 1.5rem));
     padding-bottom: 0;
   }
 
@@ -1384,7 +1483,7 @@ body.is-piling-stickers .sticker-peach {
   .about-loves,
   .about-snap-captioned figcaption {
     font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-    font-size: 4.8vw;
+    font-size: 4.2vw;
     line-height: 1.55;
     letter-spacing: 0.01em;
     color: #000;
@@ -1404,22 +1503,24 @@ body.is-piling-stickers .sticker-peach {
     align-items: center;
     gap: 0.35rem;
     width: 100%;
-    margin: 0.25rem 0 1.5rem;
+    margin: 0.15rem 0 clamp(0.45rem, 1.2vh, 1.5rem);
   }
 
   .about-hero .about-snap {
     margin: 0;
     align-self: center;
+    width: min(36%, 8rem, 20svh);
+    translate: 1.1rem 0;
   }
 
   .about-lede {
     width: 66.666%;
     max-width: 66.666%;
-    margin: 0;
+    margin: clamp(0.35rem, 1vh, 0.85rem) 0 0;
     align-self: center;
     text-align: left;
     font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-    font-size: 4.8vw;
+    font-size: 4.2vw;
     line-height: 1.55;
     letter-spacing: 0.01em;
     color: #000;
@@ -1463,6 +1564,39 @@ body.is-piling-stickers .sticker-peach {
   .about-snap-captioned {
     width: min(48%, 11rem);
     aspect-ratio: auto;
+  }
+
+  .about-snap-standup {
+    width: min(48%, 11rem, 28svh);
+    margin: clamp(0.35rem, 1vh, 1.5rem) 0 clamp(0.5rem, 1.4vh, 2.75rem);
+  }
+
+  .about-para-anchor {
+    display: block;
+    position: relative;
+    width: 100%;
+    z-index: 1;
+  }
+
+  .about-para-anchor > p {
+    width: 66.666%;
+    max-width: 66.666%;
+    margin: 0 0 0.75rem;
+    align-self: flex-start;
+    text-align: left;
+  }
+
+  .about-para-anchor .about-gap {
+    margin-top: clamp(1.1rem, 2.8vh, 3.5rem);
+  }
+
+  .about-snap-sky {
+    position: absolute;
+    right: 0;
+    bottom: 0.15rem;
+    margin: 0;
+    width: min(28%, 6.25rem);
+    z-index: 2;
   }
 
   .about-snap-hippo {
@@ -1559,7 +1693,7 @@ h2 {
 
 #best-of > h2,
 #latest > h2,
-#about > h2 {
+#about h2 {
   font-family: "Block Craft", "Space Mono", ui-monospace, monospace;
   font-weight: 500;
   font-size: 2.55rem;
@@ -1569,10 +1703,10 @@ h2 {
 
 #best-of > h2 .typeout-shadow,
 #latest > h2 .typeout-shadow,
-#about > h2 .typeout-shadow,
+#about h2 .typeout-shadow,
 #best-of > h2 .typeout-shadow-left,
 #latest > h2 .typeout-shadow-left,
-#about > h2 .typeout-shadow-left {
+#about h2 .typeout-shadow-left {
   position: absolute;
   left: 0;
   top: 0;
@@ -1585,26 +1719,26 @@ h2 {
 
 #best-of > h2 .typeout-shadow,
 #latest > h2 .typeout-shadow,
-#about > h2 .typeout-shadow {
+#about h2 .typeout-shadow {
   transform: translate(0.08em, -0.03em);
 }
 
 #best-of > h2 .typeout-shadow-left,
 #latest > h2 .typeout-shadow-left,
-#about > h2 .typeout-shadow-left {
+#about h2 .typeout-shadow-left {
   transform: translate(0.1em, -0.03em);
 }
 
 #best-of > h2 .typeout-ghost,
 #latest > h2 .typeout-ghost,
-#about > h2 .typeout-ghost {
+#about h2 .typeout-ghost {
   visibility: hidden;
   display: block;
 }
 
 #best-of > h2 .typeout-live,
 #latest > h2 .typeout-live,
-#about > h2 .typeout-live {
+#about h2 .typeout-live {
   position: absolute;
   left: 0;
   top: 0;
@@ -3943,14 +4077,26 @@ footer p {
 
   #best-of > h2,
   #latest > h2,
-  #about > h2 {
+  #about h2 {
     font-size: 15vw;
     line-height: 0.85;
   }
 
-  #about > h2 {
+  #best-of > h2,
+  #latest > h2 {
+    margin-left: 4vw;
+  }
+
+  #about h2 {
     font-size: 17.2vw;
-    margin-left: 7vw;
+  }
+
+  .about-heading {
+    margin-left: 11vw;
+  }
+
+  .about-fig {
+    font-size: 17.2vw;
   }
 
   #best-of-heading,
@@ -3976,8 +4122,8 @@ footer p {
     display: block;
     position: absolute;
     z-index: 12;
-    left: -0.85rem;
-    width: calc(2.5 * var(--sticker-unit));
+    left: calc(4vw - 2.1rem);
+    width: calc(3.75 * var(--sticker-unit));
     height: auto;
     rotate: -30deg;
     pointer-events: none;
@@ -3985,7 +4131,7 @@ footer p {
   }
 
   .best-of-heading-peach {
-    top: calc(10vh + 5.75rem);
+    top: calc(10vh + 6rem);
   }
 
   .latest-heading-peach {
@@ -4035,14 +4181,14 @@ footer p {
 
   .sticker-strawberry {
     --sticker-w: 1.6;
-    top: 46%;
+    top: 6%;
     right: 1%;
     left: auto;
     bottom: auto;
   }
 
   .sticker-cow {
-    --sticker-w: 4.35;
+    --sticker-w: 2.35;
     top: 38%;
     right: 6%;
     left: auto;

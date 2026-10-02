@@ -2296,7 +2296,7 @@ if (latestPosts) {
 }
 
 const sectionHeadings = document.querySelectorAll(
-  "#best-of > h2, #latest > h2, #about > h2"
+  "#best-of > h2, #latest > h2, #about h2"
 );
 const prefersReducedMotion = window.matchMedia(
   "(prefers-reduced-motion: reduce)"
