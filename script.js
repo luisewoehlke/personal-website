@@ -280,28 +280,43 @@ document.querySelectorAll(".landing .scroll-hint").forEach((hint) => {
   });
 });
 
-const scrollToBestOfHeadingHash = () => {
+const scrollToBestOfHeadingHash = ({ smooth = false } = {}) => {
   const hash = location.hash;
   if (hash !== "#best-of-heading" && hash !== "#best-of") return;
   const wide = window.matchMedia("(min-width: 1041px)").matches;
+  const mobile = isMobileLayout();
+  // Mobile: aim at the heading so landing stickers (nigiri) clear the viewport.
   const el = document.getElementById(
-    wide || hash === "#best-of" ? "best-of" : "best-of-heading"
+    mobile ? "best-of-heading" : wide || hash === "#best-of" ? "best-of" : "best-of-heading"
   );
   if (!el) return;
+
+  const preferSmooth =
+    smooth &&
+    mobile &&
+    !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const apply = () => {
     const margin =
       parseFloat(getComputedStyle(el).scrollMarginTop) ||
       window.innerHeight * 0.1;
-    const y = el.getBoundingClientRect().top + window.scrollY - margin;
+    const y = Math.max(
+      0,
+      el.getBoundingClientRect().top + window.scrollY - margin
+    );
+    if (preferSmooth) {
+      window.scrollTo({ top: y, behavior: "smooth" });
+      return;
+    }
     const root = document.documentElement;
     const prev = root.style.scrollBehavior;
     root.style.scrollBehavior = "auto";
-    window.scrollTo(0, Math.max(0, y));
+    window.scrollTo(0, y);
     root.style.scrollBehavior = prev;
   };
 
   apply();
+  if (preferSmooth) return;
   requestAnimationFrame(() => {
     apply();
     requestAnimationFrame(apply);
@@ -313,11 +328,23 @@ const scrollToBestOfHeadingHash = () => {
 };
 
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", scrollToBestOfHeadingHash);
+  document.addEventListener("DOMContentLoaded", () => scrollToBestOfHeadingHash());
 } else {
   scrollToBestOfHeadingHash();
 }
-window.addEventListener("load", scrollToBestOfHeadingHash);
+window.addEventListener("load", () => scrollToBestOfHeadingHash());
+window.addEventListener("hashchange", () => scrollToBestOfHeadingHash({ smooth: true }));
+
+document.querySelectorAll('.scroll-hint[href="#best-of"]').forEach((hint) => {
+  hint.addEventListener("click", (event) => {
+    if (!isMobileLayout()) return;
+    event.preventDefault();
+    if (location.hash !== "#best-of") {
+      history.pushState(null, "", "#best-of");
+    }
+    scrollToBestOfHeadingHash({ smooth: true });
+  });
+});
 
 const landingScrollHint = document.querySelector(".landing .scroll-hint");
 if (landingScrollHint) {
@@ -1934,12 +1961,33 @@ if (postFilter) {
   });
   let sheetPointerId = null;
   let sheetStartY = 0;
+  let sheetStartHeight = 0;
   let sheetDragging = false;
+  let sheetSuppressClick = false;
+  let sheetLastY = 0;
+  let sheetLastT = 0;
+  let sheetVelocity = 0;
+  const sheetPeekHeight = () => {
+    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    return 23 * rem;
+  };
+  const sheetExpandedHeight = () =>
+    Math.min(window.innerHeight * 0.9, 36 * (parseFloat(getComputedStyle(document.documentElement).fontSize) || 16));
+  const clearSheetDragStyles = () => {
+    postFilter.classList.remove("is-sheet-dragging");
+    postFilter.style.height = "";
+    postFilter.style.translate = "";
+  };
   postFilter.addEventListener("pointerdown", (event) => {
     if (!isFilterSheet() || !postFilter.open || event.button !== 0) return;
     sheetPointerId = event.pointerId;
     sheetStartY = event.clientY;
+    sheetLastY = event.clientY;
+    sheetLastT = performance.now();
+    sheetVelocity = 0;
+    sheetStartHeight = postFilter.getBoundingClientRect().height;
     sheetDragging = false;
+    sheetSuppressClick = false;
     try {
       postFilter.setPointerCapture?.(event.pointerId);
     } catch (_) {
@@ -1948,12 +1996,38 @@ if (postFilter) {
   });
   postFilter.addEventListener("pointermove", (event) => {
     if (event.pointerId !== sheetPointerId) return;
-    if (Math.abs(event.clientY - sheetStartY) > 8) sheetDragging = true;
+    const now = performance.now();
+    const dyStep = event.clientY - sheetLastY;
+    const dt = Math.max(1, now - sheetLastT);
+    sheetVelocity = dyStep / dt;
+    sheetLastY = event.clientY;
+    sheetLastT = now;
+    const dy = event.clientY - sheetStartY;
+    if (!sheetDragging && Math.abs(dy) > 8) {
+      sheetDragging = true;
+      sheetSuppressClick = true;
+      postFilter.classList.add("is-sheet-dragging");
+    }
+    if (!sheetDragging) return;
+    const peek = sheetPeekHeight();
+    const expanded = sheetExpandedHeight();
+    const nextHeight = Math.min(
+      expanded,
+      Math.max(peek, sheetStartHeight - dy)
+    );
+    postFilter.style.height = `${nextHeight}px`;
+    // Pull down past peek to dismiss: slide the sheet with the finger.
+    if (dy > 0 && sheetStartHeight <= peek + 1) {
+      postFilter.style.height = `${peek}px`;
+      postFilter.style.translate = `0 ${dy}px`;
+    } else {
+      postFilter.style.translate = "";
+    }
   });
   postFilter.addEventListener(
     "touchmove",
     (event) => {
-      if (!isFilterSheet() || !postFilter.open) return;
+      if (!isFilterSheet() || !postFilter.open || !sheetDragging) return;
       event.preventDefault();
     },
     { passive: false }
@@ -1961,26 +2035,44 @@ if (postFilter) {
   const endSheetGesture = (event) => {
     if (event.pointerId !== sheetPointerId) return;
     const dy = event.clientY - sheetStartY;
+    const wasDragging = sheetDragging;
+    const height = postFilter.getBoundingClientRect().height;
+    const peek = sheetPeekHeight();
+    const expanded = sheetExpandedHeight();
+    const mid = (peek + expanded) / 2;
+    const startExpanded =
+      postFilter.classList.contains("is-sheet-expanded") || sheetStartHeight > mid;
     sheetPointerId = null;
-    if (!sheetDragging) return;
-    if (dy < -36) expandSheet();
-    else if (dy > 36) {
-      if (postFilter.classList.contains("is-sheet-expanded")) collapseSheet();
-      else closeFilter();
+    sheetDragging = false;
+    clearSheetDragStyles();
+    if (!wasDragging) return;
+    const flickUp = sheetVelocity < -0.45 || dy < -36;
+    const flickDown = sheetVelocity > 0.45 || dy > 36;
+    if (flickUp || (!flickDown && height >= mid)) {
+      expandSheet();
+      return;
     }
+    if (flickDown) {
+      if (startExpanded) collapseSheet();
+      else closeFilter();
+      return;
+    }
+    if (height > mid) expandSheet();
+    else collapseSheet();
   };
   postFilter.addEventListener("pointerup", endSheetGesture);
   postFilter.addEventListener("pointercancel", () => {
     sheetPointerId = null;
     sheetDragging = false;
+    clearSheetDragStyles();
   });
   postFilter.addEventListener(
     "click",
     (event) => {
-      if (!isFilterSheet() || !sheetDragging) return;
+      if (!isFilterSheet() || !sheetSuppressClick) return;
       event.preventDefault();
       event.stopPropagation();
-      sheetDragging = false;
+      sheetSuppressClick = false;
     },
     true
   );

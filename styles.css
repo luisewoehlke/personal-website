@@ -1259,7 +1259,7 @@ body.is-piling-stickers .sticker-peach {
     align-items: stretch;
     min-height: 0;
     max-width: 100%;
-    gap: 0.35rem;
+    gap: 2.25rem;
   }
 
   .about-page #about > h2 {
@@ -1272,11 +1272,11 @@ body.is-piling-stickers .sticker-peach {
   .about-fig {
     top: -0.75rem;
     left: -1.5rem;
-    width: 6.12rem;
+    width: 5.2rem;
   }
 
   .about-page #about .about-gap {
-    margin-top: 1.35rem;
+    margin-top: 3.5rem;
   }
 
   .about-page #about p,
@@ -1289,17 +1289,25 @@ body.is-piling-stickers .sticker-peach {
     color: #000;
   }
 
+  .about-page #about p {
+    margin: 0 0 0.75rem;
+  }
+
+  .about-loves {
+    margin: 0.75rem 0 2.25rem;
+  }
+
   .about-snap-group {
     display: block;
     position: relative;
     width: 100%;
-    margin: 0.55rem 0 0.85rem;
+    margin: 1.25rem 0 2.75rem;
   }
 
   .about-snap-group-loves {
     min-height: 14.5rem;
-    margin-top: 1.25rem;
-    margin-bottom: 0.5rem;
+    margin-top: 2.5rem;
+    margin-bottom: 2.5rem;
   }
 
   .about-snap-group-loves .about-snap {
@@ -1341,7 +1349,7 @@ body.is-piling-stickers .sticker-peach {
     width: min(58%, 13.5rem);
     height: auto;
     aspect-ratio: calc(var(--w) / var(--h));
-    margin: 0.55rem 0 0.15rem;
+    margin: 1.5rem 0 2.75rem;
     rotate: none;
   }
 
@@ -3263,10 +3271,6 @@ body.has-photo-lightbox {
   transition: opacity 0.6s ease, translate 0.72s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.post-filter-br {
-  display: none;
-}
-
 .post-filter label {
   font-family: inherit;
   font-size: 0.92em;
@@ -3745,7 +3749,17 @@ footer p {
     z-index: 12;
     padding-bottom: max(3vw, env(safe-area-inset-bottom, 0px));
     font-size: 4.65vw;
-    animation: scroll-hint-bob 2.2s ease-in-out infinite;
+    animation: scroll-hint-bob-mobile 1.8s ease-in-out infinite;
+  }
+
+  @keyframes scroll-hint-bob-mobile {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(0.4rem);
+    }
   }
 
   .landing .scroll-hint:hover > *,
@@ -3770,13 +3784,18 @@ footer p {
   }
 
   #about > h2 {
-    font-size: 20.28vw;
+    font-size: 17.2vw;
     margin-left: 7vw;
   }
 
   #best-of-heading,
   #best-of > h2 {
     scroll-margin-top: calc(var(--header-h, 4.8rem) + 0.15rem);
+  }
+
+  #best-of {
+    /* Match heading offset so native hash scroll clears landing stickers */
+    scroll-margin-top: calc(var(--header-h, 4.8rem) - 10vh);
   }
 
   #best-of > h2,
@@ -3969,18 +3988,6 @@ footer p {
 }
 
 @media (max-width: 1280px) {
-  .post-filter-br {
-    display: block;
-  }
-
-  .post-filter label:has(.post-filter-br) {
-    align-items: flex-start;
-  }
-
-  .post-filter label:has(.post-filter-br) input {
-    margin-top: calc((1lh - 0.9rem) / 2);
-  }
-
   .work-list > li:has(> .post-card) {
     width: 92%;
     justify-self: center;
@@ -4501,15 +4508,21 @@ footer p {
     border-radius: 2.35rem 2.35rem 0 0;
     box-shadow: 0 -0.35rem 1.4rem rgba(92, 58, 40, 0.12);
     padding-bottom: env(safe-area-inset-bottom, 0px);
-    max-height: 23rem;
+    height: 23rem;
+    max-height: none;
     overflow: hidden;
     touch-action: none;
     overscroll-behavior: none;
-    transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: height 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+      translate 0.38s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .post-filter[open].is-sheet-expanded {
-    max-height: min(90vh, 36rem);
+    height: min(90vh, 36rem);
+  }
+
+  .post-filter[open].is-sheet-dragging {
+    transition: none;
   }
 
   .post-filter-handle {
