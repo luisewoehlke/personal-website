@@ -1132,7 +1132,8 @@ body.is-piling-stickers .sticker-peach {
   display: none;
 }
 
-.about-sticker-crab {
+.about-sticker-crab,
+.about-sticker-donkey-crab {
   display: none;
 }
 
@@ -1326,6 +1327,9 @@ body.is-piling-stickers .sticker-peach {
     min-height: 0;
     max-width: 100%;
     --about-space: 1.5;
+    --sky-left: 13rem;
+    --sky-drop: 1rem;
+    --snap-sm-w: min(28%, 6.25rem);
     --about-flex-gap: calc(clamp(0.7rem, 1.8vh, 2.25rem) * var(--about-space));
     gap: var(--about-flex-gap);
   }
@@ -1477,26 +1481,22 @@ body.is-piling-stickers .sticker-peach {
     margin-top: 0.1rem;
   }
 
-  .about-page img[src*="pickle"],
-  .about-page img[src*="espr"],
-  .about-stickers img[src*="fig"],
-  .about-stickers img[src*="blueberries"],
-  .about-stickers img[src*="garlic"] {
+  .about-snap-donkey-wrap .about-sticker-pickle {
     display: none !important;
+  }
+
+  .about-snap-donkey-wrap .about-sticker-donkey-crab {
+    display: block;
+    position: relative;
+    top: auto;
+    left: 4rem;
+    top: -7.2rem;
+    margin: 0;
+    z-index: 3;
   }
 
   .about-hero {
     position: relative;
-  }
-
-  .about-hero .about-sticker-crab {
-    display: none;
-    position: absolute;
-    top: auto;
-    left: 16.667%;
-    bottom: 0;
-    translate: -60% 45%;
-    z-index: 3;
   }
 
   .about-page #about > .about-heading {
@@ -1620,8 +1620,8 @@ body.is-piling-stickers .sticker-peach {
     align-items: flex-start;
     align-self: flex-start;
     gap: 0.2rem;
-    width: min(28%, 6.25rem);
-    margin: calc(1.5rem * var(--about-space)) 0 calc(2.75rem * var(--about-space));
+    width: calc(var(--snap-sm-w) - 1.5rem);
+    margin: calc(0.5rem * var(--about-space)) 0 calc(2.75rem * var(--about-space)) 3%;
     z-index: 1;
   }
 
@@ -1674,12 +1674,29 @@ body.is-piling-stickers .sticker-peach {
 
   .about-para-anchor .about-snap-sky {
     position: absolute;
-    left: 13rem;
+    left: var(--sky-left);
     right: auto;
-    bottom: -1rem;
+    bottom: calc(-1 * var(--sky-drop));
     margin: 0;
-    width: min(28%, 6.25rem);
+    width: var(--snap-sm-w);
     z-index: 2;
+  }
+
+  .about-page #about .about-para-farm {
+    /* Gap the donkey block used to fill above this para */
+    margin-top: calc(var(--sky-drop) + var(--snap-sm-w) - 1.5rem + 2.75rem * var(--about-space));
+    margin-left: 10%;
+  }
+
+  /* Fill the slot the pigeon left so % sticker positions don't shift */
+  .about-page #about > .about-loves-block {
+    margin-top: calc(1.5rem * var(--about-space) + var(--snap-sm-w) + 0.35rem);
+  }
+
+  .about-page > .about-snap-pigeon {
+    display: block;
+    width: min(28%, 6.25rem);
+    margin: 2rem 50% 8rem auto;
   }
 
   .about-snap-flavor7 {
@@ -1729,8 +1746,8 @@ body.is-piling-stickers .sticker-peach {
   .about-snap-festival {
     margin-right: 0;
     margin-left: auto;
-    /* Cancel scatter gap so festival sits tight above the list */
-    margin-bottom: calc(0.25rem - var(--about-flex-gap));
+    margin-top: calc(0.5rem * var(--about-space));
+    margin-bottom: calc(var(--about-end-gap) / 2);
   }
 
   .about-snap-last {
@@ -3756,11 +3773,11 @@ footer p {
 
 .footer-potato {
   position: absolute;
-  right: -1.85rem;
+  right: -2rem;
   bottom: -1.35rem;
   width: 2.95rem;
   height: auto;
-  rotate: -16deg;
+  rotate: -35deg;
   z-index: 0;
   pointer-events: none;
   image-rendering: pixelated;
