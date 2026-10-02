@@ -346,10 +346,16 @@ if (latestScrollHint) {
       latestScrollHint.classList.remove("is-hidden");
       return;
     }
-    const rect = latestScrollHint.getBoundingClientRect();
-    // Hide once the hint has moved ~20px up from the bottom of the viewport.
-    const hide = window.innerHeight - rect.bottom > 20;
-    latestScrollHint.classList.toggle("is-hidden", hide);
+    const section = document.getElementById("best-of");
+    if (!section) {
+      latestScrollHint.classList.add("is-hidden");
+      return;
+    }
+    const margin = parseFloat(getComputedStyle(section).scrollMarginTop) || 0;
+    const idealY =
+      section.getBoundingClientRect().top + window.scrollY - margin;
+    const show = Math.abs(window.scrollY - idealY) <= 20;
+    latestScrollHint.classList.toggle("is-hidden", !show);
   };
   updateLatestScrollHint();
   window.addEventListener("scroll", updateLatestScrollHint, { passive: true });
@@ -711,14 +717,14 @@ const alignStandupLabel = (label) => {
   const mobile = isMobileLayout();
   /* Natural layout height (no vertical % translate fighting margin). */
   label.style.top = "0";
-  label.style.translate = mobile ? "0.45rem 0" : "1.2rem 0.1rem";
+  label.style.translate = mobile ? "0.75rem 0" : "1.2rem 0.1rem";
 
   const markBox = mark.getBoundingClientRect();
   const liveBox = live.getBoundingClientRect();
   let targetY = card.getBoundingClientRect().bottom;
   if (mobile) {
     /* Custom font metrics read low on real phones; bias toward the orange’s upper half */
-    targetY = markBox.top + markBox.height * 0.34;
+    targetY = markBox.top + markBox.height * 0.4;
   } else {
     /* Slight optical lift on desktop */
     targetY -= 5;
