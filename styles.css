@@ -1160,6 +1160,10 @@ body.is-piling-stickers .sticker-peach {
   object-fit: cover;
 }
 
+.about-snap-mobile {
+  display: none;
+}
+
 .about-snap-front {
   z-index: 1;
 }
@@ -1368,11 +1372,12 @@ body.is-piling-stickers .sticker-peach {
   }
 
   .about-page {
-    padding-bottom: 6.5rem;
+    --about-end-gap: 14rem; /* half of prior last-para→footer space */
+    padding-bottom: 0;
   }
 
   .about-page + footer {
-    padding-top: 3.5rem;
+    padding-top: 0;
   }
 
   .about-page #about p,
@@ -1451,6 +1456,10 @@ body.is-piling-stickers .sticker-peach {
     width: min(28%, 6.25rem);
   }
 
+  .about-snap-mobile {
+    display: block;
+  }
+
   .about-snap-captioned {
     width: min(48%, 11rem);
     aspect-ratio: auto;
@@ -1497,6 +1506,17 @@ body.is-piling-stickers .sticker-peach {
   .about-snap-festival {
     margin-right: 0;
     margin-left: auto;
+    /* Cancel scatter gap so festival sits tight above the list */
+    margin-bottom: calc(0.25rem - 2.25rem);
+  }
+
+  .about-snap-last {
+    align-self: flex-start;
+    margin-left: 33.333%;
+    translate: -50% 0;
+    /* Sit at 2/3 of the end gap; cancel scatter flex gap above */
+    margin-top: calc(var(--about-end-gap) * 2 / 3 - 2.25rem);
+    margin-bottom: calc(var(--about-end-gap) / 3);
   }
 
   .about-snap-heading-bg {
