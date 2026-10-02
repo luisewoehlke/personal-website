@@ -1120,6 +1120,18 @@ body.is-piling-stickers .sticker-peach {
   display: none;
 }
 
+.about-sticker-strawberry {
+  display: none;
+}
+
+.about-sticker-pickle {
+  display: none;
+}
+
+.about-snap-donkey-wrap {
+  display: contents;
+}
+
 .about-page + footer {
   padding-top: 0.5rem;
   padding-bottom: 1rem;
@@ -1396,12 +1408,13 @@ body.is-piling-stickers .sticker-peach {
     display: block;
     position: relative;
     top: auto;
-    left: auto;
+    left: 33.333%;
+    translate: -50% 0;
     width: calc(2.15rem + 2.15rem * 0.75 + 0.35rem);
     height: calc(2.15rem + 0.55rem);
     z-index: 3;
-    align-self: flex-end;
-    margin: clamp(0.15rem, 0.8vh, 1.1rem) 4% clamp(0.15rem, 0.8vh, 1.1rem) 0;
+    align-self: flex-start;
+    margin: clamp(0.15rem, 0.8vh, 1.1rem) 0;
   }
 
   .about-sticker-group-cd .about-sticker-cd {
@@ -1557,6 +1570,31 @@ body.is-piling-stickers .sticker-peach {
     width: min(28%, 6.25rem);
   }
 
+  .about-snap-donkey-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    align-self: flex-start;
+    gap: 0.2rem;
+    width: min(28%, 6.25rem);
+    margin: 1.5rem 0 2.75rem;
+    z-index: 1;
+  }
+
+  .about-snap-donkey-wrap .about-snap {
+    margin: 0;
+    width: 100%;
+  }
+
+  .about-snap-donkey-wrap .about-sticker-pickle {
+    display: block;
+    position: relative;
+    top: auto;
+    left: 0.35rem;
+    margin: 0;
+    z-index: 3;
+  }
+
   .about-snap-mobile {
     display: block;
   }
@@ -1665,6 +1703,19 @@ body.is-piling-stickers .sticker-peach {
     z-index: 0;
   }
 
+  .about-sticker-strawberry {
+    display: block;
+    position: absolute;
+    top: calc(-0.2rem + min(24%, 4.5rem) / 2);
+    left: auto;
+    right: calc(min(24%, 4.5rem) / 2);
+    translate: 50% -50%;
+    z-index: 2;
+    margin: 0;
+    width: calc(2.15rem * 0.55);
+    max-width: 8vw;
+  }
+
   .about-snap-out-l,
   .about-snap-out-r {
     left: auto;
@@ -1691,8 +1742,8 @@ h2 {
   margin: 0 0 0.75rem;
 }
 
-#best-of > h2,
-#latest > h2,
+#best-of-heading,
+#latest-heading,
 #about h2 {
   font-family: "Block Craft", "Space Mono", ui-monospace, monospace;
   font-weight: 500;
@@ -1701,11 +1752,11 @@ h2 {
   position: relative;
 }
 
-#best-of > h2 .typeout-shadow,
-#latest > h2 .typeout-shadow,
+#best-of-heading .typeout-shadow,
+#latest-heading .typeout-shadow,
 #about h2 .typeout-shadow,
-#best-of > h2 .typeout-shadow-left,
-#latest > h2 .typeout-shadow-left,
+#best-of-heading .typeout-shadow-left,
+#latest-heading .typeout-shadow-left,
 #about h2 .typeout-shadow-left {
   position: absolute;
   left: 0;
@@ -1717,27 +1768,27 @@ h2 {
   z-index: 0;
 }
 
-#best-of > h2 .typeout-shadow,
-#latest > h2 .typeout-shadow,
+#best-of-heading .typeout-shadow,
+#latest-heading .typeout-shadow,
 #about h2 .typeout-shadow {
   transform: translate(0.08em, -0.03em);
 }
 
-#best-of > h2 .typeout-shadow-left,
-#latest > h2 .typeout-shadow-left,
+#best-of-heading .typeout-shadow-left,
+#latest-heading .typeout-shadow-left,
 #about h2 .typeout-shadow-left {
   transform: translate(0.1em, -0.03em);
 }
 
-#best-of > h2 .typeout-ghost,
-#latest > h2 .typeout-ghost,
+#best-of-heading .typeout-ghost,
+#latest-heading .typeout-ghost,
 #about h2 .typeout-ghost {
   visibility: hidden;
   display: block;
 }
 
-#best-of > h2 .typeout-live,
-#latest > h2 .typeout-live,
+#best-of-heading .typeout-live,
+#latest-heading .typeout-live,
 #about h2 .typeout-live {
   position: absolute;
   left: 0;
@@ -1757,7 +1808,7 @@ h2 {
   scroll-margin-top: calc(var(--header-h, 4.8rem) + 0.15rem);
 }
 
-#latest > h2 {
+#latest-heading {
   scroll-margin-top: calc(var(--header-h, 4.8rem) + 0.15rem);
 }
 
@@ -1799,6 +1850,10 @@ h2 {
   box-sizing: border-box;
 }
 
+.heading-peach-wrap {
+  display: contents;
+}
+
 .best-of-heading-peach,
 .latest-heading-peach {
   display: block;
@@ -1821,8 +1876,7 @@ h2 {
   top: calc(var(--latest-pad-top, 3.25rem) + 4.55rem);
 }
 
-#best-of-heading,
-#best-of > h2 {
+#best-of-heading {
   scroll-margin-top: calc(var(--header-h, 4.8rem) + 10vh);
 }
 
@@ -1885,8 +1939,7 @@ h2 {
     top: calc(var(--best-pad-top) + 4.5rem);
   }
 
-  #best-of-heading,
-  #best-of > h2 {
+  #best-of-heading {
     scroll-margin-top: calc(var(--header-h, 4.8rem) + var(--best-pad-top));
     flex-shrink: 0;
   }
@@ -3913,7 +3966,7 @@ footer p {
     translate: none;
   }
 
-  #best-of > h2 {
+  #best-of-heading {
     margin-left: 0;
   }
 
@@ -4075,16 +4128,28 @@ footer p {
     height: 6.3vw;
   }
 
-  #best-of > h2,
-  #latest > h2,
+  #best-of-heading,
+  #latest-heading,
   #about h2 {
     font-size: 15vw;
     line-height: 0.85;
   }
 
-  #best-of > h2,
-  #latest > h2 {
+  .heading-peach-wrap {
+    display: block;
+    position: relative;
+    width: fit-content;
+    max-width: 100%;
     margin-left: 4vw;
+    font-size: 15vw;
+    line-height: 0.85;
+  }
+
+  #best-of-heading,
+  #latest-heading {
+    margin-left: 0;
+    font-size: 1em;
+    line-height: inherit;
   }
 
   #about h2 {
@@ -4099,8 +4164,7 @@ footer p {
     font-size: 17.2vw;
   }
 
-  #best-of-heading,
-  #best-of > h2 {
+  #best-of-heading {
     scroll-margin-top: calc(var(--header-h, 4.8rem) + 0.15rem);
   }
 
@@ -4109,11 +4173,11 @@ footer p {
     scroll-margin-top: calc(var(--header-h, 4.8rem) - 10vh);
   }
 
-  #best-of > h2,
-  #best-of > h2 .typeout-ghost,
-  #best-of > h2 .typeout-live,
-  #best-of > h2 .typeout-shadow,
-  #best-of > h2 .typeout-shadow-left {
+  #best-of-heading,
+  #best-of-heading .typeout-ghost,
+  #best-of-heading .typeout-live,
+  #best-of-heading .typeout-shadow,
+  #best-of-heading .typeout-shadow-left {
     white-space: pre-line;
   }
 
@@ -4122,21 +4186,14 @@ footer p {
     display: block;
     position: absolute;
     z-index: 12;
-    left: calc(4vw - 2.1rem);
-    width: calc(3.75 * var(--sticker-unit));
+    left: -.9em;
+    top: 1.5em;
+    width: 1.55em;
     height: auto;
+    translate: 0 -72%;
     rotate: -30deg;
     pointer-events: none;
     image-rendering: pixelated;
-  }
-
-  .best-of-heading-peach {
-    top: calc(10vh + 6rem);
-  }
-
-  .latest-heading-peach {
-    top: calc(var(--latest-pad-top, 3.25rem) + 6rem);
-    translate: 0 -85%;
   }
 
   .sticker-peach.is-hidden {
@@ -4720,7 +4777,7 @@ footer p {
     max-width: calc(66.666vw - 5vw);
   }
 
-  #latest > h2 {
+  #latest-heading {
     margin-bottom: 4.5rem;
   }
 
