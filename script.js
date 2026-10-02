@@ -310,9 +310,7 @@ const scrollToBestOfHeadingHash = ({ smooth = false } = {}) => {
   if (!el) return;
 
   const preferSmooth =
-    smooth &&
-    mobile &&
-    !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    smooth && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const apply = () => {
     const margin =
@@ -355,7 +353,6 @@ window.addEventListener("hashchange", () => scrollToBestOfHeadingHash({ smooth: 
 
 document.querySelectorAll('.scroll-hint[href="#best-of"]').forEach((hint) => {
   hint.addEventListener("click", (event) => {
-    if (!isMobileLayout()) return;
     event.preventDefault();
     if (location.hash !== "#best-of") {
       history.pushState(null, "", "#best-of");
