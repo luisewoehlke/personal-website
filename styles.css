@@ -809,6 +809,10 @@ main {
   z-index: 14;
 }
 
+.landing-sticker-group {
+  display: contents;
+}
+
 .sticker {
   position: absolute;
   z-index: 9;
@@ -4232,22 +4236,45 @@ footer p {
     height: auto;
   }
 
+  .landing-sticker-group {
+    display: block;
+    position: absolute;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+
+  .landing-sticker-group .sticker {
+    position: absolute;
+  }
+
+  .landing-sticker-group-sushi {
+    left: 1%;
+    bottom: 1%;
+  }
+
+  .landing-sticker-group-cowberry {
+    top: 38%;
+    right: 13%;
+  }
+
   .sticker-potato-2 {
     display: none;
   }
 
   .sticker-strawberry {
     --sticker-w: 1.6;
-    top: 6%;
-    right: 1%;
+    top: calc(2.2 * var(--sticker-unit));
+    right: calc(-1.65 * var(--sticker-unit));
     left: auto;
     bottom: auto;
+    rotate: 25deg;
   }
 
   .sticker-cow {
-    --sticker-w: 2.35;
-    top: 38%;
-    right: 6%;
+    --sticker-w: 4.3;
+    top: 0;
+    right: 0;
     left: auto;
     bottom: auto;
   }
@@ -4259,8 +4286,8 @@ footer p {
   }
 
   .sticker-pickle {
-    --sticker-w: 2.5;
-    top: 82%;
+    --sticker-w: 2.6;
+    top: 78%;
     right: -4%;
     left: auto;
     bottom: auto;
@@ -4275,17 +4302,17 @@ footer p {
   }
 
   .sticker-maki {
-    --sticker-w: 2.5;
-    bottom: 3%;
-    left: 10%;
+    --sticker-w: 1.7;
+    bottom: calc(1.3 * var(--sticker-unit));
+    left: calc(1.95 * var(--sticker-unit));
     top: auto;
     right: auto;
   }
 
   .sticker-nigiri {
     --sticker-w: 2.5;
-    bottom: 1%;
-    left: 1%;
+    bottom: 0;
+    left: 0;
     top: auto;
     right: auto;
   }
@@ -4300,7 +4327,7 @@ footer p {
   }
 
   .sticker-fig-card {
-    --sticker-w: 2.7;
+    --sticker-w: 2.9;
     display: block;
     position: absolute;
     left: -4%;
