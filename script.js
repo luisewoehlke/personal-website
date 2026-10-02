@@ -57,13 +57,13 @@ if (peachSticker) {
 }
 if (siteHeader) {
   let lastScrollY = window.scrollY;
-  let headerHidden = false;
-  const updateHeader = () => {
-    const scrollY = window.scrollY;
-    const delta = scrollY - lastScrollY;
-    if (scrollY <= 0) headerHidden = false;
-    else if (delta > 8) headerHidden = true;
-    else if (delta < -8) headerHidden = false;
+  const isAboutPage = Boolean(document.querySelector("main.about-page"));
+  /* Name-only hide lives under the phone menu breakpoint */
+  const isPhoneHeader = () => window.matchMedia("(max-width: 640px)").matches;
+  const hideNameAtTop = () => isAboutPage && isPhoneHeader();
+  let nameRevealed = false;
+  let headerHidden = hideNameAtTop() && lastScrollY <= 0;
+  const applyHeaderHidden = () => {
     siteHeader.classList.toggle("is-hidden", headerHidden);
     document
       .querySelector(".site-header-bg")
@@ -74,6 +74,23 @@ if (siteHeader) {
       end?.classList.remove("is-open");
       burger?.setAttribute("aria-expanded", "false");
     }
+  };
+  const updateHeader = () => {
+    const scrollY = window.scrollY;
+    const delta = scrollY - lastScrollY;
+    if (scrollY <= 0) {
+      if (hideNameAtTop()) {
+        if (!nameRevealed) headerHidden = true;
+      } else {
+        headerHidden = false;
+      }
+    } else if (delta > 8) {
+      headerHidden = true;
+    } else if (delta < -8) {
+      headerHidden = false;
+      if (hideNameAtTop()) nameRevealed = true;
+    }
+    applyHeaderHidden();
     lastScrollY = scrollY;
   };
   const syncHeaderHeight = () => {
@@ -82,6 +99,7 @@ if (siteHeader) {
       `${siteHeader.offsetHeight}px`
     );
   };
+  applyHeaderHidden();
   syncHeaderHeight();
   window.addEventListener("resize", syncHeaderHeight);
   window.addEventListener("scroll", updateHeader, { passive: true });
@@ -2085,10 +2103,23 @@ if (postFilter) {
       }
     }
   });
+  let suppressFilterOutsideClickUntil = 0;
   document.addEventListener("pointerdown", (event) => {
     if (!postFilter.open || postFilter.contains(event.target)) return;
     closeFilter();
+    /* Same tap must not activate links under the dismiss target */
+    if (isFilterSheet()) suppressFilterOutsideClickUntil = performance.now() + 500;
   });
+  document.addEventListener(
+    "click",
+    (event) => {
+      if (performance.now() > suppressFilterOutsideClickUntil) return;
+      event.preventDefault();
+      event.stopPropagation();
+      suppressFilterOutsideClickUntil = 0;
+    },
+    true
+  );
   const latestHeading = document.querySelector("#latest-heading");
   const syncFilterIn = () => {
     if (!latestHeading) return;

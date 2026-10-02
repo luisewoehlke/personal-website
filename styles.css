@@ -1118,7 +1118,7 @@ body.is-piling-stickers .sticker-peach {
 .about-page #about.about-scatter {
   position: relative;
   max-width: 31rem;
-  min-height: 996px;
+  min-height: 1120px;
   margin: 0 auto;
 }
 
@@ -1133,6 +1133,10 @@ body.is-piling-stickers .sticker-peach {
 .about-page #about a {
   text-decoration: underline;
   text-underline-offset: 0.15em;
+}
+
+.about-loves-block {
+  display: contents;
 }
 
 .about-loves {
@@ -1292,14 +1296,55 @@ body.is-piling-stickers .sticker-peach {
     opacity: 0.92;
   }
 
+  .about-sticker-group {
+    position: absolute;
+    top: var(--t);
+    left: var(--l);
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+
+  .about-sticker-group .about-sticker {
+    top: auto;
+    left: auto;
+  }
+
+  /* Match landing: nigiri 1%/1%, maki 10%/3% → ~9% right, ~1rem up */
+  .about-sticker-group-sushi .about-sticker-nigiri {
+    top: 0;
+    left: 0;
+  }
+
+  .about-sticker-group-sushi .about-sticker-maki {
+    top: -0.85rem;
+    left: 9vw;
+  }
+
   .about-page #about > h2,
   .about-page #about > p,
   .about-page #about > .about-snap,
   .about-page #about > .about-snap-group,
   .about-page #about > .about-loves,
+  .about-page #about > .about-loves-block,
   .about-page #about > .about-hero {
     position: relative;
     z-index: 1;
+  }
+
+  .about-loves-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .about-loves-block .about-gap {
+    margin-top: 0;
+  }
+
+  .about-loves-block .about-loves {
+    margin: 0;
   }
 
   .about-fig {
@@ -1391,44 +1436,6 @@ body.is-piling-stickers .sticker-peach {
     margin: 1.25rem 0 2.75rem;
   }
 
-  .about-snap-group-loves {
-    min-height: 11rem;
-    margin-top: 2.5rem;
-    margin-bottom: 2.5rem;
-  }
-
-  .about-snap-group-loves .about-snap {
-    position: absolute;
-    margin: 0;
-    height: auto;
-  }
-
-  .about-snap-group-loves .about-snap-out-l {
-    left: 0;
-    top: 0;
-    width: min(38%, 8rem);
-    aspect-ratio: calc(128 / 169);
-    z-index: 1;
-  }
-
-  .about-snap-group-loves .about-snap-out-r.about-snap-end {
-    left: auto;
-    right: 4%;
-    top: 42%;
-    width: min(32%, 7.25rem);
-    aspect-ratio: calc(128 / 96);
-    z-index: 1;
-  }
-
-  .about-snap-group-loves .about-snap-front {
-    left: auto;
-    right: 0;
-    top: 18%;
-    width: min(28%, 6rem);
-    aspect-ratio: 1;
-    z-index: 2;
-  }
-
   .about-snap {
     position: static;
     left: auto;
@@ -1440,13 +1447,17 @@ body.is-piling-stickers .sticker-peach {
     rotate: none;
   }
 
+  .about-snap-sm {
+    width: min(28%, 6.25rem);
+  }
+
   .about-snap-captioned {
     width: min(48%, 11rem);
     aspect-ratio: auto;
   }
 
   .about-snap-hippo {
-    width: min(32%, 7rem);
+    width: min(24%, 5.25rem);
   }
 
   .about-snap-captioned img {
@@ -1481,6 +1492,11 @@ body.is-piling-stickers .sticker-peach {
   .about-snap-end {
     align-self: flex-end;
     rotate: none;
+  }
+
+  .about-snap-festival {
+    margin-right: 0;
+    margin-left: auto;
   }
 
   .about-snap-heading-bg {
@@ -3908,7 +3924,7 @@ footer p {
   #best-of > h2,
   #latest > h2,
   #about > h2 {
-    font-size: 12vw;
+    font-size: 15vw;
     line-height: 0.85;
   }
 
@@ -3949,11 +3965,11 @@ footer p {
   }
 
   .best-of-heading-peach {
-    top: calc(10vh + 4rem);
+    top: calc(10vh + 5.75rem);
   }
 
   .latest-heading-peach {
-    top: calc(var(--latest-pad-top, 3.25rem) + 4.25rem);
+    top: calc(var(--latest-pad-top, 3.25rem) + 6rem);
     translate: 0 -85%;
   }
 
@@ -4245,9 +4261,16 @@ footer p {
     gap: 2rem;
   }
 
+  .header-nav:has(.about-link[aria-current="page"]) {
+    transition: none;
+  }
+
   .header-end.is-open .header-nav:has(.about-link[aria-current="page"]) {
     min-height: calc(3.25rem * 2 + 2rem * 3 + 2rem * 2 + 2.15rem + 1em);
     min-width: 5.5rem;
+    /* Less padding so logos can spread through the existing pill height */
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
   }
 
   .header-nav:has(.about-link[aria-current="page"]) .about-link {
@@ -4367,7 +4390,7 @@ footer p {
     grid-template-columns: 1fr;
     width: 100%;
     margin-left: 0;
-    margin-top: 2.5rem;
+    margin-top: 4rem;
     max-width: 100%;
   }
 
