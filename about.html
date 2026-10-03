@@ -134,11 +134,13 @@
           </div>
           <img class="sticker about-sticker" style="--t: 39.5%; --l: 78%; --r: -22deg; --s: 0.8" src="images/stickers/unused/raspberry.png" alt="" />
           <img class="sticker about-sticker" style="--t: 60%; --l: 96%; --r: 0deg; --s: 1.1" src="images/stickers/espr.png" alt="" />
-          <img class="sticker about-sticker" style="--t: 90%; --l: 71%; --r: -24deg; --s: 1.1" src="images/stickers/fig.png" alt="" />
-          <img class="sticker about-sticker" style="--t: 51.5%; --l: 62%; --r: 18deg; --s: 0.9" src="images/stickers/unused/banana.png" alt="" />
-          <img class="sticker about-sticker" style="--t: 89.4%; --l: 62%; --r: -15deg; --s: 1.1" src="images/stickers/unused/blueberries.png" alt="" />
-          <img class="sticker about-sticker" style="--t: 98%; --l: 8%; --r: 12deg; --s: 0.9" src="images/stickers/unused/garlic.png" alt="" />
-          <img class="sticker about-sticker" style="--t: 47.3%; --l: 23%; --r: -20deg; --s: 1.3" src="images/stickers/unused/sloth.png" alt="" />
+          <div class="about-sticker-group about-sticker-group-fig" style="--t: 89.4%; --l: 62%">
+            <img class="sticker about-sticker about-sticker-blueberries-scatter" style="--r: -15deg; --s: 1.1" src="images/stickers/unused/blueberries.png" alt="" />
+            <img class="sticker about-sticker about-sticker-fig" style="--r: -24deg; --s: 1.1" src="images/stickers/fig.png" alt="" />
+          </div>
+          <img class="sticker about-sticker about-sticker-banana-scatter" style="--t: 51.5%; --l: 62%; --r: 18deg; --s: 0.9" src="images/stickers/unused/banana.png" alt="" />
+          <img class="sticker about-sticker about-sticker-garlic" style="--t: 98%; --l: 8%; --r: 12deg; --s: 0.9" src="images/stickers/unused/garlic.png" alt="" />
+          <img class="sticker about-sticker about-sticker-sloth" style="--t: 47.3%; --l: 23%; --r: -20deg; --s: 1.3" src="images/stickers/unused/sloth.png" alt="" />
         </div>
         <div class="about-heading">
           <img
@@ -202,17 +204,19 @@
             me, extremely hot, at the Monkey Barrel Comedy Club in Edinburgh
           </figcaption>
         </figure>
-        <p class="about-gap about-para-peek">
-          I've been described as a book&#8209;cel and spreadsheet rotator. I've also
-          been described as German. Probably because I'm German.
-        </p>
-        <img
-          class="about-snap about-snap-sm about-snap-mobile about-snap-end about-snap-flavor7"
-          style="--x: 100px; --y: 880px; --w: 72px; --h: 54px"
-          src="images/about/flavor-7.jpg"
-          alt="Sunset landscape seen through a train window"
-          loading="lazy"
-        />
+        <div class="about-peek-block">
+          <p class="about-gap about-para-peek">
+            I've been described as a book&#8209;cel and spreadsheet rotator. I've also
+            been described as German. Probably because I'm&nbsp;German.
+          </p>
+          <img
+            class="about-snap about-snap-sm about-snap-mobile about-snap-end about-snap-flavor7"
+            style="--x: 100px; --y: 880px; --w: 72px; --h: 54px"
+            src="images/about/flavor-7.jpg"
+            alt="Sunset landscape seen through a train window"
+            loading="lazy"
+          />
+        </div>
         <figure
           class="about-snap about-snap-captioned about-snap-hint about-snap-out-r about-snap-start about-snap-hippo"
           style="--x: 530px; --y: 388px; --w: 60px; --h: 58px"
@@ -233,13 +237,22 @@
             <a href="https://www.governance.ai" target="_blank" rel="noopener noreferrer">GovAI</a>,
             and before that in various AI safety and EA community building orgs.
           </p>
-          <img
-            class="about-snap about-snap-sm about-snap-sky about-snap-out-r about-snap-end"
-            style="--x: 400px; --y: 780px; --w: 72px; --h: 54px"
-            src="images/about/flavor-6.jpg"
-            alt="Sunset clouds above train wires"
-            loading="lazy"
-          />
+          <div class="about-sky-group">
+            <img
+              class="about-snap about-snap-sm about-snap-sky about-snap-out-r about-snap-end"
+              style="--x: 400px; --y: 780px; --w: 72px; --h: 54px"
+              src="images/about/flavor-6.jpg"
+              alt="Sunset clouds above train wires"
+              loading="lazy"
+            />
+            <img
+              class="sticker about-sticker about-sticker-banana"
+              style="--r: 18deg; --s: 0.9"
+              src="images/stickers/unused/banana.png"
+              alt=""
+              aria-hidden="true"
+            />
+          </div>
         </div>
         <p class="about-para-farm">
           Before that, I did an undergrad in Computer Science. Before that, I
@@ -291,6 +304,20 @@
           <li>ecstatic dance</li>
           <li>classics and literary fiction</li>
         </ul>
+        <div class="about-sticker-group about-sticker-group-fig-loves" aria-hidden="true">
+          <img
+            class="sticker about-sticker about-sticker-blueberries"
+            style="--r: -15deg; --s: 1.1"
+            src="images/stickers/unused/blueberries.png"
+            alt=""
+          />
+          <img
+            class="sticker about-sticker about-sticker-fig-loves"
+            style="--r: -24deg; --s: 1.1"
+            src="images/stickers/fig.png"
+            alt=""
+          />
+        </div>
         </div>
         <img
           class="about-snap about-snap-festival about-snap-out-l about-snap-end"

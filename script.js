@@ -1235,8 +1235,8 @@ const raindropCopy = (item) => {
     : "";
   const tagsHtml = tags.length
     ? `<span class="raindrop-tags">${tags
-        .map((tag) => `<span>#${escapeHtml(String(tag).replace(/^#/, ""))}</span>`)
-        .join("")}</span>`
+        .map((tag) => `#${escapeHtml(String(tag).replace(/^#/, ""))}`)
+        .join(" ")}</span>`
     : "";
   return `<span class="raindrop-copy">
       <strong>${escapeHtml(item.title)}</strong>
@@ -1383,14 +1383,14 @@ const placeRaindrops = () => {
 
 const sizeRaindropCards = () => {
   if (!latestPosts) return;
-  const maxCard = window.innerHeight * (isMobileLayout() ? 0.7 : 1 / 3);
+  const maxCard = window.innerHeight * (isMobileLayout() ? 0.7 : 0.4);
   const post = latestPosts.querySelector(
     ":scope > li:not(.raindrop-item):not(.post-month):not(.photo-item):not(.book-item):not([hidden])"
   );
   const otherWidth = post
     ? post.getBoundingClientRect().width
     : latestPosts.clientWidth;
-  const maxOuter = otherWidth * 0.8;
+  const maxOuter = otherWidth * (isMobileLayout() ? 0.8 : 0.4);
 
   latestPosts.querySelectorAll(":scope > li.raindrop-item").forEach((item) => {
     const img = item.querySelector(".raindrop-embed.is-image img");
@@ -1423,11 +1423,15 @@ const sizeRaindropCards = () => {
 
     const chromeFor = (innerW) => {
       item.style.width = `${innerW + padX + borderX}px`;
-      const kickerMb = kicker
-        ? parseFloat(getComputedStyle(kicker).marginBottom) || 0
+      const kickerStyles = kicker ? getComputedStyle(kicker) : null;
+      // Absolute kickers sit in padding-top already — don't subtract them twice.
+      const kickerInFlow =
+        kicker && kickerStyles && kickerStyles.position !== "absolute";
+      const kickerMb = kickerInFlow
+        ? parseFloat(kickerStyles.marginBottom) || 0
         : 0;
       const gap = card ? parseFloat(getComputedStyle(card).rowGap) || 0 : 0;
-      const kickerH = kicker ? kicker.offsetHeight + kickerMb : 0;
+      const kickerH = kickerInFlow ? kicker.offsetHeight + kickerMb : 0;
       const copyH = copy ? copy.offsetHeight : 0;
       return padY + borderY + kickerH + (copy ? gap : 0) + copyH;
     };
@@ -1447,18 +1451,45 @@ const sizeRaindropCards = () => {
     let width = Math.min(maxInner, naturalWidth);
     let usedHeight = width / ratio;
     let fit = "contain";
-    const isNarrow = window.matchMedia("(max-width: 640px)").matches;
-    const minOuter = Math.min(
-      isNarrow ? otherWidth * 0.72 : window.innerWidth / 3,
-      otherWidth
-    );
-    if (img && naturalWidth + padX + borderX < minOuter - 1) {
-      width = Math.max(0, minOuter - padX - borderX);
-      usedHeight = Math.max(0, maxCard - chromeFor(width));
-      fit = "cover";
-      item.style.maxWidth = "none";
+    item.style.maxWidth = "";
+    if (isMobileLayout()) {
+      // Widen short portrait cards and crop.
+      const isNarrow = window.matchMedia("(max-width: 640px)").matches;
+      const minOuter = Math.min(
+        isNarrow ? otherWidth * 0.72 : window.innerWidth / 3,
+        otherWidth
+      );
+      if (img && naturalWidth + padX + borderX < minOuter - 1) {
+        width = Math.max(0, minOuter - padX - borderX);
+        usedHeight = Math.max(0, maxCard - chromeFor(width));
+        fit = "cover";
+        item.style.maxWidth = "none";
+      }
     } else {
-      item.style.maxWidth = "";
+      // Desktop: wide enough that "From: …" stays on one line.
+      let kickerNeed = 0;
+      if (kicker) {
+        const prev = {
+          whiteSpace: kicker.style.whiteSpace,
+          width: kicker.style.width,
+          right: kicker.style.right,
+        };
+        kicker.style.whiteSpace = "nowrap";
+        kicker.style.width = "max-content";
+        kicker.style.right = "auto";
+        kickerNeed = Math.ceil(kicker.scrollWidth);
+        kicker.style.whiteSpace = prev.whiteSpace;
+        kicker.style.width = prev.width;
+        kicker.style.right = prev.right;
+      }
+      const minOuter = Math.min(kickerNeed + padX + borderX, maxOuter);
+      const outer = width + padX + borderX;
+      if (img && outer < minOuter - 1) {
+        width = Math.max(0, minOuter - padX - borderX);
+        usedHeight = Math.max(0, maxCard - chromeFor(width));
+        fit = "cover";
+        item.style.maxWidth = "none";
+      }
     }
     item.style.width = `${width + padX + borderX}px`;
     const embed = img ? img.closest(".raindrop-embed") : video;

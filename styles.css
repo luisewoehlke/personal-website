@@ -1206,6 +1206,20 @@ body.is-piling-stickers .sticker-peach {
   rotate: 70deg;
 }
 
+.about-sticker-group-fig .about-sticker-blueberries-scatter {
+  top: 0;
+  left: 0;
+}
+
+.about-sticker-group-fig .about-sticker-fig {
+  top: 1rem;
+  left: 2.2rem;
+}
+
+.about-sticker-group-fig-loves {
+  display: none;
+}
+
 .about-sticker-group-cow .about-sticker-cow,
 .about-sticker-group-cow .about-sticker-mic {
   top: auto;
@@ -1339,6 +1353,7 @@ body.is-piling-stickers .sticker-peach {
 .about-page #about > .about-loves-block,
 .about-page #about > .about-heading,
 .about-page #about > .about-para-anchor,
+.about-page #about > .about-peek-block,
 .about-page #about > .about-hero {
   position: relative;
   z-index: 1;
@@ -1363,7 +1378,18 @@ body.is-piling-stickers .sticker-peach {
   margin-top: calc(clamp(1.1rem, 2.8vh, 3.5rem) * var(--about-space));
 }
 
-.about-page #about > p.about-para-peek {
+.about-peek-block {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.about-peek-block .about-para-peek {
+  width: 60.666%;
+  max-width: 60.666%;
   margin-top: clamp(0.65rem, 1.6vh, 2rem);
   margin-bottom: 0;
   margin-left: auto;
@@ -1390,7 +1416,7 @@ body.is-piling-stickers .sticker-peach {
   text-align: left;
 }
 
-.about-page #about > p:nth-of-type(even):not(.about-para-peek) {
+.about-page #about > p:nth-of-type(even):not(.about-para-farm) {
   align-self: flex-end;
   text-align: right;
 }
@@ -1400,6 +1426,14 @@ body.is-piling-stickers .sticker-peach {
   flex-direction: column;
   gap: 0.75rem;
   width: 100%;
+}
+
+.about-loves-block .about-sticker-blueberries {
+  display: none;
+}
+
+.about-sticker-blueberries-scatter {
+  display: block;
 }
 
 .about-loves-block .about-gap {
@@ -1506,7 +1540,7 @@ body.is-piling-stickers .sticker-peach {
   margin-top: calc(clamp(1.1rem, 2.8vh, 3.5rem) * var(--about-space));
 }
 
-.about-para-anchor .about-snap-sky {
+.about-para-anchor .about-sky-group {
   position: absolute;
   left: var(--sky-left);
   right: auto;
@@ -1514,6 +1548,22 @@ body.is-piling-stickers .sticker-peach {
   margin: 0;
   width: var(--snap-sm-w);
   z-index: 2;
+}
+
+.about-para-anchor .about-sky-group .about-snap-sky {
+  position: static;
+  left: auto;
+  bottom: auto;
+  margin: 0;
+  width: 100%;
+}
+
+.about-para-anchor .about-sticker-banana {
+  display: none;
+}
+
+.about-sticker-banana-scatter {
+  display: block;
 }
 
 .about-page #about .about-para-farm {
@@ -1531,7 +1581,7 @@ body.is-piling-stickers .sticker-peach {
   margin: 2rem 50% 8rem auto;
 }
 
-.about-snap-flavor7 {
+.about-peek-block .about-snap-flavor7 {
   margin-top: calc(1.4rem - var(--about-flex-gap));
   margin-right: 58%;
 }
@@ -1596,9 +1646,9 @@ body.is-piling-stickers .sticker-peach {
   top: auto;
   z-index: 2;
   /* Center the glyph on the image's bottom-left corner */
-  translate: -50% 50%;
+  translate: 0 0;
   font-family: "Block Craft", "Space Mono", ui-monospace, monospace;
-  font-size: 2rem;
+  font-size: 3rem;
   line-height: 1;
   color: var(--about-q-mark);
   text-shadow:
@@ -1610,13 +1660,23 @@ body.is-piling-stickers .sticker-peach {
 }
 
 @keyframes about-q-wobble {
-  0% { translate: calc(-50% - 0.4rem) 50%; rotate: -25deg; }
-  50% { translate: calc(-50% + 0.1rem) 50%; rotate: 25deg; }
+  0% { translate: calc(-50% - 0.4rem) 50%; rotate: -30deg; }
+  50% { translate: calc(-50% + 0.1rem) 50%; rotate: 30deg; }
+}
+
+@keyframes about-q-wobble-desktop {
+  0% { translate: calc(-35% - 0.7rem) 15%; rotate: -35deg; }
+  50% { translate: calc(-35% + 0.6rem) 15%; rotate: 35deg; }
 }
 
 .about-snap-hint,
 .about-snap-hint * {
   cursor: default;
+}
+
+.about-snap-hint .about-snap-q,
+.about-snap-hint .about-snap-q * {
+  cursor: pointer;
 }
 
 .about-snap-hint figcaption {
@@ -1704,13 +1764,179 @@ body.is-piling-stickers .sticker-peach {
 
   /* Match mobile wrap measure: 60.666vw text / 4.2vw type ≈ 14.444em */
   .about-page #about > p,
-  .about-para-anchor > p {
+  .about-para-anchor > p,
+  .about-peek-block .about-para-peek {
     width: 14.444em;
     max-width: 14.444em;
   }
 
+  /* Desktop: keep book-cel + flavor-7 as one unit */
+  .about-peek-block {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .about-peek-block .about-para-peek {
+    width: 16.2em;
+    max-width: 16.2em;
+  }
+
+  .about-peek-block .about-snap-flavor7 {
+    margin-top: 0.35rem;
+    margin-right: 30%;
+  }
+
+  /* Desktop: center “Before taking…” + farm; text stays left-aligned */
+  .about-para-anchor {
+    --about-para-measure: 14.444em;
+  }
+
+  .about-para-anchor > p {
+    width: var(--about-para-measure);
+    max-width: var(--about-para-measure);
+    margin: 0 auto 0.75rem;
+    align-self: center;
+    text-align: left;
+  }
+
+  .about-para-anchor .about-sky-group {
+    left: calc((100% - var(--about-para-measure)) / 2 + var(--sky-left));
+    bottom: calc(-1 * var(--sky-drop) - 1.5rem);
+  }
+
+  .about-sticker-banana-scatter {
+    display: none;
+  }
+
+  .about-para-anchor .about-sticker-banana {
+    display: block;
+    position: absolute;
+    top: auto;
+    left: auto;
+    right: 3.75rem;
+    bottom: 4.5rem;
+    width: calc(2.15rem * var(--s, 1));
+    max-width: 2.75rem;
+    margin: 0;
+    rotate: var(--r, 0deg);
+  }
+
+  .about-page #about .about-para-farm {
+    margin-top: calc(
+      var(--sky-drop) + var(--snap-sm-w) - 1.5rem + 2.75rem * var(--about-space) +
+        2.75rem
+    );
+    margin-left: auto;
+    margin-right: auto;
+    align-self: center;
+    text-align: left;
+    translate: 7rem 0;
+  }
+
   .about-snap-hippo {
     width: min(24%, 5.25rem);
+  }
+
+  .about-sticker-strawberry {
+    top: calc(17rem + min(24%, 6.5rem) / 2 + var(--about-heading-extra));
+  }
+
+  .about-sticker-apricot {
+    left: calc(var(--l) + 22%);
+  }
+
+  .about-sticker-sloth {
+    top: calc(var(--t) - 1.5%);
+    left: calc(var(--l) - 8%);
+  }
+
+  .about-sticker-garlic {
+    top: calc(var(--t) + 1%);
+    left: calc(var(--l) + 58%);
+  }
+
+  .about-sticker-group-cow {
+    top: calc(var(--t) - 1.5%);
+  }
+
+  .about-loves-block {
+    position: relative;
+    width: fit-content;
+    max-width: 100%;
+    margin-left: 8vw;
+    margin-right: auto;
+    align-self: flex-start;
+  }
+
+  .about-sticker-group-fig {
+    display: none;
+  }
+
+  .about-loves-block .about-sticker-group-fig-loves {
+    display: block;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    top: auto;
+    width: 0;
+    height: 0;
+    margin: 0;
+    translate: -60% 45%;
+    z-index: 2;
+  }
+
+  .about-loves-block .about-sticker-blueberries,
+  .about-loves-block .about-sticker-fig-loves {
+    display: block;
+    position: absolute;
+    width: calc(2.15rem * var(--s, 1));
+    max-width: 2.75rem;
+    margin: 0;
+    rotate: var(--r, 0deg);
+  }
+
+  .about-loves-block .about-sticker-blueberries {
+    top: 0;
+    left: 0;
+  }
+
+  .about-loves-block .about-sticker-fig-loves {
+    top: 1rem;
+    left: 2.2rem;
+  }
+
+  .about-page > .about-snap-pigeon {
+    margin: 2rem 68% 16rem auto;
+  }
+
+  .about-snap-hint .about-snap-q {
+    animation-name: about-q-wobble-desktop;
+  }
+
+  .about-snap-captioned figcaption {
+    justify-self: stretch;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 0.7rem;
+    left: 0;
+    right: auto;
+    translate: none;
+    text-align: left;
+    color: #74584a;
+  }
+
+  /* Center on screen: #about is viewport-centered, so 50% ≈ 50vw */
+  .about-snap-donkey-wrap {
+    position: static;
+  }
+
+  .about-snap-donkey-wrap .about-sticker-donkey-crab {
+    position: absolute;
+    left: 50%;
+    top: 74%;
+    translate: -50% 0;
   }
 }
 
@@ -1816,6 +2042,16 @@ body.is-piling-stickers .sticker-peach {
     rotate: 70deg;
   }
 
+  .about-sticker-group-fig .about-sticker-blueberries-scatter {
+    top: 0;
+    left: 0;
+  }
+
+  .about-sticker-group-fig .about-sticker-fig {
+    top: 1rem;
+    left: 2.2rem;
+  }
+
   .about-sticker-group-cow .about-sticker-cow,
   .about-sticker-group-cow .about-sticker-mic {
     top: auto;
@@ -1867,6 +2103,7 @@ body.is-piling-stickers .sticker-peach {
   .about-page #about > .about-loves-block,
   .about-page #about > .about-heading,
   .about-page #about > .about-para-anchor,
+  .about-page #about > .about-peek-block,
   .about-page #about > .about-hero {
     position: relative;
     z-index: 1;
@@ -1937,8 +2174,15 @@ body.is-piling-stickers .sticker-peach {
     margin-top: calc(clamp(1.1rem, 2.8vh, 3.5rem) * var(--about-space));
   }
 
-  .about-page #about > p.about-para-peek {
+  /* Mobile: unwrap peek group so para + flavor-7 flow like before */
+  .about-peek-block {
+    display: contents;
+  }
+
+  .about-peek-block .about-para-peek {
     /* Keep a few lines visible at the bottom of short viewports */
+    width: 60.666vw;
+    max-width: 60.666vw;
     margin-top: clamp(0.65rem, 1.6vh, 2rem);
     margin-bottom: 0;
     margin-left: auto;
@@ -2004,7 +2248,7 @@ body.is-piling-stickers .sticker-peach {
     color: #000;
   }
 
-  .about-page #about > p:nth-of-type(even):not(.about-para-peek) {
+  .about-page #about > p:nth-of-type(even):not(.about-para-farm) {
     align-self: flex-end;
     text-align: right;
   }
@@ -2092,7 +2336,7 @@ body.is-piling-stickers .sticker-peach {
     margin-top: calc(clamp(1.1rem, 2.8vh, 3.5rem) * var(--about-space));
   }
 
-  .about-para-anchor .about-snap-sky {
+  .about-para-anchor .about-sky-group {
     position: absolute;
     left: var(--sky-left);
     right: auto;
@@ -2100,6 +2344,22 @@ body.is-piling-stickers .sticker-peach {
     margin: 0;
     width: var(--snap-sm-w);
     z-index: 2;
+  }
+
+  .about-para-anchor .about-sky-group .about-snap-sky {
+    position: static;
+    left: auto;
+    bottom: auto;
+    margin: 0;
+    width: 100%;
+  }
+
+  .about-para-anchor .about-sticker-banana {
+    display: none;
+  }
+
+  .about-sticker-banana-scatter {
+    display: block;
   }
 
   .about-page #about .about-para-farm {
@@ -2119,7 +2379,7 @@ body.is-piling-stickers .sticker-peach {
     margin: 2rem 50% 8rem auto;
   }
 
-  .about-snap-flavor7 {
+  .about-peek-block .about-snap-flavor7 {
     margin-top: calc(1.4rem - var(--about-flex-gap));
     margin-right: 58%;
   }
@@ -3471,7 +3731,7 @@ body.has-photo-lightbox {
 
 @media (min-width: 801px) {
   .raindrop-embed.is-image img {
-    max-height: 33.333svh;
+    max-height: 40svh;
   }
 }
 
@@ -3528,7 +3788,7 @@ body.has-photo-lightbox {
   z-index: 2;
   color: #74584a;
   font-family: "Courier Prime", "Courier New", monospace;
-  font-size: 0.72rem;
+  font-size: 0.62rem;
   line-height: 1;
   text-decoration: none;
 }
@@ -3544,6 +3804,55 @@ body.has-photo-lightbox {
   line-height: 1.3;
 }
 
+/* Desktop raindrop chrome — must follow base rules so overrides win */
+@media (min-width: 801px) {
+  .work-list > li.raindrop-item:not(:has(.is-spotify)) {
+    max-width: 40%;
+  }
+
+  .work-list > li.raindrop-item {
+    --raindrop-kicker-h: 1.75rem;
+    position: relative;
+    max-height: 40svh;
+    padding: var(--raindrop-kicker-h) 0.85rem .55rem;
+  }
+
+  .raindrop-kicker,
+  .raindrop-kicker:hover,
+  .raindrop-kicker:visited {
+    position: absolute;
+    top: 0;
+    left: 0.85rem;
+    right: 0.85rem;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    height: var(--raindrop-kicker-h);
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .raindrop-kicker-arrow {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .raindrop-copy strong {
+    font-size: 0.78rem;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .raindrop-copy > .raindrop-tags {
+    padding-right: 0;
+  }
+}
+
 .raindrop-note {
   color: var(--muted);
   font-size: 0.88rem;
@@ -3551,13 +3860,12 @@ body.has-photo-lightbox {
 }
 
 .raindrop-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem 0.55rem;
+  display: block;
   color: #74584a;
   font-family: "Courier Prime", "Courier New", monospace;
   font-size: 0.75rem;
   line-height: 1.3;
+  white-space: normal;
 }
 
 .raindrop-card:hover strong {
