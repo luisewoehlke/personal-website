@@ -128,7 +128,7 @@ if (siteHeader) {
 
 const backgroundStickers = () =>
   document.querySelectorAll(
-    ".landing-sticker-back .sticker, .landing-stickers .sticker, .sticker-peach"
+    ".landing-sticker-back .sticker, .landing-stickers .sticker"
   );
 
 let piledHint = null;
@@ -260,10 +260,11 @@ const pileBackgroundStickers = (hint) => {
         ? 16
         : 0;
     const wombatLeft = el.classList.contains("sticker-wombat") ? -14 : 0;
-    const orangeLeft = el.classList.contains("sticker-orange-2") ? -30 : 0;
+    const orangeLeft = el.classList.contains("sticker-orange-2") ? -62 : 0;
     const orangeDown = el.classList.contains("sticker-orange-2") ? 20 : 0;
+    const cowDown = el.classList.contains("sticker-cow") ? 2 : 0;
     const targetX = pileX + jitterX + sushiShift + wombatLeft + orangeLeft;
-    let targetY = pileY + jitterY + orangeDown;
+    let targetY = pileY + jitterY + orangeDown + cowDown;
     if (
       el.classList.contains("sticker-crab") ||
       el.classList.contains("sticker-potato-2")
@@ -301,12 +302,9 @@ document.querySelectorAll(".landing .scroll-hint").forEach((hint) => {
 const scrollToBestOfHeadingHash = ({ smooth = false } = {}) => {
   const hash = location.hash;
   if (hash !== "#best-of-heading" && hash !== "#best-of") return;
-  const wide = window.matchMedia("(min-width: 1041px)").matches;
   const mobile = isMobileLayout();
-  // Mobile: aim at the heading so landing stickers (nigiri) clear the viewport.
-  const el = document.getElementById(
-    mobile ? "best-of-heading" : wide || hash === "#best-of" ? "best-of" : "best-of-heading"
-  );
+  // Mobile: heading (clears landing stickers). Desktop: section — same target as landing hint.
+  const el = document.getElementById(mobile ? "best-of-heading" : "best-of");
   if (!el) return;
 
   const preferSmooth =
@@ -351,15 +349,19 @@ if (document.readyState === "loading") {
 window.addEventListener("load", () => scrollToBestOfHeadingHash());
 window.addEventListener("hashchange", () => scrollToBestOfHeadingHash({ smooth: true }));
 
-document.querySelectorAll('.scroll-hint[href="#best-of"]').forEach((hint) => {
-  hint.addEventListener("click", (event) => {
-    event.preventDefault();
-    if (location.hash !== "#best-of") {
-      history.pushState(null, "", "#best-of");
-    }
-    scrollToBestOfHeadingHash({ smooth: true });
+document
+  .querySelectorAll('.scroll-hint[href="#best-of"], .scroll-hint[href="#best-of-heading"]')
+  .forEach((hint) => {
+    hint.addEventListener("click", (event) => {
+      event.preventDefault();
+      // Desktop always uses #best-of so landing + latest back hints settle identically.
+      const next = isMobileLayout() ? "#best-of-heading" : "#best-of";
+      if (location.hash !== next) {
+        history.pushState(null, "", next);
+      }
+      scrollToBestOfHeadingHash({ smooth: true });
+    });
   });
-});
 
 const landingScrollHint = document.querySelector(".landing .scroll-hint");
 if (landingScrollHint) {
@@ -448,15 +450,38 @@ if (bestOfBackHint && latestSection) {
 const bestOfSideRail = document.querySelector("#best-of > .scroll-hint-rail");
 const bestOfSection = document.getElementById("best-of");
 if (bestOfSideRail && bestOfSection) {
+  let sideRailSettleTimer = 0;
+  const sideRailIdealY = () => {
+    const margin =
+      parseFloat(getComputedStyle(bestOfSection).scrollMarginTop) || 0;
+    return bestOfSection.getBoundingClientRect().top + window.scrollY - margin;
+  };
+  const sideRailInBounds = () => {
+    const delta = window.scrollY - sideRailIdealY();
+    // 1-col best-of is taller than one screen; allow more scroll-down than 2-col's ±40.
+    const downAllowance = Math.max(280, window.innerHeight * 0.55);
+    return delta >= -40 && delta <= downAllowance;
+  };
+  const isOneColDesktop = () =>
+    window.matchMedia("(min-width: 801px) and (max-width: 1040px)").matches;
   const updateBestOfSideRail = () => {
-    if (!window.matchMedia("(min-width: 801px) and (max-width: 1040px)").matches) {
+    window.clearTimeout(sideRailSettleTimer);
+    if (!isOneColDesktop()) {
       bestOfSideRail.classList.add("is-hidden");
       return;
     }
-    const rect = bestOfSection.getBoundingClientRect();
-    const show =
-      rect.top < window.innerHeight * 0.55 && rect.bottom > window.innerHeight * 0.35;
-    bestOfSideRail.classList.toggle("is-hidden", !show);
+    // Match 2-col: hide immediately when off the settled best-of position;
+    // reappear only after 1s settled in-bounds.
+    if (!sideRailInBounds()) {
+      bestOfSideRail.classList.add("is-hidden");
+      return;
+    }
+    if (!bestOfSideRail.classList.contains("is-hidden")) return;
+    sideRailSettleTimer = window.setTimeout(() => {
+      if (sideRailInBounds() && isOneColDesktop()) {
+        bestOfSideRail.classList.remove("is-hidden");
+      }
+    }, 1000);
   };
   updateBestOfSideRail();
   window.addEventListener("scroll", updateBestOfSideRail, { passive: true });
@@ -1358,7 +1383,7 @@ const placeRaindrops = () => {
 
 const sizeRaindropCards = () => {
   if (!latestPosts) return;
-  const maxCard = window.innerHeight * 0.7;
+  const maxCard = window.innerHeight * (isMobileLayout() ? 0.7 : 1 / 3);
   const post = latestPosts.querySelector(
     ":scope > li:not(.raindrop-item):not(.post-month):not(.photo-item):not(.book-item):not([hidden])"
   );

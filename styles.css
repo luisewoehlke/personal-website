@@ -1101,45 +1101,165 @@ body.is-piling-stickers .sticker-peach {
   overflow: visible;
 }
 
+/* About: flex composition (stretched mobile) for all widths */
 .about-page {
   position: relative;
   max-width: var(--max);
   margin: 0 auto;
-  padding-top: calc(var(--header-h, 4.8rem) + 1.5rem);
+  --about-end-gap: 14rem;
+  padding-top: calc(var(--header-h, 4.8rem) + clamp(0.55rem, 1.4vh, 1.5rem));
   padding-bottom: 0;
 }
 
 .about-fig {
   position: absolute;
   left: -0.9em;
-  top: .35em;
+  top: 0.35em;
   width: 1.5em;
   height: auto;
-  font-size: 2.55rem;
+  font-size: 1em;
   rotate: -22deg;
-  z-index: 2;
+  z-index: 4;
   pointer-events: none;
   image-rendering: pixelated;
 }
 
 .about-heading {
+  display: block;
   position: relative;
+  width: fit-content;
+  max-width: 100%;
+  margin-left: 11%;
+  font-family: "Block Craft Even", "Block Craft", "Space Mono", ui-monospace, monospace;
+  /* Cap below the old ~1600px size */
+  font-size: clamp(3.75rem, 6.5vw, 4.5rem);
+  line-height: 0.85;
 }
 
 .about-stickers {
-  display: none;
+  display: block;
+  position: absolute;
+  top: var(--about-heading-extra);
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.about-sticker {
+  position: absolute;
+  top: var(--t);
+  left: var(--l);
+  width: calc(2.15rem * var(--s, 1));
+  max-width: 2.75rem;
+  height: auto;
+  rotate: var(--r, 0deg);
+  image-rendering: pixelated;
+  opacity: 0.92;
 }
 
 .about-sticker-wombat {
-  display: none;
+  display: block;
+  position: relative;
+  top: -4rem;
+  left: -5rem;
+  translate: none;
+  z-index: 3;
+  align-self: flex-end;
+}
+
+.about-sticker-group {
+  position: absolute;
+  top: var(--t);
+  left: var(--l);
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.about-sticker-group .about-sticker {
+  top: auto;
+  left: auto;
+}
+
+.about-sticker-group-sushi .about-sticker-nigiri {
+  top: 7rem;
+  left: 0;
+  rotate: 15deg;
+}
+
+.about-sticker-group-sushi .about-sticker-maki {
+  top: 5.8rem;
+  left: 2.25rem;
+}
+
+.about-sticker-group-peach .about-sticker-peach {
+  top: 0;
+  left: 0;
+}
+
+.about-sticker-group-peach .about-sticker-lemon {
+  top: -1rem;
+  left: 2.1rem;
+  rotate: 70deg;
+}
+
+.about-sticker-group-cow .about-sticker-cow,
+.about-sticker-group-cow .about-sticker-mic {
+  top: auto;
+  bottom: 0;
+}
+
+.about-sticker-group-cow .about-sticker-cow {
+  left: 0;
+  rotate: 0deg;
+  scale: 2;
+}
+
+.about-sticker-group-cow .about-sticker-mic {
+  left: calc(2.15rem * 1.55 - 0.1rem + 0.85rem);
+  bottom: -1.5rem;
+  scale: -1 1;
+  rotate: 0deg;
 }
 
 .about-sticker-group-flow {
-  display: none;
+  display: block;
+  position: relative;
+  top: auto;
+  left: 33.333%;
+  translate: -50% 0;
+  width: calc(2.15rem + 2.15rem * 0.75 + 0.35rem);
+  height: calc(2.15rem + 0.55rem);
+  z-index: 3;
+  align-self: flex-start;
+  margin: calc(clamp(0.15rem, 0.8vh, 1.1rem) * var(--about-space)) 0;
+}
+
+.about-sticker-group-cd .about-sticker-cd {
+  top: 0;
+  left: 0;
+}
+
+.about-sticker-group-cd .about-sticker-orange {
+  top: auto;
+  bottom: -0.9rem;
+  left: 2.15rem;
 }
 
 .about-sticker-strawberry {
-  display: none;
+  display: block;
+  position: absolute;
+  top: calc(19.5rem + min(24%, 6.5rem) / 2 + var(--about-heading-extra));
+  left: auto;
+  right: 3rem;
+  translate: 50% -50%;
+  z-index: 2;
+  margin: 0;
+  max-width: 2rem;
+  rotate: -40deg;
 }
 
 .about-sticker-pickle {
@@ -1152,42 +1272,41 @@ body.is-piling-stickers .sticker-peach {
 }
 
 .about-snap-donkey-wrap {
-  display: contents;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: flex-start;
+  gap: 0.2rem;
+  width: calc(var(--snap-sm-w) - 1.5rem);
+  margin: calc(0.5rem * var(--about-space)) 0 calc(2.75rem * var(--about-space)) 3%;
+  z-index: 1;
+}
+
+.about-snap-donkey-wrap .about-sticker-pickle {
+  display: none !important;
+}
+
+.about-snap-donkey-wrap .about-sticker-donkey-crab {
+  display: block;
+  position: relative;
+  top: -7.2rem;
+  left: 4rem;
+  margin: 0;
+  z-index: 3;
+}
+
+.about-snap-donkey-wrap .about-snap {
+  margin: 0;
+  width: 100%;
 }
 
 .about-page + footer {
-  padding-top: 0.5rem;
+  padding-top: 0;
   padding-bottom: 1rem;
 }
 
 .about-page #about {
-  max-width: 38rem;
-}
-
-.about-page #about p {
-  font-size: 1rem;
-  line-height: 1.55;
-  color: var(--muted);
-}
-
-.about-page #about.about-scatter {
-  position: relative;
-  max-width: 31rem;
-  min-height: 1120px;
-  margin: 0 auto;
-}
-
-.about-page #about > .about-heading {
-  position: relative;
-  top: -3rem;
-}
-
-.about-page #about > h2 {
-  position: relative;
-}
-
-.about-page #about .about-gap {
-  margin-top: 4.5rem;
+  max-width: min(51rem, 92vw);
 }
 
 .about-page #about a {
@@ -1195,75 +1314,272 @@ body.is-piling-stickers .sticker-peach {
   text-underline-offset: 0.15em;
 }
 
+.about-page #about.about-scatter {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-height: 0;
+  max-width: min(51rem, 92vw);
+  margin: 0 auto;
+  --about-space: 1.5;
+  --about-heading-extra: 3.5rem;
+  --sky-left: 13rem;
+  --sky-drop: 1rem;
+  --snap-sm-w: min(28%, 6.25rem);
+  --about-flex-gap: calc(clamp(0.7rem, 1.8vh, 2.25rem) * var(--about-space));
+  gap: var(--about-flex-gap);
+}
+
+.about-page #about > h2,
+.about-page #about > p,
+.about-page #about > .about-snap,
+.about-page #about > .about-snap-group,
+.about-page #about > .about-loves,
+.about-page #about > .about-loves-block,
+.about-page #about > .about-heading,
+.about-page #about > .about-para-anchor,
+.about-page #about > .about-hero {
+  position: relative;
+  z-index: 1;
+}
+
+.about-page #about > .about-heading {
+  top: -2.6rem;
+  z-index: 4;
+  margin-bottom: calc(1.35rem + var(--about-heading-extra));
+}
+
+.about-page #about .about-heading h2 {
+  top: auto;
+  z-index: 4;
+  margin: 0;
+  font-size: 1em;
+  line-height: inherit;
+  font-family: inherit;
+}
+
+.about-page #about .about-gap {
+  margin-top: calc(clamp(1.1rem, 2.8vh, 3.5rem) * var(--about-space));
+}
+
+.about-page #about .about-para-peek {
+  margin-top: clamp(0.65rem, 1.6vh, 2rem);
+  margin-bottom: 0;
+  margin-right: 12%;
+}
+
+.about-page #about p,
+.about-loves,
+.about-snap-captioned figcaption {
+  font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-size: 1.1rem;
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+  color: #000;
+}
+
+.about-page #about > p {
+  width: 60.666%;
+  max-width: 60.666%;
+  margin: 0 0 0.75rem;
+  align-self: flex-start;
+  text-align: left;
+}
+
+.about-page #about p:nth-of-type(even) {
+  align-self: flex-end;
+  text-align: right;
+}
+
 .about-loves-block {
-  display: contents;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.about-loves-block .about-gap {
+  margin-top: 0;
+}
+
+.about-loves-block .about-loves {
+  margin: 0;
 }
 
 .about-loves {
-  margin: 0;
-  padding-left: 1.4rem;
-  font-size: 1.05rem;
+  margin: calc(0.75rem * var(--about-space)) 0 calc(2.25rem * var(--about-space));
+  padding-left: 1.5rem;
+  font-size: 1.1rem;
   line-height: 1.55;
-  color: var(--muted);
+  color: #000;
+}
+
+.about-loves li {
+  line-height: 1.4;
 }
 
 .about-loves li + li {
-  margin-top: 0.35rem;
+  margin-top: 0.1rem;
+}
+
+.about-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  margin: 0.15rem 0 clamp(0.45rem, 1.2vh, 1.5rem);
+  position: relative;
+}
+
+.about-hero .about-snap {
+  margin: 0;
+  align-self: center;
+  width: min(36%, 8rem, 20svh);
+  translate: 1.1rem 0;
+}
+
+.about-lede {
+  width: 60.666%;
+  max-width: 60.666%;
+  margin: clamp(0.35rem, 1vh, 0.85rem) 0 0;
+  align-self: center;
+  text-align: left;
+  font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-size: 1.1rem;
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+  color: #000;
+}
+
+.about-snap-group {
+  display: block;
+  position: relative;
+  width: 100%;
+  margin: 1.25rem 0 2.75rem;
 }
 
 .about-snap {
-  position: absolute;
-  left: var(--x);
-  top: var(--y);
-  width: var(--w);
-  height: var(--h);
+  position: static;
+  left: auto;
+  top: auto;
+  width: min(44%, 10rem);
+  height: auto;
+  aspect-ratio: calc(var(--w) / var(--h));
+  margin: calc(1.5rem * var(--about-space)) 0 calc(2.75rem * var(--about-space));
   object-fit: cover;
+  rotate: none;
+}
+
+.about-snap-sm {
+  width: min(28%, 6.25rem);
 }
 
 .about-snap-mobile {
-  display: none;
+  display: block;
 }
 
 .about-snap-front {
   z-index: 1;
 }
 
-.about-snap-group {
-  display: contents;
-}
-
-.about-hero {
-  display: contents;
-}
-
 .about-para-anchor {
-  display: contents;
+  display: block;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+
+.about-para-anchor > p {
+  width: 60.666%;
+  max-width: 60.666%;
+  margin: 0 0 0.75rem;
+  align-self: flex-start;
+  text-align: left;
+}
+
+.about-para-anchor .about-gap {
+  margin-top: calc(clamp(1.1rem, 2.8vh, 3.5rem) * var(--about-space));
+}
+
+.about-para-anchor .about-snap-sky {
+  position: absolute;
+  left: var(--sky-left);
+  right: auto;
+  bottom: calc(-1 * var(--sky-drop));
+  margin: 0;
+  width: var(--snap-sm-w);
+  z-index: 2;
+}
+
+.about-page #about .about-para-farm {
+  margin-top: calc(var(--sky-drop) + var(--snap-sm-w) - 1.5rem + 2.75rem * var(--about-space));
+  margin-left: 10%;
+}
+
+.about-page #about > .about-loves-block {
+  margin-top: calc(1.5rem * var(--about-space) + var(--snap-sm-w) + 0.35rem);
+}
+
+.about-page > .about-snap-pigeon {
+  display: block;
+  width: min(28%, 6.25rem);
+  margin: 2rem 50% 8rem auto;
+}
+
+.about-snap-flavor7 {
+  margin-top: calc(1.4rem - var(--about-flex-gap));
+  margin-right: 58%;
+}
+
+.about-snap-hippo {
+  width: min(24%, 5.25rem);
+  margin-top: calc(7rem * var(--about-space));
 }
 
 .about-snap-captioned {
   height: auto;
   margin: 0;
+  width: min(48%, 11rem);
+  aspect-ratio: auto;
 }
 
 .about-snap-captioned img {
   display: block;
   width: 100%;
-  height: var(--h);
+  height: auto;
   object-fit: cover;
 }
 
 .about-snap-captioned figcaption {
   margin-top: 0.35rem;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   line-height: 1.35;
-  color: var(--muted);
+  color: #000;
   text-align: left;
+  width: max-content;
+  max-width: 14rem;
+  left: 50%;
+  right: auto;
+  translate: -50% 0;
+}
+
+.about-snap-standup {
+  width: min(48%, 11rem, 28svh);
+  margin: clamp(0.35rem, 1vh, 1.5rem) 0 clamp(0.5rem, 1.4vh, 2.75rem);
+}
+
+.about-snap-hint {
+  position: relative;
+  left: auto;
+  top: auto;
 }
 
 .about-snap-hint .about-snap-q {
   position: absolute;
-  left: -.2rem;
-  top: calc(var(--h) - 1.8rem);
+  left: -0.2rem;
+  top: calc(100% - 1.8rem);
   font-family: "Block Craft", "Space Mono", ui-monospace, monospace;
   font-size: 2rem;
   line-height: 1;
@@ -1277,8 +1593,8 @@ body.is-piling-stickers .sticker-peach {
 }
 
 @keyframes about-q-wobble {
-  0% { left: -.6rem; rotate: -25deg; }
-  50% { left: -.1rem; rotate: 25deg; }
+  0% { left: -0.6rem; rotate: -25deg; }
+  50% { left: -0.1rem; rotate: 25deg; }
 }
 
 .about-snap-hint,
@@ -1302,34 +1618,75 @@ body.is-piling-stickers .sticker-peach {
   opacity: 1;
 }
 
+.about-snap-start {
+  align-self: flex-start;
+}
+
+.about-snap-end {
+  align-self: flex-end;
+  rotate: none;
+}
+
+.about-snap-festival {
+  margin-right: 0;
+  margin-left: auto;
+  margin-top: calc(0.5rem * var(--about-space));
+  margin-bottom: calc(var(--about-end-gap) / 2);
+}
+
+.about-snap-last {
+  align-self: flex-start;
+  margin-left: 33.333%;
+  translate: -50% 0;
+  margin-top: calc(var(--about-end-gap) * 2 / 3 - var(--about-flex-gap));
+  margin-bottom: calc(var(--about-end-gap) / 3);
+}
+
+.about-snap-heading-bg {
+  position: absolute;
+  left: auto;
+  right: 0;
+  top: -0.2rem;
+  width: min(24%, 4.5rem);
+  height: auto;
+  aspect-ratio: 1;
+  margin: 0;
+  z-index: 0;
+}
+
+.about-snap-out-l,
+.about-snap-out-r {
+  left: auto;
+}
+
 @media (min-width: 881px) {
   .about-page {
-    padding-left: 0;
-    padding-right: 0;
+    max-width: min(51rem, 92vw);
+    padding-left: max(1.5rem, env(safe-area-inset-left, 0px));
+    padding-right: max(1.5rem, env(safe-area-inset-right, 0px));
   }
 
   .about-page #about.about-scatter {
-    margin-left: max(calc(50% - 15.5rem), calc(208px - (100vw - 100%) / 2));
-    --about-spread: clamp(0px, (100vw - 1300px) * 0.2, 160px);
+    max-width: min(51rem, 92vw);
+    margin-left: auto;
+    margin-right: auto;
   }
 
-  .about-snap-out-l {
-    left: calc(var(--x) - var(--about-spread));
-  }
-
-  .about-snap-out-r {
-    left: calc(var(--x) + var(--about-spread));
+  .about-snap-hippo {
+    width: min(12%, 2.625rem);
   }
 }
 
-@media (min-width: 881px) and (max-width: 1300px) {
-  .about-page #about.about-scatter {
-    max-width: 27rem;
-    margin-left: max(calc(50% - 13.5rem), calc(208px - (100vw - 100%) / 2));
+@media (min-width: 1600px) {
+  .about-heading {
+    font-size: 4.5rem;
   }
 
-  .about-snap-out-r {
-    left: calc(var(--x) - 4rem);
+  .about-page #about p,
+  .about-loves,
+  .about-lede,
+  .about-snap-captioned figcaption {
+    font-size: 1.1rem;
   }
 }
 
@@ -1743,18 +2100,9 @@ body.is-piling-stickers .sticker-peach {
     top: auto;
   }
 
-  .about-snap-hint figcaption {
-    position: absolute;
-    top: calc(100% + 0.35rem);
-    margin-top: 0;
-    z-index: 3;
-  }
-
+  .about-snap-hint figcaption,
   .about-snap-hint .about-snap-q {
-    top: auto;
-    bottom: 0.25rem;
-    left: -0.15rem;
-    z-index: 2;
+    display: none;
   }
 
   .about-snap-start {
@@ -2110,6 +2458,19 @@ h2 {
 
 /* 1-col best-of (desktop/tablet only): left rail with top / latest */
 @media (min-width: 801px) and (max-width: 1040px) {
+  #best-of {
+    --best-pad-top: 3.5vh;
+    padding-top: var(--best-pad-top);
+  }
+
+  .best-of-heading-peach {
+    top: calc(var(--best-pad-top) + 4.5rem);
+  }
+
+  #best-of-heading {
+    scroll-margin-top: calc(var(--header-h, 4.8rem) + var(--best-pad-top));
+  }
+
   .scroll-hint-rail {
     display: flex;
     flex-direction: column;
@@ -3068,6 +3429,12 @@ body.has-photo-lightbox {
   object-fit: contain;
 }
 
+@media (min-width: 801px) {
+  .raindrop-embed.is-image img {
+    max-height: 33.333svh;
+  }
+}
+
 .raindrop-kicker,
 .raindrop-kicker:hover,
 .raindrop-kicker:visited {
@@ -3591,15 +3958,8 @@ body.has-photo-lightbox {
   height: 1.15rem;
 }
 
-.post-filter.is-filtered .post-filter-icon-wrap::after {
-  content: "";
-  position: absolute;
-  right: -0.05rem;
-  bottom: -0.2rem;
-  width: 0.4rem;
-  height: 0.4rem;
-  border-radius: 50%;
-  background: currentColor;
+.post-filter.is-filtered .post-filter-icon path {
+  stroke-width: 3;
 }
 
 .post-filter-count {
@@ -5327,12 +5687,7 @@ footer p {
   }
 
   .about-snap-hint .about-snap-q {
-    font-size: 1.65rem;
-    min-width: 2.5rem;
-    min-height: 2.5rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    display: none;
   }
 
   .wolky-hint::before {
