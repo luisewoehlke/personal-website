@@ -14,6 +14,13 @@
     <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/block-craft" />
     <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/bytebounce" />
     <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="preload"
+      as="image"
+      href="images/about/portrait.webp"
+      type="image/webp"
+      fetchpriority="high"
+    />
   </head>
   <body id="top">
     <div class="site-header-bg" aria-hidden="true"></div>
@@ -134,11 +141,8 @@
           </div>
           <img class="sticker about-sticker" style="--t: 39.5%; --l: 78%; --r: -22deg; --s: 0.8" src="images/stickers/unused/raspberry.png" alt="" />
           <img class="sticker about-sticker" style="--t: 60%; --l: 96%; --r: 0deg; --s: 1.1" src="images/stickers/espr.png" alt="" />
-          <div class="about-sticker-group about-sticker-group-fig" style="--t: 89.4%; --l: 62%">
-            <img class="sticker about-sticker about-sticker-blueberries-scatter" style="--r: -15deg; --s: 1.1" src="images/stickers/unused/blueberries.png" alt="" />
-            <img class="sticker about-sticker about-sticker-fig" style="--r: -24deg; --s: 1.1" src="images/stickers/fig.png" alt="" />
-          </div>
-          <img class="sticker about-sticker about-sticker-banana-scatter" style="--t: 51.5%; --l: 62%; --r: 18deg; --s: 0.9" src="images/stickers/unused/banana.png" alt="" />
+          <img class="sticker about-sticker about-sticker-fig-scatter" style="--t: 90%; --l: 71%; --r: -24deg; --s: 1.1" src="images/stickers/fig.png" alt="" />
+          <img class="sticker about-sticker about-sticker-blueberries-scatter" style="--t: 89.4%; --l: 62%; --r: -15deg; --s: 1.1" src="images/stickers/unused/blueberries.png" alt="" />
           <img class="sticker about-sticker about-sticker-garlic" style="--t: 98%; --l: 8%; --r: 12deg; --s: 0.9" src="images/stickers/unused/garlic.png" alt="" />
           <img class="sticker about-sticker about-sticker-sloth" style="--t: 47.3%; --l: 23%; --r: -20deg; --s: 1.3" src="images/stickers/unused/sloth.png" alt="" />
         </div>
@@ -152,22 +156,37 @@
           <h2>About</h2>
         </div>
         <div class="about-hero">
-          <img
+          <picture
             class="about-snap about-snap-start about-snap-front"
             style="--x: 370px; --y: -22px; --w: 128px; --h: 128px"
-            src="images/about/portrait.jpg"
-            alt="Luise smiling in front of Brighton Pier at sunset"
-            fetchpriority="high"
-          />
+          >
+            <source srcset="images/about/portrait.webp" type="image/webp" />
+            <img
+              src="images/about/portrait.jpg"
+              width="400"
+              height="400"
+              alt="Luise smiling in front of Brighton Pier at sunset"
+              fetchpriority="high"
+              decoding="async"
+            />
+          </picture>
           <p class="about-lede">Effective Altruist <br />on sabbatical.</p>
           
         </div>
-        <img
+        <picture
           class="about-snap about-snap-end about-snap-heading-bg"
           style="--x: 345px; --y: 42px; --w: 88px; --h: 88px"
-          src="images/about/flavor-3.jpg"
-          alt="Colourful leaves floating on dark water"
-        />
+        >
+          <source srcset="images/about/flavor-3.webp" type="image/webp" />
+          <img
+            src="images/about/flavor-3.jpg"
+            width="240"
+            height="132"
+            alt="Colourful leaves floating on dark water"
+            fetchpriority="low"
+            decoding="async"
+          />
+        </picture>
         <img
           class="sticker about-sticker about-sticker-strawberry"
           style="--r: -28deg; --s: 0.75"
@@ -195,10 +214,17 @@
           class="about-snap about-snap-captioned about-snap-hint about-snap-out-l about-snap-end about-snap-standup"
           style="--x: -200px; --y: 176px; --w: 176px; --h: 203px"
         >
-          <img
-            src="images/about/stand-up.jpg"
-            alt="Luise doing stand-up at Monkey Barrel Comedy"
-          />
+          <picture>
+            <source srcset="images/about/stand-up.webp" type="image/webp" />
+            <img
+              src="images/about/stand-up.jpg"
+              width="480"
+              height="612"
+              alt="Luise doing stand-up at Monkey Barrel Comedy"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
           <span class="about-snap-q" tabindex="0">?</span>
           <figcaption>
             me, extremely hot, at the Monkey Barrel Comedy Club in Edinburgh
@@ -207,7 +233,7 @@
         <div class="about-peek-block">
           <p class="about-gap about-para-peek">
             I've been described as a book&#8209;cel and spreadsheet rotator. I've also
-            been described as German. Probably because I'm&nbsp;German.
+            been described as German. Probably because I'm German.
           </p>
           <img
             class="about-snap about-snap-sm about-snap-mobile about-snap-end about-snap-flavor7"

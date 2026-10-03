@@ -1206,16 +1206,6 @@ body.is-piling-stickers .sticker-peach {
   rotate: 70deg;
 }
 
-.about-sticker-group-fig .about-sticker-blueberries-scatter {
-  top: 0;
-  left: 0;
-}
-
-.about-sticker-group-fig .about-sticker-fig {
-  top: 1rem;
-  left: 2.2rem;
-}
-
 .about-sticker-group-fig-loves {
   display: none;
 }
@@ -1509,6 +1499,18 @@ body.is-piling-stickers .sticker-peach {
   rotate: none;
 }
 
+picture.about-snap {
+  display: block;
+  object-fit: unset;
+}
+
+picture.about-snap > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .about-snap-sm {
   width: min(28%, 6.25rem);
 }
@@ -1559,11 +1561,17 @@ body.is-piling-stickers .sticker-peach {
 }
 
 .about-para-anchor .about-sticker-banana {
-  display: none;
-}
-
-.about-sticker-banana-scatter {
   display: block;
+  position: absolute;
+  top: auto;
+  left: auto;
+  right: -0.35rem;
+  bottom: -0.85rem;
+  width: calc(2.15rem * var(--s, 1));
+  max-width: 2.75rem;
+  margin: 0;
+  rotate: var(--r, 0deg);
+  z-index: 2;
 }
 
 .about-page #about .about-para-farm {
@@ -1806,21 +1814,9 @@ body.is-piling-stickers .sticker-peach {
     bottom: calc(-1 * var(--sky-drop) - 1.5rem);
   }
 
-  .about-sticker-banana-scatter {
-    display: none;
-  }
-
   .about-para-anchor .about-sticker-banana {
-    display: block;
-    position: absolute;
-    top: auto;
-    left: auto;
     right: 3.75rem;
     bottom: 4.5rem;
-    width: calc(2.15rem * var(--s, 1));
-    max-width: 2.75rem;
-    margin: 0;
-    rotate: var(--r, 0deg);
   }
 
   .about-page #about .about-para-farm {
@@ -1870,7 +1866,8 @@ body.is-piling-stickers .sticker-peach {
     align-self: flex-start;
   }
 
-  .about-sticker-group-fig {
+  .about-sticker-fig-scatter,
+  .about-sticker-blueberries-scatter {
     display: none;
   }
 
@@ -2040,16 +2037,6 @@ body.is-piling-stickers .sticker-peach {
     top: -1rem;
     left: 2.1rem;
     rotate: 70deg;
-  }
-
-  .about-sticker-group-fig .about-sticker-blueberries-scatter {
-    top: 0;
-    left: 0;
-  }
-
-  .about-sticker-group-fig .about-sticker-fig {
-    top: 1rem;
-    left: 2.2rem;
   }
 
   .about-sticker-group-cow .about-sticker-cow,
@@ -2355,11 +2342,26 @@ body.is-piling-stickers .sticker-peach {
   }
 
   .about-para-anchor .about-sticker-banana {
-    display: none;
+    display: block;
+    position: absolute;
+    top: auto;
+    left: auto;
+    right: -0.35rem;
+    bottom: -0.85rem;
+    width: calc(2.15rem * var(--s, 1));
+    max-width: 2.75rem;
+    margin: 0;
+    rotate: var(--r, 0deg);
+    z-index: 2;
   }
 
-  .about-sticker-banana-scatter {
+  .about-sticker-fig-scatter,
+  .about-sticker-blueberries-scatter {
     display: block;
+  }
+
+  .about-sticker-group-fig-loves {
+    display: none;
   }
 
   .about-page #about .about-para-farm {
