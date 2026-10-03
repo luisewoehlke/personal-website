@@ -1379,7 +1379,7 @@ body.is-piling-stickers .sticker-peach {
     display: block;
     position: relative;
     top: -4rem;
-    left: .5rem;
+    left: -5rem;
     translate: none;
     z-index: 3;
     align-self: flex-end;
@@ -1403,11 +1403,12 @@ body.is-piling-stickers .sticker-peach {
   .about-sticker-group-sushi .about-sticker-nigiri {
     top: 7rem;
     left: 0;
+    rotate: 15deg;
   }
 
   .about-sticker-group-sushi .about-sticker-maki {
-    top: 5.5rem;
-    left: 9vw;
+    top: 5.8rem;
+    left: 8.5vw;
   }
 
   .about-sticker-group-peach .about-sticker-peach {
@@ -1416,8 +1417,8 @@ body.is-piling-stickers .sticker-peach {
   }
 
   .about-sticker-group-peach .about-sticker-lemon {
-    top: -.5rem;
-    left: 1.9rem;
+    top: -1rem;
+    left: 2.1rem;
     rotate: 70deg;
   }
 
@@ -1430,13 +1431,12 @@ body.is-piling-stickers .sticker-peach {
   .about-sticker-group-cow .about-sticker-cow {
     left: 0;
     rotate: 0deg;
-    width: 16.3vw;
-    max-width: none;
+    scale: 2;
   }
 
   .about-sticker-group-cow .about-sticker-mic {
     left: calc(2.15rem * 1.55 - 0.1rem + 3.3vw);
-    bottom: -.8rem;
+    bottom: -1.5rem;
     scale: -1 1;
     rotate: 0deg;
   }
@@ -1461,7 +1461,7 @@ body.is-piling-stickers .sticker-peach {
 
   .about-sticker-group-cd .about-sticker-orange {
     top: auto;
-    bottom: -0.5rem;
+    bottom: -.9rem;
     left: 2.15rem;
   }
 
@@ -1659,7 +1659,6 @@ body.is-piling-stickers .sticker-peach {
     position: relative;
     top: auto;
     left: 0.35rem;
-    margin: 0;
     z-index: 3;
   }
 
@@ -1798,13 +1797,12 @@ body.is-piling-stickers .sticker-peach {
   .about-sticker-strawberry {
     display: block;
     position: absolute;
-    top: calc(20rem + min(24%, 6.5rem) / 2 + var(--about-heading-extra));
+    top: calc(19.5rem + min(24%, 6.5rem) / 2 + var(--about-heading-extra));
     left: auto;
-    right: 3.2rem;
+    right: 3rem;
     translate: 50% -50%;
     z-index: 2;
     margin: 0;
-    width: calc(2.15rem * 0.55);
     max-width: 8vw;
     rotate: -40deg;
   }
