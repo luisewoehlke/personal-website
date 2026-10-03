@@ -1560,6 +1560,10 @@ picture.about-snap > img {
   width: 100%;
 }
 
+.about-me-cfs {
+  display: none;
+}
+
 .about-para-anchor .about-sticker-banana {
   display: block;
   position: absolute;
@@ -2343,6 +2347,10 @@ picture.about-snap > img {
     width: 100%;
   }
 
+  .about-me-cfs {
+    display: inline;
+  }
+
   .about-para-anchor .about-sticker-banana {
     display: block;
     position: absolute;
@@ -2410,6 +2418,22 @@ picture.about-snap > img {
     display: none;
   }
 
+  .about-snap-standup figcaption {
+    display: block;
+    opacity: 1;
+    justify-self: stretch;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 0.5rem;
+    left: 0;
+    right: auto;
+    translate: none;
+    text-align: left;
+    color: #74584a;
+    font-size: 0.72rem;
+    line-height: 1.3;
+  }
+
   .about-snap-start {
     align-self: flex-start;
   }
@@ -2472,6 +2496,15 @@ picture.about-snap > img {
     left: 50%;
     right: auto;
     translate: -50% 0;
+  }
+
+  .about-snap-standup figcaption {
+    width: 100%;
+    max-width: 100%;
+    left: 0;
+    right: auto;
+    translate: none;
+    text-align: left;
   }
 }
 
