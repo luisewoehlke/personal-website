@@ -1,3 +1,13 @@
+/* Block Craft with hhea/typo metrics matched to win metrics, so iOS and Windows
+   place glyphs at the same height in the line box */
+@font-face {
+  font-family: "Block Craft Even";
+  font-style: normal;
+  font-weight: 500;
+  font-display: block;
+  src: url("fonts/BlockCraft-even.woff") format("woff");
+}
+
 :root {
   --bg: #ffccac;
   --ink: #1c1916;
@@ -1331,6 +1341,8 @@ body.is-piling-stickers .sticker-peach {
     min-height: 0;
     max-width: 100%;
     --about-space: 1.5;
+    /* Extra space under the heading; stickers layer shifts by the same amount */
+    --about-heading-extra: 3.5rem;
     --sky-left: 13rem;
     --sky-drop: 1rem;
     --snap-sm-w: min(28%, 6.25rem);
@@ -1341,7 +1353,11 @@ body.is-piling-stickers .sticker-peach {
   .about-stickers {
     display: block;
     position: absolute;
-    inset: 0;
+    /* Keep layer height as before the heading gap, then drop it by that gap */
+    top: var(--about-heading-extra);
+    right: 0;
+    bottom: 0;
+    left: 0;
     z-index: 3;
     pointer-events: none;
     overflow: visible;
@@ -1362,7 +1378,7 @@ body.is-piling-stickers .sticker-peach {
   .about-sticker-wombat {
     display: block;
     position: relative;
-    top: 2.8rem;
+    top: -4rem;
     left: .5rem;
     translate: none;
     z-index: 3;
@@ -1510,7 +1526,7 @@ body.is-piling-stickers .sticker-peach {
   .about-page #about > .about-heading {
     top: -2.6rem;
     z-index: 4;
-    margin-bottom: 1.35rem;
+    margin-bottom: calc(1.35rem + var(--about-heading-extra));
   }
 
   .about-page #about > h2 {
@@ -1782,7 +1798,7 @@ body.is-piling-stickers .sticker-peach {
   .about-sticker-strawberry {
     display: block;
     position: absolute;
-    top: calc(20rem + min(24%, 6.5rem) / 2);
+    top: calc(20rem + min(24%, 6.5rem) / 2 + var(--about-heading-extra));
     left: auto;
     right: 3.2rem;
     translate: 50% -50%;
@@ -4242,6 +4258,7 @@ footer p {
   #best-of-heading,
   #latest-heading,
   #about h2 {
+    font-family: "Block Craft Even", "Block Craft", "Space Mono", ui-monospace, monospace;
     font-size: 15vw;
     line-height: 0.85;
   }
