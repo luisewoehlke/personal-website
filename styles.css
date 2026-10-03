@@ -1363,10 +1363,13 @@ body.is-piling-stickers .sticker-peach {
   margin-top: calc(clamp(1.1rem, 2.8vh, 3.5rem) * var(--about-space));
 }
 
-.about-page #about .about-para-peek {
+.about-page #about > p.about-para-peek {
   margin-top: clamp(0.65rem, 1.6vh, 2rem);
   margin-bottom: 0;
+  margin-left: auto;
   margin-right: 12%;
+  align-self: flex-end;
+  text-align: left;
 }
 
 .about-page #about p,
@@ -1387,7 +1390,7 @@ body.is-piling-stickers .sticker-peach {
   text-align: left;
 }
 
-.about-page #about p:nth-of-type(even) {
+.about-page #about > p:nth-of-type(even):not(.about-para-peek) {
   align-self: flex-end;
   text-align: right;
 }
@@ -1574,12 +1577,26 @@ body.is-piling-stickers .sticker-peach {
   position: relative;
   left: auto;
   top: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto;
+}
+
+.about-snap-hint > img {
+  grid-column: 1;
+  grid-row: 1;
 }
 
 .about-snap-hint .about-snap-q {
-  position: absolute;
-  left: -0.2rem;
-  top: calc(100% - 1.8rem);
+  grid-column: 1;
+  grid-row: 1;
+  place-self: end start;
+  position: relative;
+  left: auto;
+  top: auto;
+  z-index: 2;
+  /* Center the glyph on the image's bottom-left corner */
+  translate: -50% 50%;
   font-family: "Block Craft", "Space Mono", ui-monospace, monospace;
   font-size: 2rem;
   line-height: 1;
@@ -1593,8 +1610,8 @@ body.is-piling-stickers .sticker-peach {
 }
 
 @keyframes about-q-wobble {
-  0% { left: -0.6rem; rotate: -25deg; }
-  50% { left: -0.1rem; rotate: 25deg; }
+  0% { translate: calc(-50% - 0.4rem) 50%; rotate: -25deg; }
+  50% { translate: calc(-50% + 0.1rem) 50%; rotate: 25deg; }
 }
 
 .about-snap-hint,
@@ -1603,6 +1620,8 @@ body.is-piling-stickers .sticker-peach {
 }
 
 .about-snap-hint figcaption {
+  grid-column: 1;
+  grid-row: 2;
   opacity: 0;
   transition: opacity 0.2s ease;
 }
@@ -1672,8 +1691,26 @@ body.is-piling-stickers .sticker-peach {
     margin-right: auto;
   }
 
+  .about-lede br {
+    display: none;
+  }
+
+  .about-lede {
+    width: max-content;
+    max-width: 100%;
+    white-space: nowrap;
+    translate: -1.25rem 0;
+  }
+
+  /* Match mobile wrap measure: 60.666vw text / 4.2vw type ≈ 14.444em */
+  .about-page #about > p,
+  .about-para-anchor > p {
+    width: 14.444em;
+    max-width: 14.444em;
+  }
+
   .about-snap-hippo {
-    width: min(12%, 2.625rem);
+    width: min(24%, 5.25rem);
   }
 }
 
@@ -1900,11 +1937,14 @@ body.is-piling-stickers .sticker-peach {
     margin-top: calc(clamp(1.1rem, 2.8vh, 3.5rem) * var(--about-space));
   }
 
-  .about-page #about .about-para-peek {
+  .about-page #about > p.about-para-peek {
     /* Keep a few lines visible at the bottom of short viewports */
     margin-top: clamp(0.65rem, 1.6vh, 2rem);
     margin-bottom: 0;
+    margin-left: auto;
     margin-right: 12%;
+    align-self: flex-end;
+    text-align: left;
   }
 
   .about-page {
@@ -1964,7 +2004,7 @@ body.is-piling-stickers .sticker-peach {
     color: #000;
   }
 
-  .about-page #about p:nth-of-type(even) {
+  .about-page #about > p:nth-of-type(even):not(.about-para-peek) {
     align-self: flex-end;
     text-align: right;
   }
