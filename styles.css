@@ -2167,15 +2167,17 @@ picture.about-snap > img {
   }
 
   .about-peek-block .about-para-peek {
-    /* Keep a few lines visible at the bottom of short viewports */
-    width: 60.666vw;
-    max-width: 60.666vw;
+    /* Match desktop wrap measure so line breaks match */
+    width: 16.2em;
+    max-width: min(16.2em, 76%);
     margin-top: clamp(0.65rem, 1.6vh, 2rem);
     margin-bottom: 0;
     margin-left: auto;
     margin-right: 12%;
     align-self: flex-end;
     text-align: left;
+    /* Visual nudge only — does not change flow height / sticker % */
+    translate: 0 1.25rem;
   }
 
   .about-page {
@@ -2346,8 +2348,8 @@ picture.about-snap > img {
     position: absolute;
     top: auto;
     left: auto;
-    right: -0.35rem;
-    bottom: -0.85rem;
+    right: 3.75rem;
+    bottom: 4.25rem;
     width: calc(2.15rem * var(--s, 1));
     max-width: 2.75rem;
     margin: 0;
@@ -2383,7 +2385,8 @@ picture.about-snap > img {
 
   .about-peek-block .about-snap-flavor7 {
     margin-top: calc(1.4rem - var(--about-flex-gap));
-    margin-right: 58%;
+    margin-right: 28%;
+    translate: 0 1.25rem;
   }
 
   .about-snap-hippo {
@@ -2421,6 +2424,7 @@ picture.about-snap > img {
     margin-left: auto;
     margin-top: calc(0.5rem * var(--about-space));
     margin-bottom: calc(var(--about-end-gap) / 2);
+    translate: 0 -0.35rem;
   }
 
   .about-snap-last {
