@@ -1132,7 +1132,7 @@ body.is-piling-stickers .sticker-peach {
   margin-left: 11%;
   font-family: "Block Craft Even", "Block Craft", "Space Mono", ui-monospace, monospace;
   /* Cap below the old ~1600px size */
-  font-size: clamp(3.75rem, 6.5vw, 4.5rem);
+  font-size: clamp(3.5rem, 6.5vw, 3.5rem);
   line-height: 0.85;
 }
 
@@ -1679,7 +1679,7 @@ body.is-piling-stickers .sticker-peach {
 
 @media (min-width: 1600px) {
   .about-heading {
-    font-size: 4.5rem;
+    font-size: 3rem;
   }
 
   .about-page #about p,
