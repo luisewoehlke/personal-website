@@ -3907,6 +3907,63 @@ body.has-photo-lightbox {
   white-space: normal;
 }
 
+/* Mobile: match desktop raindrop type scale + chrome */
+@media (max-width: 800px) {
+  .work-list > li.raindrop-item {
+    --raindrop-kicker-h: 1.75rem;
+    position: relative;
+    max-height: 33.333svh;
+    padding: var(--raindrop-kicker-h) 0.85rem 0.55rem;
+  }
+
+  .raindrop-kicker,
+  .raindrop-kicker:hover,
+  .raindrop-kicker:visited {
+    position: absolute;
+    top: 0;
+    left: 0.85rem;
+    right: 0.85rem;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    height: var(--raindrop-kicker-h);
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .raindrop-kicker-arrow {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .raindrop-copy strong {
+    font-size: 0.78rem;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .raindrop-note {
+    font-size: 0.75rem;
+  }
+
+  .raindrop-tags {
+    font-size: 0.68rem;
+  }
+
+  .raindrop-copy > .raindrop-tags {
+    padding-right: 0;
+  }
+
+  .raindrop-embed.is-image img {
+    max-height: 33.333svh;
+  }
+}
+
 .raindrop-card:hover strong {
   color: var(--accent);
 }

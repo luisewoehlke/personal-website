@@ -221,8 +221,11 @@ const spreadBackgroundStickers = () => {
   piledHint = null;
 };
 
-const pileBackgroundStickers = (hint) => {
+const pileBackgroundStickers = (hint, { force = false } = {}) => {
   if (!hint || isMobileLayout()) return;
+  // Avoid re-piling on focusin during click (would measure the lifted
+  // arrow and briefly yank stickers up before scatter).
+  if (!force && piledHint === hint) return;
   const stickers = [...backgroundStickers()];
   if (!stickers.length) return;
   cacheStickerRestCenters(stickers);
@@ -288,6 +291,7 @@ document.querySelectorAll(".landing .scroll-hint").forEach((hint) => {
   });
   hint.addEventListener("focusin", () => {
     if (hint.classList.contains("is-hidden")) return;
+    if (piledHint === hint) return;
     pileBackgroundStickers(hint);
   });
   hint.addEventListener("pointerleave", cancelBackgroundStickerPile);
@@ -1383,7 +1387,7 @@ const placeRaindrops = () => {
 
 const sizeRaindropCards = () => {
   if (!latestPosts) return;
-  const maxCard = window.innerHeight * (isMobileLayout() ? 0.7 : 0.4);
+  const maxCard = window.innerHeight * (isMobileLayout() ? 1 / 3 : 0.4);
   const post = latestPosts.querySelector(
     ":scope > li:not(.raindrop-item):not(.post-month):not(.photo-item):not(.book-item):not([hidden])"
   );
@@ -1452,44 +1456,30 @@ const sizeRaindropCards = () => {
     let usedHeight = width / ratio;
     let fit = "contain";
     item.style.maxWidth = "";
-    if (isMobileLayout()) {
-      // Widen short portrait cards and crop.
-      const isNarrow = window.matchMedia("(max-width: 640px)").matches;
-      const minOuter = Math.min(
-        isNarrow ? otherWidth * 0.72 : window.innerWidth / 3,
-        otherWidth
-      );
-      if (img && naturalWidth + padX + borderX < minOuter - 1) {
-        width = Math.max(0, minOuter - padX - borderX);
-        usedHeight = Math.max(0, maxCard - chromeFor(width));
-        fit = "cover";
-        item.style.maxWidth = "none";
-      }
-    } else {
-      // Desktop: wide enough that "From: …" stays on one line.
-      let kickerNeed = 0;
-      if (kicker) {
-        const prev = {
-          whiteSpace: kicker.style.whiteSpace,
-          width: kicker.style.width,
-          right: kicker.style.right,
-        };
-        kicker.style.whiteSpace = "nowrap";
-        kicker.style.width = "max-content";
-        kicker.style.right = "auto";
-        kickerNeed = Math.ceil(kicker.scrollWidth);
-        kicker.style.whiteSpace = prev.whiteSpace;
-        kicker.style.width = prev.width;
-        kicker.style.right = prev.right;
-      }
-      const minOuter = Math.min(kickerNeed + padX + borderX, maxOuter);
-      const outer = width + padX + borderX;
-      if (img && outer < minOuter - 1) {
-        width = Math.max(0, minOuter - padX - borderX);
-        usedHeight = Math.max(0, maxCard - chromeFor(width));
-        fit = "cover";
-        item.style.maxWidth = "none";
-      }
+    // Wide enough that "From: …" stays on one line.
+    let kickerNeed = 0;
+    if (kicker) {
+      const prev = {
+        whiteSpace: kicker.style.whiteSpace,
+        width: kicker.style.width,
+        right: kicker.style.right,
+      };
+      kicker.style.whiteSpace = "nowrap";
+      kicker.style.width = "max-content";
+      kicker.style.right = "auto";
+      kickerNeed = Math.ceil(kicker.scrollWidth);
+      kicker.style.whiteSpace = prev.whiteSpace;
+      kicker.style.width = prev.width;
+      kicker.style.right = prev.right;
+    }
+    const minCap = isMobileLayout() ? otherWidth : maxOuter;
+    const minOuter = Math.min(kickerNeed + padX + borderX, minCap);
+    const outer = width + padX + borderX;
+    if (img && outer < minOuter - 1) {
+      width = Math.max(0, minOuter - padX - borderX);
+      usedHeight = Math.max(0, maxCard - chromeFor(width));
+      fit = "cover";
+      item.style.maxWidth = "none";
     }
     item.style.width = `${width + padX + borderX}px`;
     const embed = img ? img.closest(".raindrop-embed") : video;
@@ -2425,7 +2415,7 @@ window.addEventListener("resize", () => {
     el.style.translate = "0px 0px 0px";
   });
   if (hint && !isMobileLayout()) {
-    pileBackgroundStickers(hint);
+    pileBackgroundStickers(hint, { force: true });
   } else if (hint) {
     cancelBackgroundStickerPile();
   }
