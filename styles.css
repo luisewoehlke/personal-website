@@ -2684,6 +2684,16 @@ h2 {
 /* 2-col: one screen tall under the sticky header; hint pinned in the bottom slot */
 @media (min-width: 1041px) {
   #best-of {
+    /* Same 70vw size at normal widths; floor stops hard shrink near the 2-col edge */
+    --best-section-w: min(
+      calc(2 * var(--max) + var(--best-gap)),
+      calc(100vw - 3rem),
+      max(70vw, 60rem)
+    );
+    --best-card-w: min(
+      var(--max),
+      calc((var(--best-section-w) - var(--best-gap)) / 2)
+    );
     --best-pad-top: 3.5vh;
     --best-hint-h: max(10svh, 4.5rem);
     --best-heading-block: 5.75rem;

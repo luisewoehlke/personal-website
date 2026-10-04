@@ -565,7 +565,7 @@ const substackFallback = [
     section: "For Comedians",
     image:
       "https://substack-post-media.s3.amazonaws.com/public/images/96f11c33-3d2e-44e4-899e-88f4e076a559_4528x2824.jpeg",
-    likes: 25,
+    likes: 28,
     comments: 5,
   },
   {
@@ -600,8 +600,8 @@ const substackFallback = [
     section: "newsletter",
     image:
       "https://substack-post-media.s3.amazonaws.com/public/images/ca87f98c-a9df-45b9-a064-b6e032b37bc5_2769x1605.jpeg",
-    likes: 250,
-    comments: 13,
+    likes: 267,
+    comments: 15,
   },
   {
     title: "5 Things I Learned About People From Doing Stand-Up Comedy",
@@ -611,7 +611,7 @@ const substackFallback = [
     section: "newsletter",
     image:
       "https://substack-post-media.s3.amazonaws.com/public/images/f7cfc26b-0a22-4c4e-a483-28888a3970d0_2041x1171.png",
-    likes: 172,
+    likes: 175,
     comments: 33,
   },
 ];

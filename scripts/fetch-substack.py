@@ -113,6 +113,8 @@ BROWSER_HEADERS = {
     ),
     "Accept": "application/json, application/xml, text/xml, */*;q=0.8",
     "Accept-Language": "en-US,en;q=0.9",
+    "Referer": "https://luisew.substack.com/archive",
+    "Origin": "https://luisew.substack.com",
 }
 
 
@@ -128,8 +130,39 @@ def fetch_bytes(url, body=None, headers=None):
         return response.read()
 
 
+def fetch_bytes_via_jina(url):
+    """GitHub Actions IPs often get Substack 403; Jina can still fetch the body."""
+    jina_url = f"https://r.jina.ai/{url}"
+    return fetch_bytes(
+        jina_url,
+        headers={
+            "Accept": "text/plain",
+            "X-Return-Format": "text",
+            "Referer": "https://r.jina.ai/",
+            "Origin": "https://r.jina.ai",
+        },
+    )
+
+
 def fetch_json(url, body=None):
     return json.loads(fetch_bytes(url, body=body))
+
+
+def fetch_json_with_proxy_fallback(url):
+    try:
+        return fetch_json(url)
+    except urllib.error.HTTPError as error:
+        if error.code not in (401, 403, 429, 503):
+            raise
+        print(f"Direct fetch HTTP {error.code}; retrying via Jina proxy")
+        return json.loads(fetch_bytes_via_jina(url))
+
+
+def likes_from(post):
+    reactions = post.get("reactions")
+    if isinstance(reactions, dict) and reactions:
+        return sum(int(value or 0) for value in reactions.values())
+    return post.get("reaction_count") or 0
 
 
 def subtitle_from(text):
@@ -157,7 +190,7 @@ def excerpt(text, limit=80):
 
 
 def substack_from_api():
-    posts = fetch_json(SUBSTACK)
+    posts = fetch_json_with_proxy_fallback(SUBSTACK)
     return [
         {
             "title": (post.get("title") or "").strip(),
@@ -165,7 +198,7 @@ def substack_from_api():
             "url": post.get("canonical_url") or "",
             "date": post.get("post_date") or "",
             "image": post.get("cover_image") or "",
-            "likes": post.get("reaction_count") or 0,
+            "likes": likes_from(post),
             "comments": post.get("comment_count") or 0,
             "excerpt": excerpt(post.get("truncated_body_text")),
             "category": "stand-up",
@@ -175,7 +208,14 @@ def substack_from_api():
 
 
 def substack_from_rss():
-    root = ET.fromstring(fetch_bytes(SUBSTACK_RSS))
+    try:
+        raw = fetch_bytes(SUBSTACK_RSS)
+    except urllib.error.HTTPError as error:
+        if error.code not in (401, 403, 429, 503):
+            raise
+        print(f"Substack RSS HTTP {error.code}; retrying via Jina proxy")
+        raw = fetch_bytes_via_jina(SUBSTACK_RSS)
+    root = ET.fromstring(raw)
     cleaned = []
     for item in root.findall("./channel/item"):
         link = (item.findtext("link") or "").strip()
@@ -208,8 +248,8 @@ def substack_from_rss():
 def substack_posts():
     try:
         return substack_from_api()
-    except urllib.error.HTTPError as error:
-        print(f"Substack API {error.code}; falling back to RSS")
+    except Exception as error:
+        print(f"Substack API failed ({error}); falling back to RSS")
         return substack_from_rss()
 
 
